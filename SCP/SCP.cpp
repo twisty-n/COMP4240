@@ -11,6 +11,7 @@
 
 #include "stdafx.h"
 #include <stdlib.h>
+#include <string.h>
 
 /* Custom includes */
 #include "matrix.h"
@@ -21,15 +22,13 @@
 #define NO_FILE_FOUND_ERROR_CODE "error_code:1:no_file_found"
 #define INVALID_ARGUMENTS_ERROR_CODE "error_code:2:invalid_arguments"
 
-#define TRUE 1
-#define FALSE 0
-
 typedef int boolean;
 
 /* Function prototypes */
 
 boolean valid_arguments(int argument_count, char * arguments[]);
 void generate_problem_instance(Instance * instance, FILE * file);
+char * generate_output_file(char * input_file);
 
 int main(int argument_count, char * argv[])
 {
@@ -38,7 +37,11 @@ int main(int argument_count, char * argv[])
 	}
 
 	FILE * file;
-	char * input_file_name = "test.txt";
+	FILE * output_file;
+	char * input_file_name = "scpnrg1.txt";
+
+	char * output_file_path = generate_output_file(input_file_name);
+
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
 
 	// Ensure that the input file opened correctly
@@ -47,19 +50,33 @@ int main(int argument_count, char * argv[])
 		return 0;
 	}
 	
-
 	Instance instance;
 
 	generate_problem_instance(&instance, file);
+	fclose(file);
 
-	print_instance(&instance);
+	// Open a file for output, write then close
+	fopen_s(&output_file, output_file_path, "w");
+	print_instance_to_file(&instance, output_file);
+	fclose(output_file);
 
-	//print_matrix(instance.instance_matrix, instance.column_count, instance.row_count);
-	
+	// TODO: Free all the memory we allocated
+	free_instance(&instance);
+	free(output_file_path);
+
 	return 0;
 }
 
+char * generate_output_file(char * input_file) {
+	static const char OUTPUT_DIRECTORY[] = "..\\output\\";
+	int length = strlen(OUTPUT_DIRECTORY) + strlen(input_file) + 5;
+	char * output_file_path = (char *) calloc(length, sizeof(char));
+	
+	strcpy_s(output_file_path, length, OUTPUT_DIRECTORY);
+	strcat_s(output_file_path, length, input_file);
 
+	return output_file_path;
+}
 
 // Checks the provided arguments, at minimum there should be a filename
 // and an operation mode
@@ -88,12 +105,9 @@ void generate_problem_instance(Instance * instance, FILE * file) {
 	
 	// Read the rows and columns for the input and generate the basix matrix
 	fscanf_s(file, "%d%d", &row_count, &column_count);
-	matrix = generate_matrix(row_count, column_count);
-
+	matrix = generate_matrix(column_count, row_count);
+	// calloc 0's the array for us, not needed but still nice
 	column_costs = (int *)calloc(column_count, sizeof(int));
-
-	// Zero the matrix out so that we only need to flip things to '1'
-	zero_matrix(matrix,  column_count, row_count);
 
 	// Read in the column weights
 	for (int i = 0; i < column_count; i++) {
@@ -114,7 +128,7 @@ void generate_problem_instance(Instance * instance, FILE * file) {
 		// Now iterate over the coverings, flipping the needed 'bits'
 		for (int column = 0; column < coverings; column++) {
 			fscanf_s(file, "%d", &covering_column);
-			matrix[row][column - 1] = 1;
+			matrix[row][covering_column - 1] = 1;
 		}
 	}
 

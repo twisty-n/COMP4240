@@ -18,3 +18,5 @@ extern void free_instance(Instance * instance);
  * Prints the information associated with a given problem instance
  */
 extern void print_instance(Instance * instance);
+
+extern void print_instance_to_file(Instance * instance, FILE * file);

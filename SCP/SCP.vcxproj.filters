@@ -27,6 +27,9 @@
     <ClInclude Include="matrix.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="problem_instance.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="problem_instance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

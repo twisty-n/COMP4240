@@ -16,22 +16,22 @@ int ** generate_matrix(int, int);
  Dealloactes a multidimensional array
  Inputs:
  			**int:	The pointer to the "matrix"
- 			int:	THe number of rows 
+ 			int:	THe number of columns
 */
 void free_matrix(int **, int);
 
 /*
  Prints the contents of a matrix
  Inputs:
-			int: the column count of the matrix
 			int: the row count of the matrix
+			int: the column count of the matrix
 */
 void print_matrix(int **, int, int);
 
 /*
  Zeros a given matrix
  Inputs:
-			int: the column count of the matrix
 			int: the row count of the matrix
+			int: the column count of the matrix
 */
 void zero_matrix(int **, int, int);

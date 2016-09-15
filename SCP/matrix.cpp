@@ -1,5 +1,5 @@
-#include "matrix.h"
 #include "stdafx.h"
+#include "matrix.h"
 #include <stdlib.h>
 
 int ** generate_matrix(int row_count, int column_count) {

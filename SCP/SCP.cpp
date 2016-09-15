@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 /* Custom includes */
 #include "matrix.h"
@@ -29,6 +30,7 @@ typedef int boolean;
 boolean valid_arguments(int argument_count, char * arguments[]);
 void generate_problem_instance(Instance * instance, FILE * file);
 char * generate_output_file(char * input_file);
+time_t print_current_time();
 
 int main(int argument_count, char * argv[])
 {
@@ -51,9 +53,20 @@ int main(int argument_count, char * argv[])
 	}
 	
 	Instance instance;
+	
+
+	printf("Generating problem instance started "); 
+	time_t start = print_current_time(); printf("\n");
 
 	generate_problem_instance(&instance, file);
+
+	printf("Generating problem instance complete ");
+	time_t end = print_current_time(); printf("\n");
+
 	fclose(file);
+
+	printf("Generating problem instance took %f seconds\n", difftime(end, start));
+	printf("Outputing instance representation to file\n");
 
 	// Open a file for output, write then close
 	fopen_s(&output_file, output_file_path, "w");
@@ -65,6 +78,20 @@ int main(int argument_count, char * argv[])
 	free(output_file_path);
 
 	return 0;
+}
+
+time_t print_current_time() {
+	// Get the current time
+	time_t now = time(0);
+	struct tm time_val;
+	localtime_s(&time_val, &now);
+
+	char time_string[9];
+	strftime(time_string, sizeof(time_string), "%H:%M:%S", &time_val);
+
+	printf("%s", time_string);
+
+	return now;
 }
 
 char * generate_output_file(char * input_file) {

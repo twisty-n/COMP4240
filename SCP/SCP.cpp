@@ -7,7 +7,7 @@
  *								only required if finding a solution and second argument is a search
  *								single-point or metaheurstic )
 
-*/
+ */
 
 #include "stdafx.h"
 #include <stdlib.h>
@@ -38,7 +38,7 @@ int main(int argument_count, char * argv[])
 
 	FILE * file;
 	FILE * output_file;
-	char * input_file_name = "scpnrg1.txt";
+	char * input_file_name = "scpnrh5.txt";
 
 	char * output_file_path = generate_output_file(input_file_name);
 
@@ -106,6 +106,7 @@ void generate_problem_instance(Instance * instance, FILE * file) {
 	// Read the rows and columns for the input and generate the basix matrix
 	fscanf_s(file, "%d%d", &row_count, &column_count);
 	matrix = generate_matrix(column_count, row_count);
+	
 	// calloc 0's the array for us, not needed but still nice
 	column_costs = (int *)calloc(column_count, sizeof(int));
 

@@ -13,7 +13,7 @@ void print_instance(Instance * instance) {
 	printf("Number of rows: %d\nNumber of columns: %d", instance->row_count, instance->column_count);
 	printf("\nColumn:\t");
 	for (int i = 0; i < instance->column_count; i++) {
-		printf("%10d", i + 1);
+		printf(" %5d ", i + 1);
 	}
 	printf("\nCost:\t");
 	for(int i = 0; i < instance->column_count; i++) {
@@ -33,7 +33,7 @@ void print_instance_to_file(Instance * instance, FILE * file) {
 	fprintf(file, "Number of rows: %d\nNumber of columns: %d", instance->row_count, instance->column_count);
 	fprintf(file, "\nColumn:\t");
 	for (int i = 0; i < instance->column_count; i++) {
-		fprintf(file, "%4d", i + 1);
+		fprintf(file, " %5d", i + 1);
 	}
 	fprintf(file, "\nCost:\t");
 	for(int i = 0; i < instance->column_count; i++) {

@@ -2,9 +2,15 @@
 #include "matrix.h"
 #include <stdlib.h>
 
+int ** generate_matrix(int row_count) {
+	// Declare the array that will hold all of the other arrays
+	int ** _array;
+	return (int **) calloc(row_count, sizeof(*_array));
+}
+
 int ** generate_matrix(int column_count, int row_count) {
 	// Declare the array that will hold all of the other arrays
-	int ** _array = (int **) calloc(row_count, sizeof(*_array));
+	int ** _array = generate_matrix(row_count);
 
 	// Check that the allocation succeeded, if it did, we are sweet, else fail with NULL
 	if (!_array) {

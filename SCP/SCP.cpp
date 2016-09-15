@@ -29,7 +29,7 @@ typedef int boolean;
 
 boolean valid_arguments(int argument_count, char * arguments[]);
 void generate_problem_instance(Instance * instance, FILE * file);
-char * generate_output_file(char * input_file);
+char * generate_output_file_path(char * input_file);
 time_t print_current_time();
 
 int main(int argument_count, char * argv[])
@@ -40,15 +40,15 @@ int main(int argument_count, char * argv[])
 
 	FILE * file;
 	FILE * output_file;
-	char * input_file_name = "scpnrh5.txt";
+	char * input_file_name = argv[1];
 
-	char * output_file_path = generate_output_file(input_file_name);
+	char * output_file_path = generate_output_file_path(input_file_name);
 
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
 
 	// Ensure that the input file opened correctly
 	if (file_open_status != FILE_OPEN_SUCCESS) {
-		printf("%s Opening input file %s failed", NO_FILE_FOUND_ERROR_CODE, input_file_name);
+		printf("%s Opening input file %s failed\n", NO_FILE_FOUND_ERROR_CODE, input_file_name);
 		return 0;
 	}
 	
@@ -73,6 +73,8 @@ int main(int argument_count, char * argv[])
 	print_instance_to_file(&instance, output_file);
 	fclose(output_file);
 
+	//print_instance(&instance);
+
 	// TODO: Free all the memory we allocated
 	free_instance(&instance);
 	free(output_file_path);
@@ -94,7 +96,7 @@ time_t print_current_time() {
 	return now;
 }
 
-char * generate_output_file(char * input_file) {
+char * generate_output_file_path(char * input_file) {
 	static const char OUTPUT_DIRECTORY[] = "..\\output\\";
 	int length = strlen(OUTPUT_DIRECTORY) + strlen(input_file) + 5;
 	char * output_file_path = (char *) calloc(length, sizeof(char));
@@ -128,14 +130,18 @@ boolean valid_arguments(int argument_count, char * arguments[]) {
 void generate_problem_instance(Instance * instance, FILE * file) {
 	int row_count = 0, column_count = 0;
 	int ** matrix;
+	int ** raw_coverings;
 	int * column_costs;
+	int * row_covering_count;
 	
 	// Read the rows and columns for the input and generate the basix matrix
 	fscanf_s(file, "%d%d", &row_count, &column_count);
 	matrix = generate_matrix(column_count, row_count);
+	raw_coverings = generate_matrix(row_count);
 	
 	// calloc 0's the array for us, not needed but still nice
 	column_costs = (int *)calloc(column_count, sizeof(int));
+	row_covering_count = (int *)calloc(column_count, sizeof(int));
 
 	// Read in the column weights
 	for (int i = 0; i < column_count; i++) {
@@ -153,17 +159,26 @@ void generate_problem_instance(Instance * instance, FILE * file) {
 	for (int row = 0; row < row_count; row++) {
 		// First scan in the number of coverings this row has
 		fscanf_s(file, "%d", &coverings);
+		
+		// Maintain information about the number of coverings for a given row
+		// and which columns presented that cover
+		row_covering_count[row] = coverings;
+		raw_coverings[row] = (int *) calloc(coverings, sizeof(*raw_coverings[row]));
+
 		// Now iterate over the coverings, flipping the needed 'bits'
-		for (int column = 0; column < coverings; column++) {
+		for (int column_count = 0; column_count < coverings; column_count++) {
 			fscanf_s(file, "%d", &covering_column);
 			matrix[row][covering_column - 1] = 1;
+			raw_coverings[row][column_count] = covering_column - 1;
 		}
 	}
 
 	instance->column_costs = column_costs;
+	instance->raw_coverings = raw_coverings;
+	instance->row_covering_count = row_covering_count;
 	instance->column_count = column_count;
 	instance->row_count = row_count;
-	instance->instance_matrix = matrix;
+	instance->matrix = matrix;
 }
 
 

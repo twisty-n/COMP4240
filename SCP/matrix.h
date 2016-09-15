@@ -12,6 +12,11 @@
 */
 int ** generate_matrix(int, int);
 
+/*
+ Generates a multidimensional array without populating the 2nd dimension
+ */
+int ** generate_matrix(int);
+
 /**
  Dealloactes a multidimensional array
  Inputs:

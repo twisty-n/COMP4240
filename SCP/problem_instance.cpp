@@ -5,8 +5,10 @@
 
 
 void free_instance(Instance * instance) {
-	free_matrix(instance->instance_matrix, instance->row_count);
+	free_matrix(instance->matrix, instance->row_count);
+	free_matrix(instance->raw_coverings, instance->row_count);
 	free(instance->column_costs);
+	free(instance->row_covering_count);
 }
 
 void print_instance(Instance * instance) {
@@ -23,7 +25,7 @@ void print_instance(Instance * instance) {
 	for (int num_rows = 0; num_rows < instance->row_count; num_rows++) {
 		printf("Row %d:\t", num_rows + 1);
 		for (int num_cols = 0; num_cols < instance->column_count; num_cols++) {
-			printf("%4d", instance->instance_matrix[num_rows][num_cols]);
+			printf("%4d", instance->matrix[num_rows][num_cols]);
 		}
 		printf("\n");
 	}
@@ -43,7 +45,7 @@ void print_instance_to_file(Instance * instance, FILE * file) {
 	for (int num_rows = 0; num_rows < instance->row_count; num_rows++) {
 		fprintf(file, "Row %d:\t", num_rows + 1);
 		for (int num_cols = 0; num_cols < instance->column_count; num_cols++) {
-			fprintf(file, "%4d", instance->instance_matrix[num_rows][num_cols]);
+			fprintf(file, "%4d", instance->matrix[num_rows][num_cols]);
 		}
 		fprintf(file, "\n");
 	}

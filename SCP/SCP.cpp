@@ -60,25 +60,32 @@ int main(int argument_count, char * argv[])
 	
 
 	printf("Generating problem instance started "); 
-	time_t start = print_current_time(); printf("\n");
+	time_t start_formulate = print_current_time(); printf("\n");
 
 	generate_problem_instance(&instance, file);
 
 	printf("Generating problem instance complete ");
-	time_t end = print_current_time(); printf("\n");
+	time_t end_formulate = print_current_time(); printf("\n");
 
 	fclose(file);
 
-	printf("Generating problem instance took %f seconds\n", difftime(end, start));
-	printf("Outputing instance representation to file\n");
+	printf("Generating problem instance took %f seconds\n", difftime(end_formulate, start_formulate));
+	//printf("Outputing instance representation to file\n");
 
 	// Open a file for output, write then close
 	fopen_s(&output_file, output_file_path, "w");
-	print_instance_to_file(&instance, output_file);
+	//print_instance_to_file(&instance, output_file);
 	fclose(output_file);
 
 	//print_instance(&instance);
+	printf("Solution generated started ");
+	time_t start_sol = print_current_time(); printf("\n");
 	random_construction(&instance, &solution);
+
+	printf("Solution generation complete");
+	time_t end_sol = print_current_time(); printf("\n");
+	printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
+	
 	print_solution(&solution);
 
 	// TODO: Free all the memory we allocated

@@ -30,6 +30,12 @@
     <ClInclude Include="problem_instance.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="constructive_heuristic.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="solution.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -42,6 +48,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="problem_instance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="constructive_heuristic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="solution.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

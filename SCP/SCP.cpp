@@ -17,6 +17,8 @@
 /* Custom includes */
 #include "matrix.h"
 #include "problem_instance.h"
+#include "solution.h"
+#include "constructive_heuristic.h"
 
 /* Constants */
 #define FILE_OPEN_SUCCESS 0
@@ -40,7 +42,8 @@ int main(int argument_count, char * argv[])
 
 	FILE * file;
 	FILE * output_file;
-	char * input_file_name = argv[1];
+	//char * input_file_name = argv[1];
+	char * input_file_name = "scpnrg5.txt";
 
 	char * output_file_path = generate_output_file_path(input_file_name);
 
@@ -53,6 +56,7 @@ int main(int argument_count, char * argv[])
 	}
 	
 	Instance instance;
+	Solution solution;
 	
 
 	printf("Generating problem instance started "); 
@@ -74,6 +78,8 @@ int main(int argument_count, char * argv[])
 	fclose(output_file);
 
 	//print_instance(&instance);
+	random_construction(&instance, &solution);
+	print_solution(&solution);
 
 	// TODO: Free all the memory we allocated
 	free_instance(&instance);

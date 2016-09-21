@@ -8,7 +8,7 @@ struct Instance {
 	// A grid in which a raw_coverings[x] represents the xth row and raw_coverings[x][y] represents a column with a cost
 	int ** raw_coverings;
 
-	// An array in which row_covering_count[x] represents the number of coverings for column x
+	// An array in which row_covering_count[x] represents the number of coverings for a row x
 	int * row_covering_count;
 
 	// An array in which column_costs[x] gives the cost of column x (after accounting for col 1 -> col 0)

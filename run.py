@@ -5,6 +5,7 @@ import os
 
 path_to_runner = "./x64/Debug/SCP.exe"
 #path_to_runner = "./Debug/SCP.exe"
+#TODO:  Lauren - put in a check to see which path to use depending on host machine
 path_to_test_files = "./test_data/"
 path_to_output = "./output/"
 

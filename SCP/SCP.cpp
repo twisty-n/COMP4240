@@ -75,7 +75,7 @@ int main(int argument_count, char * argv[])
 	//Open a file for output, write then close
 	//fopen_s(&output_file, output_file_path, "w");
 	//print_instance_to_file(&instance, output_file);
-	fclose(output_file);
+	//fclose(output_file);
 
 	//print_instance(&instance);
 	printf("Solution generated started ");

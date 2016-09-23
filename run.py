@@ -1,6 +1,7 @@
 import subprocess
 import threading
 import os
+import csv
 
 
 path_to_runner = "./Debug/SCP.exe"
@@ -11,7 +12,7 @@ path_to_output = "./output/"
 def launch_scp_program(path_to_runner,filename):
     print("Launching SCP with %s" % filename)
     # Start the process with the filename and args
-    #subprocess.call([path_to_runner, path_to_test_files+filename, "test"])
+    subprocess.call([path_to_runner, path_to_test_files+filename, "test"])
     # Listen to the results
 
 

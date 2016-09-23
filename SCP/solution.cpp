@@ -10,7 +10,7 @@ void print_solution(Solution * solution) {
 	for (int i = 1; i < solution->number_of_covers; i++) {
 		// Plus 1 so that the columns are displayed sensibly
 		printf("%5d ", solution->minimal_cover[i-1]+1);
-		if (i % 6 == 0 && i != 0) {
+		if (i % 6 == 0 && i != 0) {							//TODO:  why is %6 hardcoded?  where does the 6 come from?
 			printf("\n");
 		}
 	}

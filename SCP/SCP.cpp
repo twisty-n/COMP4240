@@ -4,9 +4,8 @@
  *		1. string:			Filename representing the input file to deal with
  *		2. string:			Represents the operation (section of part 2 of the assignment) to perform
  *		3. int:optional:	The current best known solution for the given input file (only required
- *								only required if finding a solution and second argument is a search
- *								single-point or metaheurstic )
-
+ *							if finding a solution and second argument is a search single-point or 
+ *					        metaheurstic)
  */
 
 #include "stdafx.h"
@@ -37,13 +36,14 @@ time_t print_current_time();
 int main(int argument_count, char * argv[])
 {
 	if (!valid_arguments(argument_count, argv)) {
-		return 0;
+		//return 0;
 	}
 
 	FILE * file;
 	FILE * output_file;
-	//char * input_file_name = argv[1];
-	char * input_file_name = "scpnrg5.txt";
+	char * input_file_name = argv[1];
+	//char * input_file_name = "scp42.txt";
+	printf("loading file name %s\n", input_file_name);
 
 	char * output_file_path = generate_output_file_path(input_file_name);
 
@@ -72,10 +72,10 @@ int main(int argument_count, char * argv[])
 	printf("Generating problem instance took %f seconds\n", difftime(end_formulate, start_formulate));
 	//printf("Outputing instance representation to file\n");
 
-	// Open a file for output, write then close
-	fopen_s(&output_file, output_file_path, "w");
+	//Open a file for output, write then close
+	//fopen_s(&output_file, output_file_path, "w");
 	//print_instance_to_file(&instance, output_file);
-	fclose(output_file);
+	//fclose(output_file);
 
 	//print_instance(&instance);
 	printf("Solution generated started ");
@@ -90,7 +90,7 @@ int main(int argument_count, char * argv[])
 
 	// TODO: Free all the memory we allocated
 	free_instance(&instance);
-	free(output_file_path);
+	//free(output_file_path);
 
 	return 0;
 }

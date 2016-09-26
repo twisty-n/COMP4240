@@ -2,6 +2,7 @@ import subprocess
 import threading
 import os
 import csv
+import sys
 
 
 path_to_runner = "./Debug/SCP.exe"
@@ -16,26 +17,29 @@ summary_output_file = "summary.csv"
 # way to track the data.  We would need one list per row.
 # I will look into iterable data structures for storing and writing to csv
 # but at the moment, this is a 'working' csv write solution
-best_cover_list = []
-best_cover_time_list = []
-average_cover_list = []
-average_cover_time = []
+best_cover_random_cost = ['random - best cover']
+best_cover_random_time = ['random - best_time']
+average_cover_random_cost = ['random - average_cover']
+average_cover_random_time = ['random - average_time']
+report_average = False
 
 
 
 def launch_scp_program(path_to_runner,filename):
     print("Launching SCP with %s" % filename)
     # Start the process with the filename and args
-    test_scp = subprocess.call([path_to_runner, path_to_test_files+filename, "test"])
-    # Listen to the results
 
-    #TODO:  Lauren - still trying to work this out.  Also need to take to twisty about best design for getting data -  might be best to wait and see if I can get csv writing to work with an iterable 2D array first
+    # output will be captured in a list
+    output_list = []
+    test_scp = subprocess.call([path_to_runner, path_to_test_files+filename, "test"], stdout=output_list)
 
-    #proof of concept - appending data to lists at this point
-    best_cover_list.append(0)
-    best_cover_time_list.append(0)
-    average_cover_list.append(0)
-    average_cover_time.append(0)
+    # then added to to the summary lists
+    best_cover_random_cost.append(output_list[0])
+    best_cover_random_time.append(output_list[1])
+    if report_average:
+        average_cover_random_cost.append(output_list[2])
+        average_cover_random_time.append(output_list[3])
+
 
 def host_path():
     if os.path.exists(path_to_runner):
@@ -48,19 +52,19 @@ def host_path():
 
 #for debug
 def print_lists_to_console():
-    print "best_cover_list: ", best_cover_list
-    print "best_cover_time_list: ", best_cover_time_list
-    print "average_cover_list: ", average_cover_list
-    print "average_cover_time: ", average_cover_time
+    print "best_cover_list: ", best_cover_random_cost
+    print "best_cover_time_list: ", best_cover_random_time
+    print "average_cover_list: ", average_cover_random_cost
+    print "average_cover_time: ", average_cover_random_time
 
 
 def append_to_csv():
     with open(path_to_output+summary_output_file, 'a') as csvfile:
         wr = csv.writer(csvfile, dialect='excel', delimiter=',', quoting=csv.QUOTE_NONE, quotechar='', escapechar='')
-        wr.writerow(best_cover_list)
-        wr.writerow(best_cover_time_list)
-        wr.writerow(average_cover_list)
-        wr.writerow(average_cover_time)
+        wr.writerow(best_cover_random_cost)
+        wr.writerow(best_cover_random_time)
+        wr.writerow(average_cover_random_cost)
+        wr.writerow(average_cover_random_time)
     csvfile.close()
 
 if __name__ == "__main__":

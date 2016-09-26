@@ -43,9 +43,10 @@ int main(int argument_count, char * argv[])
 	FILE * output_file;
 	char * input_file_name = argv[1];
 	//char * input_file_name = "scp42.txt";
+
 	printf("loading file name %s\n", input_file_name);
 
-	char * output_file_path = generate_output_file_path(input_file_name);
+	//char * output_file_path = generate_output_file_path(input_file_name);
 
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
 
@@ -85,8 +86,10 @@ int main(int argument_count, char * argv[])
 	printf("Solution generation complete");
 	time_t end_sol = print_current_time(); printf("\n");
 	printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
+	solution.time = difftime(end_sol, start_sol);
 	
-	print_solution(&solution);
+	//print_solution(&solution);
+	print_solution_stats(&solution);
 
 	// TODO: Free all the memory we allocated
 	free_instance(&instance);

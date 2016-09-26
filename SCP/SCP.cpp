@@ -46,7 +46,7 @@ int main(int argument_count, char * argv[])
 
 	//printf("loading file name %s\n", input_file_name);
 
-	//char * output_file_path = generate_output_file_path(input_file_name);
+	char * output_file_path = generate_output_file_path(input_file_name);
 
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
 
@@ -87,13 +87,16 @@ int main(int argument_count, char * argv[])
 	time_t end_sol = print_current_time(); //printf("\n");
 	//printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
 	solution.time = difftime(end_sol, start_sol);
-	
+
 	//print_solution(&solution);
 	print_solution_stats(&solution);
+	fopen_s(&output_file, output_file_path, "w");
+	print_solution_to_file(&solution, output_file, "random_construction");
+	//fclose(output_file);
 
 	// TODO: Free all the memory we allocated
 	free_instance(&instance);
-	//free(output_file_path);
+	free(output_file_path);
 
 	return 0;
 }
@@ -113,7 +116,7 @@ time_t print_current_time() {
 }
 
 char * generate_output_file_path(char * input_file) {
-	static const char OUTPUT_DIRECTORY[] = "..\\output\\";
+	static const char OUTPUT_DIRECTORY[] = "..\\output\\raw_dump\\";
 	int length = strlen(OUTPUT_DIRECTORY) + strlen(input_file) + 5;
 	char * output_file_path = (char *) calloc(length, sizeof(char));
 	

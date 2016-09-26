@@ -23,9 +23,19 @@ void print_solution_stats(Solution * solution) {
 	printf("%6.4lf",solution->time);
 }
 
-void print_solution_to_file(Solution * solution, FILE * file) {
-
-
+void print_solution_to_file(Solution * solution, FILE * file, char * heuristic) {
+	fprintf(file, "best solution for heuristic %s\n", heuristic);
+	fprintf(file, "Total Cost: %d\n", solution->cost);
+	fprintf(file, "Required Covers %d\n", solution->number_of_covers);
+	fprintf(file, "Minimal Covering Columns: \n");
+	for (int i = 1; i < solution->number_of_covers; i++) {
+		// Plus 1 so that the columns are displayed sensibly
+		fprintf(file, "%5d ", solution->minimal_cover[i - 1] + 1);
+		if (i % 6 == 0 && i != 0) {
+			// Prints 6 per row (arbitarily) to fit into the console window
+			fprintf(file, "\n");
+		}
+	}
 }
 
 void free_solution(Solution * solution) {

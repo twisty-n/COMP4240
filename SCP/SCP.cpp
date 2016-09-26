@@ -23,7 +23,7 @@
 #define FILE_OPEN_SUCCESS 0
 #define NO_FILE_FOUND_ERROR_CODE "error_code:1:no_file_found"
 #define INVALID_ARGUMENTS_ERROR_CODE "error_code:2:invalid_arguments"
-#define NO_OF_RUNS 100				//TODO:  remove this. It is a hack until cmd line argument defines the number of runs for each heuristic
+#define NO_OF_RUNS 5				//TODO:  remove this. It is a hack until cmd line argument defines the number of runs for each heuristic
 
 typedef int boolean;
 

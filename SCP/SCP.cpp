@@ -90,8 +90,9 @@ int main(int argument_count, char * argv[])
 
 	//print_solution(&solution);
 	print_solution_stats(&solution);
-	fopen_s(&output_file, output_file_path, "w");
-	print_solution_to_file(&solution, output_file, "random_construction");
+
+	//fopen_s(&output_file, output_file_path, "w");
+	//print_solution_to_file(&solution, output_file, "random_construction");
 	//fclose(output_file);
 
 	// TODO: Free all the memory we allocated

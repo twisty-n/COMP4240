@@ -23,6 +23,7 @@
 #define FILE_OPEN_SUCCESS 0
 #define NO_FILE_FOUND_ERROR_CODE "error_code:1:no_file_found"
 #define INVALID_ARGUMENTS_ERROR_CODE "error_code:2:invalid_arguments"
+#define NO_OF_RUNS 100				//TODO:  remove this. It is a hack until cmd line argument defines the number of runs for each heuristic
 
 typedef int boolean;
 
@@ -43,11 +44,9 @@ int main(int argument_count, char * argv[])
 	FILE * output_file;
 	char * input_file_name = argv[1];
 	//char * input_file_name = "scp42.txt";
-
 	//printf("loading file name %s\n", input_file_name);
 
 	char * output_file_path = generate_output_file_path(input_file_name);
-
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
 
 	// Ensure that the input file opened correctly
@@ -57,7 +56,8 @@ int main(int argument_count, char * argv[])
 	}
 	
 	Instance instance;
-	Solution solution;
+	Solution current_solution;
+	Solution best_solution;
 	
 
 	//printf("Generating problem instance started "); 
@@ -78,18 +78,39 @@ int main(int argument_count, char * argv[])
 	//print_instance_to_file(&instance, output_file);
 	//fclose(output_file);
 
-	//print_instance(&instance);
-	//printf("Solution generated started ");
-	time_t start_sol = print_current_time(); //printf("\n");
-	random_construction(&instance, &solution);
+	int total_cost = 0;
+	double total_time = 0;
+	for (int i = 0; i < NO_OF_RUNS; i++) {
+		//print_instance(&instance);
+		//printf("Solution generated started ");
+		time_t start_sol = print_current_time(); //printf("\n");
+		random_construction(&instance, &current_solution);
+		//printf("Solution generation complete");
+		time_t end_sol = print_current_time(); //printf("\n");
+		//printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
+		current_solution.time = difftime(end_sol, start_sol);
 
-	//printf("Solution generation complete");
-	time_t end_sol = print_current_time(); //printf("\n");
-	//printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
-	solution.time = difftime(end_sol, start_sol);
+		if (i == 0) {
+			best_solution = current_solution;
+		}
+		else if (current_solution.cost < best_solution.cost) {
+			best_solution = current_solution;
+		}
+		total_cost += current_solution.cost;
+		total_time += current_solution.time;
+	}
+
+	double average_cost = (double)total_cost / NO_OF_RUNS;
+	double average_time = total_time / NO_OF_RUNS;
 
 	//print_solution(&solution);
-	print_solution_stats(&solution);
+	if (NO_OF_RUNS <= 1) {
+		print_solution_stats(&best_solution);
+	}
+	else {
+		print_solution_stats(&best_solution, average_cost, average_time);
+	}
+
 
 	//fopen_s(&output_file, output_file_path, "w");
 	//print_solution_to_file(&solution, output_file, "random_construction");

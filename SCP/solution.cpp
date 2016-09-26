@@ -23,8 +23,15 @@ void print_solution_stats(Solution * solution) {
 	printf("%6.4lf",solution->time);
 }
 
+void print_solution_stats(Solution * solution, double average_cost, double average_time) {
+	printf("%d ", solution->cost);		//prints basic info so python can add to the exec summary
+	printf("%6.6lf ", solution->time);
+	printf("%5.2lf ", average_cost);
+	printf("%6.6lf ", average_time);
+}
+
 void print_solution_to_file(Solution * solution, FILE * file, char * heuristic) {
-	fprintf(file, "best solution for heuristic %s\n", heuristic);
+	fprintf(file, "best solution for heuristic %s", heuristic);
 	fprintf(file, "Total Cost: %d\n", solution->cost);
 	fprintf(file, "Required Covers %d\n", solution->number_of_covers);
 	fprintf(file, "Minimal Covering Columns: \n");

@@ -73,6 +73,10 @@ def append_to_csv():
 
 if __name__ == "__main__":
 
+    if len(sys.argv) > 1:
+        no_runs = sys.argv[1]
+        report_average = True
+
     print("Launching tests\n")
     path_to_runner = host_path()
     for filename in os.listdir(path_to_test_files):
@@ -81,7 +85,7 @@ if __name__ == "__main__":
        #thread.daemon = True
        #thread.start()
 
-    print_lists_to_console()
+    #print_lists_to_console()
     append_to_csv()
 
     print("end tests")

@@ -14,6 +14,8 @@ void print_solution(Solution * solution);
 
 void print_solution_stats(Solution * solution);
 
+void print_solution_stats(Solution * solution, double average_cost, double average_time);
+
 void free_solution(Solution * solution, FILE * file);
 
-void print_solution_to_file(Solution * solution, FILE * file, char * heuristic);
+void print_solution_to_file(Solution * solution, FILE * file,  char * heuristic);

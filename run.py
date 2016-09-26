@@ -2,7 +2,6 @@ import subprocess
 import threading
 import os
 import csv
-import sys
 
 
 path_to_runner = "./Debug/SCP.exe"
@@ -27,17 +26,10 @@ average_cover_time = []
 def launch_scp_program(path_to_runner,filename):
     print("Launching SCP with %s" % filename)
     # Start the process with the filename and args
-
-    #generate raw output file
-    output_file_name = filename[:-4] + "_raw_output.txt"
-    output_file = open(path_to_output+"/raw dump/"+output_file_name,'w')
-    test_scp = subprocess.call([path_to_runner, path_to_test_files+filename, "test"], stdout=output_file)
-    output_file.close()
-
+    test_scp = subprocess.call([path_to_runner, path_to_test_files+filename, "test"])
     # Listen to the results
 
     #TODO:  Lauren - still trying to work this out.  Also need to take to twisty about best design for getting data -  might be best to wait and see if I can get csv writing to work with an iterable 2D array first
-
 
     #proof of concept - appending data to lists at this point
     best_cover_list.append(0)

@@ -44,7 +44,7 @@ int main(int argument_count, char * argv[])
 	char * input_file_name = argv[1];
 	//char * input_file_name = "scp42.txt";
 
-	printf("loading file name %s\n", input_file_name);
+	//printf("loading file name %s\n", input_file_name);
 
 	//char * output_file_path = generate_output_file_path(input_file_name);
 
@@ -60,17 +60,17 @@ int main(int argument_count, char * argv[])
 	Solution solution;
 	
 
-	printf("Generating problem instance started "); 
-	time_t start_formulate = print_current_time(); printf("\n");
+	//printf("Generating problem instance started "); 
+	time_t start_formulate = print_current_time(); //printf("\n");
 
 	generate_problem_instance(&instance, file);
 
-	printf("Generating problem instance complete ");
-	time_t end_formulate = print_current_time(); printf("\n");
+	//printf("Generating problem instance complete ");
+	time_t end_formulate = print_current_time(); //printf("\n");
 
 	fclose(file);
 
-	printf("Generating problem instance took %f seconds\n", difftime(end_formulate, start_formulate));
+	//printf("Generating problem instance took %f seconds\n", difftime(end_formulate, start_formulate));
 	//printf("Outputing instance representation to file\n");
 
 	//Open a file for output, write then close
@@ -79,13 +79,13 @@ int main(int argument_count, char * argv[])
 	//fclose(output_file);
 
 	//print_instance(&instance);
-	printf("Solution generated started ");
-	time_t start_sol = print_current_time(); printf("\n");
+	//printf("Solution generated started ");
+	time_t start_sol = print_current_time(); //printf("\n");
 	random_construction(&instance, &solution);
 
-	printf("Solution generation complete");
-	time_t end_sol = print_current_time(); printf("\n");
-	printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
+	//printf("Solution generation complete");
+	time_t end_sol = print_current_time(); //printf("\n");
+	//printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
 	solution.time = difftime(end_sol, start_sol);
 	
 	//print_solution(&solution);
@@ -107,7 +107,7 @@ time_t print_current_time() {
 	char time_string[9];
 	strftime(time_string, sizeof(time_string), "%H:%M:%S", &time_val);
 
-	printf("%s", time_string);
+	//printf("%s", time_string);
 
 	return now;
 }

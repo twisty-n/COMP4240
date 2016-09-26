@@ -30,8 +30,10 @@ def launch_scp_program(path_to_runner,filename):
     # Start the process with the filename and args
 
     # output will be captured in a list
-    output_list = []
-    test_scp = subprocess.call([path_to_runner, path_to_test_files+filename, "test"], stdout=output_list)
+    test_scp = subprocess.Popen([path_to_runner, path_to_test_files+filename, "test"],  stdout=subprocess.PIPE)
+
+    output = test_scp.communicate()
+    output_list = output[0].split()
 
     # then added to to the summary lists
     best_cover_random_cost.append(output_list[0])
@@ -54,8 +56,9 @@ def host_path():
 def print_lists_to_console():
     print "best_cover_list: ", best_cover_random_cost
     print "best_cover_time_list: ", best_cover_random_time
-    print "average_cover_list: ", average_cover_random_cost
-    print "average_cover_time: ", average_cover_random_time
+    if report_average:
+        print "average_cover_list: ", average_cover_random_cost
+        print "average_cover_time: ", average_cover_random_time
 
 
 def append_to_csv():
@@ -63,8 +66,9 @@ def append_to_csv():
         wr = csv.writer(csvfile, dialect='excel', delimiter=',', quoting=csv.QUOTE_NONE, quotechar='', escapechar='')
         wr.writerow(best_cover_random_cost)
         wr.writerow(best_cover_random_time)
-        wr.writerow(average_cover_random_cost)
-        wr.writerow(average_cover_random_time)
+        if report_average:
+            wr.writerow(average_cover_random_cost)
+            wr.writerow(average_cover_random_time)
     csvfile.close()
 
 if __name__ == "__main__":
@@ -77,6 +81,7 @@ if __name__ == "__main__":
        #thread.daemon = True
        #thread.start()
 
+    print_lists_to_console()
     append_to_csv()
 
     print("end tests")

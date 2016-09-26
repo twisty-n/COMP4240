@@ -19,8 +19,8 @@ void print_solution(Solution * solution) {
 }
 
 void print_solution_stats(Solution * solution) {
-	printf("%d",solution->cost);		//prints basic info so python can add to the exec summary
-	printf("%5.2lf",solution->cost);
+	printf("%d ",solution->cost);		//prints basic info so python can add to the exec summary
+	printf("%6.4lf",solution->time);
 }
 
 void print_solution_to_file(Solution * solution, FILE * file) {

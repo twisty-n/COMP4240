@@ -16,7 +16,6 @@ path_to_output = "./output/"
 summary_output_file = "summary.xlsx"
 path_to_input_files = "./input/"
 best_known_input_file = "best-known.txt"
-no_test_cases = 66
 
 
 # lists are required to store data - as this works best with the
@@ -44,7 +43,7 @@ def launch_scp_program(path_to_runner,filename):
 	output = test_scp.communicate()
 	output_list = output[0].split()
 	# then added to to the summary lists
-	best_known_solution.append(float(output_list[0]))
+	best_cover_random_cost.append(float(output_list[0]))
 	best_cover_random_time.append(float(output_list[1]))
 	if report_average:
 		average_cover_random_cost.append(float(output_list[2]))
@@ -92,11 +91,11 @@ def print_summary():
 		input = line.split()
 		worksheet.write_string(row, i, input[0])
 		worksheet.write(row+1, i, input[1])
-		#worksheet.write(row+2, i, best_cover_random_cost[i])
-		#worksheet.write(row+3, i, best_cover_random_time[i])
-		#if report_average:
-		#	worksheet.write(row+4, i, average_cover_random_cost[i])
-		#	worksheet.write(row+5, i, average_cover_random_time[i])
+		worksheet.write(row+2, i, best_cover_random_cost[i])
+		worksheet.write(row+3, i, best_cover_random_time[i])
+		if report_average:
+			worksheet.write(row+4, i, average_cover_random_cost[i])
+			worksheet.write(row+5, i, average_cover_random_time[i])
 		i += 1
 
 	workbook.close()

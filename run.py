@@ -4,9 +4,15 @@ import os
 import csv
 import sys
 import numpy
-import xlsxwriter	# will be highlighted in red because pycharm cannot find library - but is installed, you can see listed using 'pip list', and works fine
-					# note:  with xls libraries in python - we cannot append, we have to write a new file each time. Taken into consideration with design
+import xlsxwriter
+from xlsxwriter.utility import xl_rowcol_to_cell  #used to generate A1 notations of cells
 
+					# note for development: this xlsxwriter library will be highlighted in red because pycharm cannot find library
+					# but it is probably installed.  You can check if it is listed using 'pip list'.  Can install with pip as well,
+					# even if it is highlighted in red, it should work fine (from CMD)
+					# note:  with xls libraries in python - we cannot append to existing files, it will overwrite the existing
+					# so if we want persistence of data, we may need to add a date/time to the workbook name
+					# TODO - feature to add data/time to the workbook name.  Have a boolean flag to turn persistence on/off
 
 
 path_to_runner = "./Debug/SCP.exe"
@@ -79,26 +85,85 @@ def append_to_csv():
 	csvfile.close()
 
 
-def print_summary():
-	workbook = xlsxwriter.Workbook(path_to_output+summary_output_file)
-	worksheet = workbook.add_worksheet('testing')
+def print_summary_to_xlsx():
 
-	file = open(path_to_input_files+best_known_input_file, 'r')
+	workbook = xlsxwriter.Workbook(path_to_output+summary_output_file)
+	add_worksheet(workbook, "random constructive heuristic", best_cover_random_cost, best_cover_random_time, average_cover_random_cost, average_cover_random_time)
+	#will be able to add more sheets based on the other heuristics from here
+	workbook.close()
+
+def add_worksheet(workbook, heuristic, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time):
+	worksheet = workbook.add_worksheet(heuristic)
+	emphasis_formatting = workbook.add_format({'bold': True, 'bg_color': '#C0C0C0', 'border': True})
+	add_headings(worksheet, emphasis_formatting)
+	fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time) #think this is pass by reference, so think it might be okay
+
+
+def add_headings(worksheet, emphasis_formatting):
+	worksheet.write('A1', "test id", emphasis_formatting)
+	worksheet.write('A2', "best known", emphasis_formatting)
+	worksheet.write('A3', "best cost", emphasis_formatting)
+	worksheet.write('A4', "time (seconds)", emphasis_formatting)
+	worksheet.write('A5', "performance gains (%)", emphasis_formatting)
+	if report_average:
+		worksheet.write('A6', "average cost", emphasis_formatting)
+		worksheet.write('A7', "time (seconds)", emphasis_formatting)
+		worksheet.write('A8', "performance gains (%)", emphasis_formatting)
+	worksheet.set_column(0, 0, 25)
+
+def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time)
+
+	# TODO:  Lauren - fix this so that you are not loading and reading from file each time - here now only because it 'works'
+	input_file = open(path_to_input_files+best_known_input_file, 'r')
 
 	row = 0
-	i = 0
-	for line in file:
+	i = 1			# i matches column reference workbook.  workbook is row/col indexed at 0, but we have headers in col 0
+					# use i-1 for accessing data in lists
+
+	for line in input_file:
 		input = line.split()
-		worksheet.write_string(row, i, input[0])
-		worksheet.write(row+1, i, input[1])
-		worksheet.write(row+2, i, best_cover_random_cost[i])
-		worksheet.write(row+3, i, best_cover_random_time[i])
+
+		#add test case and best known
+		worksheet.write(row, i, input[0], emphasis_formatting)
+		worksheet.write_number(row+1, i, float(input[1]), emphasis_formatting)
+
+		#add best cover cost from program and associated time
+		worksheet.write_number(row+2, i, best_cover_cost[i-1])
+		worksheet.write_number(row+3, i, best_cover_time[i-1])
+
+		#generate formula to show the performance gains as a percentage
+		best_known_cell = xl_rowcol_to_cell(row+1,i)
+		best_cover_cell = xl_rowcol_to_cell(row+2,i)
+		performance_gains_formula = "=100-(("+best_cover_cell+"/"+best_known_cell+")*100)"
+		worksheet.write_formula(row+4, i, performance_gains_formula, emphasis_formatting)
+
+		#include average details if necessary
 		if report_average:
-			worksheet.write(row+4, i, average_cover_random_cost[i])
-			worksheet.write(row+5, i, average_cover_random_time[i])
+
+			#data from runtime
+			worksheet.write_number(row+5, i, average_cover_cost[i-1])
+			worksheet.write_number(row+6, i, average_cover_time[i-1])
+
+			#work out performance gains and as percentage
+			average_cover_cell = xl_rowcol_to_cell(row+5,i)
+			performance_gains_formula = "=100-(("+average_cover_cell+"/"+best_known_cell+")*100)"
+			worksheet.write_formula(row+7, i, performance_gains_formula, emphasis_formatting)
+
 		i += 1
 
-	workbook.close()
+	#add average performance gains
+	worksheet.write(row, i, "average performance gains (%)", emphasis_formatting)
+	best_performance_percentage_final_cell = xl_rowcol_to_cell(row+4,i-1)
+	cell_range = 'A5:'+best_performance_percentage_final_cell
+	average_performance_gains_formula = '=SUM('+cell_range+')/COUNT('+cell_range+')'
+	worksheet.write_formula(row+4, i, average_performance_gains_formula, emphasis_formatting)
+	if report_average:
+		average_performance_percentage_final_cell = xl_rowcol_to_cell(row+7,i-1)
+		cell_range = 'A8:'+average_performance_percentage_final_cell
+		average_performance_gains_formula = '=SUM('+cell_range+')/COUNT('+cell_range+')'
+		worksheet.write_formula(row+7, i, average_performance_gains_formula, emphasis_formatting)
+	worksheet.set_column(0, i, 25)
+
 
 if __name__ == "__main__":
 
@@ -119,5 +184,5 @@ if __name__ == "__main__":
 	print("end tests")
 
 	print("printing summary")
-	print_summary()
+	print_summary_to_xlsx()
 	print("summary printed - details can be found in %s" % path_to_output+'summary.xlsx')

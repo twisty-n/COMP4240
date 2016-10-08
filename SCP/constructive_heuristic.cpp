@@ -58,5 +58,4 @@ void random_construction(Instance * instance, Solution * solution) {
 	solution->covering_columns = coverings;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
-
 }

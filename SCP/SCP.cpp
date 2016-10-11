@@ -4,9 +4,8 @@
  *		1. string:			Filename representing the input file to deal with
  *		2. string:			Represents the operation (section of part 2 of the assignment) to perform
  *		3. int:optional:	The current best known solution for the given input file (only required
- *								only required if finding a solution and second argument is a search
- *								single-point or metaheurstic )
-
+ *							if finding a solution and second argument is a search single-point or 
+ *					        metaheurstic)
  */
 
 #include "stdafx.h"
@@ -24,6 +23,7 @@
 #define FILE_OPEN_SUCCESS 0
 #define NO_FILE_FOUND_ERROR_CODE "error_code:1:no_file_found"
 #define INVALID_ARGUMENTS_ERROR_CODE "error_code:2:invalid_arguments"
+#define NO_OF_RUNS 5				//TODO:  remove this. It is a hack until cmd line argument defines the number of runs for each heuristic
 
 typedef int boolean;
 
@@ -42,11 +42,11 @@ int main(int argument_count, char * argv[])
 
 	FILE * file;
 	FILE * output_file;
-	//char * input_file_name = argv[1];
-	char * input_file_name = "scpnrg5.txt";
+	char * input_file_name = argv[1];
+	//char * input_file_name = "scp42.txt";
+	//printf("loading file name %s\n", input_file_name);
 
 	char * output_file_path = generate_output_file_path(input_file_name);
-
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
 
 	// Ensure that the input file opened correctly
@@ -56,37 +56,71 @@ int main(int argument_count, char * argv[])
 	}
 	
 	Instance instance;
-	Solution solution;
+	Solution current_solution;
+	Solution best_solution;
 	
 
-	printf("Generating problem instance started "); 
-	time_t start_formulate = print_current_time(); printf("\n");
+	//printf("Generating problem instance started "); 
+	time_t start_formulate = print_current_time(); //printf("\n");
 
 	generate_problem_instance(&instance, file);
 
-	printf("Generating problem instance complete ");
-	time_t end_formulate = print_current_time(); printf("\n");
+	//printf("Generating problem instance complete ");
+	time_t end_formulate = print_current_time(); //printf("\n");
 
 	fclose(file);
 
-	printf("Generating problem instance took %f seconds\n", difftime(end_formulate, start_formulate));
+	//printf("Generating problem instance took %f seconds\n", difftime(end_formulate, start_formulate));
 	//printf("Outputing instance representation to file\n");
 
-	// Open a file for output, write then close
-	fopen_s(&output_file, output_file_path, "w");
+	//Open a file for output, write then close
+	//fopen_s(&output_file, output_file_path, "w");
 	//print_instance_to_file(&instance, output_file);
-	fclose(output_file);
+	//fclose(output_file);
+
+	int total_cost = 0;
+	double total_time = 0;
+	for (int i = 0; i < NO_OF_RUNS; i++) {
+		//print_instance(&instance);
+		//printf("Solution generated started ");
+		time_t start_sol = print_current_time(); //printf("\n");
+		//random_construction(&instance, &current_solution);
+		greedy_construction(&instance, &solution);
+
+		//printf("Solution generation complete");
+		time_t end_sol = print_current_time(); //printf("\n");
+		//printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
+		current_solution.time = difftime(end_sol, start_sol);
+
+		if (i == 0) {
+			best_solution = current_solution;
+		}
+		else if (current_solution.cost < best_solution.cost) {
+			best_solution = current_solution;
+		}
+		total_cost += current_solution.cost;
+		total_time += current_solution.time;
+	}
 
 	//print_instance(&instance);
 	printf("Solution generated started ");
-	time_t start_sol = print_current_time(); printf("\n");
-	greedy_construction(&instance, &solution);
 
-	printf("Solution generation complete");
-	time_t end_sol = print_current_time(); printf("\n");
-	printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
 	
-	print_solution(&solution);
+	double average_cost = (double)total_cost / NO_OF_RUNS;
+	double average_time = total_time / NO_OF_RUNS;
+
+	//print_solution(&solution);
+	if (NO_OF_RUNS <= 1) {
+		print_solution_stats(&best_solution);
+	}
+	else {
+		print_solution_stats(&best_solution, average_cost, average_time);
+	}
+
+
+	//fopen_s(&output_file, output_file_path, "w");
+	//print_solution_to_file(&solution, output_file, "random_construction");
+	//fclose(output_file);
 
 	// TODO: Free all the memory we allocated
 	free_instance(&instance);
@@ -104,13 +138,13 @@ time_t print_current_time() {
 	char time_string[9];
 	strftime(time_string, sizeof(time_string), "%H:%M:%S", &time_val);
 
-	printf("%s", time_string);
+	//printf("%s", time_string);
 
 	return now;
 }
 
 char * generate_output_file_path(char * input_file) {
-	static const char OUTPUT_DIRECTORY[] = "..\\output\\";
+	static const char OUTPUT_DIRECTORY[] = "..\\output\\raw_dump\\";
 	int length = strlen(OUTPUT_DIRECTORY) + strlen(input_file) + 5;
 	char * output_file_path = (char *) calloc(length, sizeof(char));
 	

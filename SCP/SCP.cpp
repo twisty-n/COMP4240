@@ -80,7 +80,7 @@ int main(int argument_count, char * argv[])
 	//print_instance(&instance);
 	printf("Solution generated started ");
 	time_t start_sol = print_current_time(); printf("\n");
-	random_construction(&instance, &solution);
+	greedy_construction(&instance, &solution);
 
 	printf("Solution generation complete");
 	time_t end_sol = print_current_time(); printf("\n");

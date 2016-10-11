@@ -70,14 +70,6 @@ int main(int argument_count, char * argv[])
 
 	fclose(file);
 
-	//printf("Generating problem instance took %f seconds\n", difftime(end_formulate, start_formulate));
-	//printf("Outputing instance representation to file\n");
-
-	//Open a file for output, write then close
-	//fopen_s(&output_file, output_file_path, "w");
-	//print_instance_to_file(&instance, output_file);
-	//fclose(output_file);
-
 	int total_cost = 0;
 	double total_time = 0;
 	for (int i = 0; i < NO_OF_RUNS; i++) {
@@ -103,7 +95,6 @@ int main(int argument_count, char * argv[])
 	double average_cost = (double)total_cost / NO_OF_RUNS;
 	double average_time = total_time / NO_OF_RUNS;
 
-	//print_solution(&solution);
 	if (NO_OF_RUNS <= 1) {
 		print_solution_stats(&best_solution);
 	}
@@ -111,12 +102,6 @@ int main(int argument_count, char * argv[])
 		print_solution_stats(&best_solution, average_cost, average_time);
 	}
 
-
-	//fopen_s(&output_file, output_file_path, "w");
-	//print_solution_to_file(&solution, output_file, "random_construction");
-	//fclose(output_file);
-
-	// TODO: Free all the memory we allocated
 	free_instance(&instance);
 	free(output_file_path);
 

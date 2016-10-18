@@ -42,8 +42,8 @@ int main(int argument_count, char * argv[])
 
 	FILE * file;
 	FILE * output_file;
-	char * input_file_name = argv[1];
-	//char * input_file_name = "scp42.txt";
+	//char * input_file_name = argv[1];
+	char * input_file_name = "scp42.txt";
 	//printf("loading file name %s\n", input_file_name);
 
 	char * output_file_path = generate_output_file_path(input_file_name);
@@ -82,10 +82,11 @@ int main(int argument_count, char * argv[])
 	double total_time = 0;
 	for (int i = 0; i < NO_OF_RUNS; i++) {
 		//print_instance(&instance);
-		//printf("Solution generated started ");
+		printf("Solution generated started ");
 		time_t start_sol = print_current_time(); //printf("\n");
+		
 		//random_construction(&instance, &current_solution);
-		greedy_construction(&instance, &solution);
+		greedy_construction(&instance, &current_solution);
 
 		//printf("Solution generation complete");
 		time_t end_sol = print_current_time(); //printf("\n");
@@ -102,14 +103,10 @@ int main(int argument_count, char * argv[])
 		total_time += current_solution.time;
 	}
 
-	//print_instance(&instance);
-	printf("Solution generated started ");
-
 	
 	double average_cost = (double)total_cost / NO_OF_RUNS;
 	double average_time = total_time / NO_OF_RUNS;
 
-	//print_solution(&solution);
 	if (NO_OF_RUNS <= 1) {
 		print_solution_stats(&best_solution);
 	}

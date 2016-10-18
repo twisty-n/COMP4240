@@ -103,56 +103,26 @@ void greedy_construction(Instance * instance, Solution * solution) {
 	int i;								//misc loop and index control
 	int j;
 	int n;
+
 	// finally, we need an array which is going to keep track of which rows are being covered by each instance, i.e; when
 	// a coloumn is added to the solution.  This way we can keep the uncovered_rows_array and the coverings array up to date.
-	int * rows_to_be_covered_at_each_instance = (int *)calloc(instance->row_count, sizeof(int));
+	int * rows_to_be_covered_this_instance = (int *)calloc(instance->row_count, sizeof(int));
 
 
 	//begin adding members greedily
 	while ( !solution_covered ) {
 
 		//find the best column to add to the solution, and will update the rows_to_be_covered_at_each_instance array.
-		find_next_best_col(instance, &best_col, uncovered_rows, no_uncovered_rows, unassigned_columns, no_unassigned_columns, rows_to_be_covered_at_each_instance, &no_current_rows);
+		find_next_best_col(instance, &best_col, uncovered_rows, &no_uncovered_rows, unassigned_columns, no_unassigned_columns, rows_to_be_covered_this_instance, &no_current_rows);
 
 		//add best col index to the solution
+		//remove it from the set of columns not currently in the solution
+		//and update the list of uncovered rows based on what the column just covered
 		minimal_coverings[number_of_coverings] = best_col;
 		number_of_coverings++;
 		current_cost += instance->column_costs[best_col];
-
-		//remove the colum from the set of columns not in the solution
-		for (i = 0; i < no_unassigned_columns; i++) {
-			if (unassigned_columns[i] == best_col) {
-				for (n = i; n < no_unassigned_columns - 1; n++) {
-					unassigned_columns[n] = unassigned_columns[n + 1];
-				}
-				no_unassigned_columns--;
-				break;
-			}
-		}
-
-		//remove the rows that just got added to the solution from the rows still left uncovered set
-		//i.e; traverse the set of rows going into the solution, and remove them from the larger rows not yet in the solution
-		//keep the larger array sorted as you go
-		for (i = 0, j = 0; i < no_current_rows; i++) {
-			
-			//update rows to be covered with the best_col_reference
-			coverings[rows_to_be_covered_at_each_instance[i]] = best_col;
-
-			//if you dont have a match, traverse along the uncovered_rows list some more
-			while (rows_to_be_covered_at_each_instance[i] != uncovered_rows[j]) {
-				j += 1;
-			}
-
-			//if you have a match, remove it from the list of uncovered rows and adjust the array and logical size
-			n = j;
-			for (n = j; n < no_uncovered_rows-1; n++) {
-				uncovered_rows[n] = uncovered_rows[n + 1];
-			}
-			no_uncovered_rows--;
-			
-			//push j along to the next element in the list
-			j++;
-		}
+		remove_column(unassigned_columns, &best_col, &no_unassigned_columns);
+		remove_rows(coverings, uncovered_rows, &no_uncovered_rows, rows_to_be_covered_this_instance, &no_current_rows, &best_col);
 
 		//building the solution is complete when all rows are considered covered by the soltuion
 		if (no_uncovered_rows <= 0) {
@@ -173,28 +143,23 @@ void greedy_construction(Instance * instance, Solution * solution) {
 
 }
 
-void find_next_best_col(Instance * instance, int * best_col, int * uncovered_rows, int no_uncovered_rows, int * unassigned_columns, int no_unassigned_columns, int * selected_rows_for_this_iteration, int * no_selected_rows) {
+void find_next_best_col(Instance * instance, int * best_col, int * uncovered_rows, int * no_uncovered_rows, int * unassigned_columns, int no_unassigned_columns, int * selected_rows_for_this_iteration, int * no_selected_rows) {
 
 	int best_col_local_index = 0;		//holds a reference to the best column index from the local array un_assigned_columns
 	int best_value = 0;					//will keep track of the best value a column has thus far
 	int * best_rows_to_be_covered;		//will keep track of the rows being covered by the best solution
-
 	int current_col_index;				//will hold a reference to the index (in the instance) of the column to be evalauted
 	int current_row_matrix_index;		//will hold a reference to the index (in the instance) of the row to be evaluated
 	int current_col_value;				//will hold the current value of the column being evaluated	TODO:  current will hold the no of rows, but may need to change when not unicost
 	int no_current_rows;				//will hold the number of the rows being covered each column
 	int * current_rows_to_be_covered;	//will keep track of the uncovered rows which are being covered by the coloumn being evaluated
 	
-	current_rows_to_be_covered = (int *)calloc(no_uncovered_rows, sizeof(int));	
-	best_rows_to_be_covered = (int *)calloc(no_uncovered_rows, sizeof(int));
+
+	current_rows_to_be_covered	=	(int *)calloc(*no_uncovered_rows, sizeof(int));	
+	best_rows_to_be_covered		=	(int *)calloc(*no_uncovered_rows, sizeof(int));
 	
-	/* TODO:  may need to look into langranian relaxation methods, as the sets are not uni-cost, and this 
-	   still needs to be taken into account - for now - just assigning based value based on which columns
-	   have the most cover. */
-
-
 	// find the value-add of any columns not currently in the solution, and track the best one.  keep track of which
-	// rows currently not listed in the solution it will cover
+	// rows it will cover, but only based on the rows currently not listed in the solution
 	
 	// for each un_assigned column
 	for (int i = 0; i < no_unassigned_columns; i++) {
@@ -207,18 +172,13 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 
 
 		//find how many rows (which are not yet covered by the solution) the column has a members
-		for (int j = 0; j < no_uncovered_rows; j++){
-
-			current_row_matrix_index = uncovered_rows[j];
-			
-			//TODO:  make sure you can check if an item is in the solution this way - if you cannot you need to think
-			//of something else
+		for (int j = 0; j < *no_uncovered_rows; j++){
+			current_row_matrix_index = uncovered_rows[j];			
 			if (instance->matrix[current_row_matrix_index][current_col_index] > 0) {
 				no_current_rows += 1;
 				current_col_value += 1;														//TODO:  change the value calcuation
 				current_rows_to_be_covered[no_current_rows] = current_row_matrix_index;
 			}
-
 		}
 
 		if (current_col_value > best_value) {
@@ -228,7 +188,7 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 
 			//get the details of the rows to be covered by the column.
 			//TODO:  may need to change how this loop is controlled when the heuristic is no longer uni-cost
-			for (int n = 0; n < no_current_rows; n++) {
+			for (int n = 0; n < *no_selected_rows; n++) {
 				best_rows_to_be_covered[n] = current_rows_to_be_covered[n];
 			}
 		}
@@ -239,10 +199,53 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 	// the heuristic can run
 	*best_col = unassigned_columns[best_col_local_index];
 
-	for (int i = 0; i < no_uncovered_rows; i++) {
+	for (int i = 0; i < *no_selected_rows; i++) {
 		selected_rows_for_this_iteration[i] = best_rows_to_be_covered[i];
 	}
 }
+
+void remove_column(int * unassigned_columns, int * best_col, int * no_unassigned_columns) {
+	for (int i = 0; i < *no_unassigned_columns; i++) {
+		if (unassigned_columns[i] == *best_col) {
+			for (int n = i; n < *no_unassigned_columns - 1; n++) {
+				unassigned_columns[n] = unassigned_columns[n + 1];
+			}
+			no_unassigned_columns--;
+			break;
+		}
+	}
+}
+
+
+void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows, int * rows_to_be_covered_this_instance, int * no_current_rows, int * best_col){
+
+	//traverse the set of rows going into the solution, and remove them from the larger rows not yet in the solution
+	//keep the larger array sorted as you go
+	for (int i = 0, j = 0; i < * no_current_rows; i++) {
+
+		//for each row to be covered, update its reference in coverings to define which col covered it
+		coverings[rows_to_be_covered_this_instance[i]] = *best_col;
+
+		//find the row to be removed from the uncovered rows list
+		//if you dont have a match, traverse along the uncovered_rows list some more
+		while (rows_to_be_covered_this_instance[i] != uncovered_rows[j]) {
+			j += 1;
+		}
+
+		//when you get the match, remove it from the list of uncovered rows and adjust the array and logical size
+		for (int n = j; n < *no_uncovered_rows - 1; n++) {
+			uncovered_rows[n] = uncovered_rows[n + 1];
+		}
+		*no_uncovered_rows--;
+
+		//push j along to the next element in the list
+		j++;
+	}
+}
+
+
+
+
 
 
 void quick_sort(int * array, int p, int r) {

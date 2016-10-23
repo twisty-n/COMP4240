@@ -88,7 +88,7 @@ int main(int argument_count, char * argv[])
 		time_t start_sol = print_current_time(); //printf("\n");
 		
 		//random_construction(&instance, &current_solution);
-		greedy_construction(&instance, &current_solution, FALSE);
+		greedy_construction(&instance, &current_solution, FALSE);	//TRUE == unicost, FALSE == NON-UNICOST
 
 		//printf("Solution generation complete");
 		time_t end_sol = print_current_time(); //printf("\n");

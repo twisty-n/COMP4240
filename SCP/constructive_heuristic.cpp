@@ -190,18 +190,38 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 			else {
 				current_col_value = instance->column_costs[current_col_index] / no_current_rows;
 			}
+		
+			if (current_col_value >= best_value) {
 
-			if (current_col_value > best_value) {
-				best_col_local_index = i;
-				best_value = current_col_value;
-				*no_selected_rows = no_current_rows;
+				if (current_col_value == best_value) {
+					if (tie_break(instance, &current_col_index, current_rows_to_be_covered, &no_current_rows, &best_col_local_index, best_rows_to_be_covered, &*no_selected_rows, &no_unassigned_columns, unassigned_columns) != best_col_local_index) {
+						best_col_local_index = i;
 
-				//get the details of the rows to be covered by the column.
-				//TODO:  may need to change how this loop is controlled when the heuristic is no longer uni-cost
-				for (int n = 0; n < *no_selected_rows; n++) {
-					best_rows_to_be_covered[n] = current_rows_to_be_covered[n];
+						best_value = current_col_value;
+						*no_selected_rows = no_current_rows;
+
+						//get the details of the rows to be covered by the column.
+						//TODO:  may need to change how this loop is controlled when the heuristic is no longer uni-cost
+						for (int n = 0; n < *no_selected_rows; n++) {
+							best_rows_to_be_covered[n] = current_rows_to_be_covered[n];
+						}
+					}
+				}
+				else {
+
+					best_col_local_index = i;
+
+					best_value = current_col_value;
+					*no_selected_rows = no_current_rows;
+
+					//get the details of the rows to be covered by the column.
+					//TODO:  may need to change how this loop is controlled when the heuristic is no longer uni-cost
+					for (int n = 0; n < *no_selected_rows; n++) {
+						best_rows_to_be_covered[n] = current_rows_to_be_covered[n];
+					}
 				}
 			}
+			
 		}
 	}
 
@@ -226,7 +246,6 @@ void remove_column(int * unassigned_columns, int * best_col, int * no_unassigned
 		}
 	}
 }
-
 
 void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows, int * rows_to_be_covered_this_instance, int * no_current_rows, int * best_col){
 
@@ -254,3 +273,44 @@ void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows,
 	}
 }
 
+int tie_break(Instance * instance, int * current_col_index, int * current_rows_to_be_covered, int * no_current_rows, int * best_col_local_index, int * best_rows_to_be_covered, int * no_best_rows, int * no_unassigned_columns, int * unassigned_columns) {
+
+	int best_tally = 0;			//keeps a tally of how many rows in the current (best) solution are covered by another colum.  +1 for each covering.
+	int current_tally = 0;		//keeps a tally of how many rows in the current (proposed) solution are coverd by another column.  +1 for each covering.
+	int current_col_ref;		//holds a reference to the column being tested
+	int current_row_ref;		//holds a reference to the row being tested
+
+	for (int i = 0; i < * no_unassigned_columns; i++) {
+		current_col_ref = unassigned_columns[i];
+		for (int j = 0; j < *no_best_rows; j++) {
+			if (i == *best_col_local_index) {
+				continue;			//skip if you hit the current column, you are only iterested in the other guys.
+			}
+			else {
+				current_row_ref = best_rows_to_be_covered[j];
+				if (instance->matrix[current_row_ref][current_col_ref] > 0) {
+					++best_tally;
+				}
+			}
+		}//end searching best rows
+		for (int j = 0; j < *no_current_rows; j++) {
+			if (i == *current_col_index) {
+				continue;			//skip if you hit the current column, you are only iterested in the other guys.
+			}
+			else {
+				current_row_ref = current_rows_to_be_covered[j];
+				if (instance->matrix[current_row_ref][current_col_ref] > 0) {
+					++current_tally;
+				}
+			}
+		}//end seraching current (proposed) rows
+
+	}//end searching all unassigned columns
+
+	if (best_tally <= current_tally) {
+		return *best_col_local_index;
+	}
+	else {
+		return *current_col_index;
+	}
+}

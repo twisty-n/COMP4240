@@ -2,6 +2,8 @@
 #include "utilities.h"
 
 
+//TODO:  has an off-by-one error.  It is not sorting the element at idex zero correctly.
+
 void quick_sort(int * arr, int left, int right) {
 	int i = left, j = right;
 	int tmp;

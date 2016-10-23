@@ -62,7 +62,7 @@ void random_construction(Instance * instance, Solution * solution) {
 }
 
 
-void greedy_construction(Instance * instance, Solution * solution) {
+void greedy_construction(Instance * instance, Solution * solution, boolean uni_cost) {
 	
 	boolean solution_covered = FALSE;
 
@@ -114,7 +114,7 @@ void greedy_construction(Instance * instance, Solution * solution) {
 	while ( !solution_covered ) {
 
 		//find the best column to add to the solution, and will update the rows_to_be_covered_at_each_instance array.
-		find_next_best_col(instance, &best_col, uncovered_rows, &no_uncovered_rows, unassigned_columns, no_unassigned_columns, rows_to_be_covered_this_instance, &no_current_rows);
+		find_next_best_col(instance, &best_col, uncovered_rows, &no_uncovered_rows, unassigned_columns, no_unassigned_columns, rows_to_be_covered_this_instance, &no_current_rows, uni_cost);
 
 		//add best col index to the solution
 		//remove it from the set of columns not currently in the solution
@@ -144,7 +144,7 @@ void greedy_construction(Instance * instance, Solution * solution) {
 
 }
 
-void find_next_best_col(Instance * instance, int * best_col, int * uncovered_rows, int * no_uncovered_rows, int * unassigned_columns, int no_unassigned_columns, int * selected_rows_for_this_iteration, int * no_selected_rows) {
+void find_next_best_col(Instance * instance, int * best_col, int * uncovered_rows, int * no_uncovered_rows, int * unassigned_columns, int no_unassigned_columns, int * selected_rows_for_this_iteration, int * no_selected_rows, boolean uni_cost) {
 
 	int best_col_local_index = 0;		//holds a reference to the best column index from the local array un_assigned_columns
 	int best_value = 0;					//will keep track of the best value a column has thus far
@@ -163,7 +163,7 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 	// rows it will cover, but only based on the rows currently not listed in the solution
 	
 	// for each un_assigned column
-	for (int i = 0; i < no_unassigned_columns; i++) {
+	for (int i = 0; i < no_unassigned_columns; i--) {
 		
 		current_col_index = unassigned_columns[i];
 		
@@ -177,20 +177,30 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 			current_row_matrix_index = uncovered_rows[j];			
 			if (instance->matrix[current_row_matrix_index][current_col_index] > 0) {
 				no_current_rows += 1;
-				current_col_value += 1;														//TODO:  change the value calcuation
 				current_rows_to_be_covered[no_current_rows-1] = current_row_matrix_index;
 			}
 		}
 
-		if (current_col_value > best_value) {
-			best_col_local_index = i;
-			best_value = current_col_value;
-			*no_selected_rows = no_current_rows;
+		//work out what this column is contributing to the solution in its current state:
+		if(no_current_rows > 0){
 
-			//get the details of the rows to be covered by the column.
-			//TODO:  may need to change how this loop is controlled when the heuristic is no longer uni-cost
-			for (int n = 0; n < *no_selected_rows; n++) {
-				best_rows_to_be_covered[n] = current_rows_to_be_covered[n];
+			if (uni_cost == TRUE) {
+				current_col_value = no_current_rows;
+			}
+			else {
+				current_col_value = instance->column_costs[current_col_index] / no_current_rows;
+			}
+
+			if (current_col_value > best_value) {
+				best_col_local_index = i;
+				best_value = current_col_value;
+				*no_selected_rows = no_current_rows;
+
+				//get the details of the rows to be covered by the column.
+				//TODO:  may need to change how this loop is controlled when the heuristic is no longer uni-cost
+				for (int n = 0; n < *no_selected_rows; n++) {
+					best_rows_to_be_covered[n] = current_rows_to_be_covered[n];
+				}
 			}
 		}
 	}

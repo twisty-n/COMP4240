@@ -24,6 +24,8 @@
 #define NO_FILE_FOUND_ERROR_CODE "error_code:1:no_file_found"
 #define INVALID_ARGUMENTS_ERROR_CODE "error_code:2:invalid_arguments"
 #define NO_OF_RUNS 1				//TODO:  remove this. It is a hack until cmd line argument defines the number of runs for each heuristic
+#define TRUE 1
+#define FALSE 0
 
 typedef int boolean;
 
@@ -86,7 +88,7 @@ int main(int argument_count, char * argv[])
 		time_t start_sol = print_current_time(); //printf("\n");
 		
 		//random_construction(&instance, &current_solution);
-		greedy_construction(&instance, &current_solution);
+		greedy_construction(&instance, &current_solution, FALSE);
 
 		//printf("Solution generation complete");
 		time_t end_sol = print_current_time(); //printf("\n");

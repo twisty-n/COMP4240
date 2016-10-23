@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "constructive_heuristic.h"
+#include "utilities.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -131,7 +132,7 @@ void greedy_construction(Instance * instance, Solution * solution) {
 	}
 	
 	//ensure minimal_coverings is sorted before passing to the solution
-	//quick_sort(minimal_coverings, 1, number_of_coverings-1);
+	quick_sort(minimal_coverings, 1, number_of_coverings-1);
 
 	//update solution details with results of the cover
 	solution->cost = current_cost;
@@ -241,42 +242,5 @@ void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows,
 		//push j along to the next element in the list
 		j++;
 	}
-}
-
-
-
-
-
-
-void quick_sort(int * array, int p, int r) {
-	
-	int q;
-	
-	if (p < r) {
-		q = partition(array, p, r);
-		return quick_sort(array, p, q - 1);
-		return quick_sort(array, q + 1, r);
-	}
-}
-
-int partition(int * array, int p, int r) {
-
-	int i = p - 1;
-	int temp;
-
-	for (int j = p; j < r; j++) {
-		if (array[j] <= array[r]) {
-			i = i - 1;
-			temp = array[i];
-			array[i] = array[j];
-			array[j] = temp;
-		}
-	}
-
-	temp = array[i + 1];
-	array[i + 1] = array[r];
-	array[r] = temp;
-
-	return i + 1;
 }
 

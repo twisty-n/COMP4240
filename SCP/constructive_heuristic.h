@@ -31,15 +31,3 @@ void remove_column(int * unassigned_columns, int * best_col, int * no_unassigned
 will be used to help remove a row from the set of row not yet covered by the solution
 */
 void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows, int * rows_to_be_covered_this_instance, int * no_current_rows, int * best_col);
-
-
-/*
-Used by greedy if an array needs to be sorted - lowest to highest
-follows: http://www.cprogramming.com/tutorial/computersciencetheory/quicksort.html
-*/
-void quick_sort(int * array, int p, int r);
-
-/*
-Used by quick_sort
-*/
-int partition(int * array, int p, int r);

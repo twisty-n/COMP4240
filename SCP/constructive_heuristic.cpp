@@ -163,7 +163,7 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 	// rows it will cover, but only based on the rows currently not listed in the solution
 	
 	// for each un_assigned column
-	for (int i = 0; i < no_unassigned_columns; i--) {
+	for (int i = 0; i < no_unassigned_columns; i++) {
 		
 		current_col_index = unassigned_columns[i];
 		
@@ -182,7 +182,8 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 		}
 
 		//work out what this column is contributing to the solution in its current state:
-		if(no_current_rows > 0){
+
+		if(no_current_rows > 0){//avoids divide by zero for non-unicost
 
 			if (uni_cost == TRUE) {
 				current_col_value = no_current_rows;
@@ -190,40 +191,27 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 			else {
 				current_col_value = instance->column_costs[current_col_index] / no_current_rows;
 			}
-		
+
+			//now define if this is the best column you've seen so far.		
 			if (current_col_value >= best_value) {
 
 				if (current_col_value == best_value) {
-					if (tie_break(instance, &current_col_index, current_rows_to_be_covered, &no_current_rows, &best_col_local_index, best_rows_to_be_covered, &*no_selected_rows, &no_unassigned_columns, unassigned_columns) != best_col_local_index) {
-						best_col_local_index = i;
-
-						best_value = current_col_value;
-						*no_selected_rows = no_current_rows;
-
-						//get the details of the rows to be covered by the column.
-						//TODO:  may need to change how this loop is controlled when the heuristic is no longer uni-cost
-						for (int n = 0; n < *no_selected_rows; n++) {
-							best_rows_to_be_covered[n] = current_rows_to_be_covered[n];
-						}
-					}
+					if (tie_break(instance, &current_col_index, current_rows_to_be_covered, &no_current_rows, &best_col_local_index, best_rows_to_be_covered, &*no_selected_rows, &no_unassigned_columns, unassigned_columns) == best_col_local_index)
+						continue;
 				}
-				else {
+				
+				best_col_local_index = i;
+					
+				best_value = current_col_value;
+				*no_selected_rows = no_current_rows;
 
-					best_col_local_index = i;
-
-					best_value = current_col_value;
-					*no_selected_rows = no_current_rows;
-
-					//get the details of the rows to be covered by the column.
-					//TODO:  may need to change how this loop is controlled when the heuristic is no longer uni-cost
-					for (int n = 0; n < *no_selected_rows; n++) {
-						best_rows_to_be_covered[n] = current_rows_to_be_covered[n];
-					}
+				//get the details of the rows to be covered by the column.
+				for (int n = 0; n < *no_selected_rows; n++) {
+					best_rows_to_be_covered[n] = current_rows_to_be_covered[n];
 				}
 			}
-			
 		}
-	}
+	}//end checking unassigned columns
 
 	// at this point - you should know the best column to be covered as well as the rows which it will cover.
 	// Update the rows_to_be_covered_at_each_instance array, and keep track of the best_col so that the rest of 

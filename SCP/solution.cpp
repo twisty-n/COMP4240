@@ -35,7 +35,7 @@ void print_solution_to_file(Solution * solution, FILE * file, char * heuristic) 
 	fprintf(file, "Total Cost: %d\n", solution->cost);
 	fprintf(file, "Required Covers %d\n", solution->number_of_covers);
 	fprintf(file, "Minimal Covering Columns: \n");
-	for (int i = 1; i < solution->number_of_covers; i++) {
+	for (int i = 1; i <= solution->number_of_covers; i++) {
 		// Plus 1 so that the columns are displayed sensibly
 		fprintf(file, "%5d ", solution->minimal_cover[i - 1] + 1);
 		if (i % 6 == 0 && i != 0) {

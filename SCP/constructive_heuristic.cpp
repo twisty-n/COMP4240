@@ -125,8 +125,8 @@ void greedy_construction(Instance * instance, Solution * solution) {
 		remove_rows(coverings, uncovered_rows, &no_uncovered_rows, rows_to_be_covered_this_instance, &no_current_rows, &best_col);
 
 		//building the solution is complete when all rows are considered covered by the soltuion
-		if (no_uncovered_rows <= 0) {
-			solution_covered == TRUE;
+		if (no_uncovered_rows == 0) {
+			solution_covered = TRUE;
 		}
 	}
 	
@@ -177,7 +177,7 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 			if (instance->matrix[current_row_matrix_index][current_col_index] > 0) {
 				no_current_rows += 1;
 				current_col_value += 1;														//TODO:  change the value calcuation
-				current_rows_to_be_covered[no_current_rows] = current_row_matrix_index;
+				current_rows_to_be_covered[no_current_rows-1] = current_row_matrix_index;
 			}
 		}
 
@@ -210,7 +210,7 @@ void remove_column(int * unassigned_columns, int * best_col, int * no_unassigned
 			for (int n = i; n < *no_unassigned_columns - 1; n++) {
 				unassigned_columns[n] = unassigned_columns[n + 1];
 			}
-			no_unassigned_columns--;
+			*no_unassigned_columns -=1;
 			break;
 		}
 	}
@@ -236,7 +236,7 @@ void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows,
 		for (int n = j; n < *no_uncovered_rows - 1; n++) {
 			uncovered_rows[n] = uncovered_rows[n + 1];
 		}
-		*no_uncovered_rows--;
+		*no_uncovered_rows -=1;
 
 		//push j along to the next element in the list
 		j++;
@@ -254,8 +254,8 @@ void quick_sort(int * array, int p, int r) {
 	
 	if (p < r) {
 		q = partition(array, p, r);
-		quick_sort(array, p, q - 1);
-		quick_sort(array, q + 1, r);
+		return quick_sort(array, p, q - 1);
+		return quick_sort(array, q + 1, r);
 	}
 }
 

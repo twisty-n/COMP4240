@@ -43,7 +43,7 @@ int main(int argument_count, char * argv[])
 	FILE * file;
 	FILE * output_file;
 	//char * input_file_name = argv[1];
-	char * input_file_name = "identity_debug_4x4.txt";
+	char * input_file_name = "identity_debug_Four_by_Four.txt";
 	//printf("loading file name %s\n", input_file_name);
 
 	char * output_file_path = generate_output_file_path(input_file_name);

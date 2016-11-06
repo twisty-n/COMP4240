@@ -100,7 +100,7 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 
 	//for each iteration we need to know
 	int best_col;						//will hold a reference to the index of the column which is to be added to the solution	
-	int no_current_rows;				//will be used to keep track of the number of rows (current NOT in the solution) which are about to be added
+	int no_current_rows;				//will be used to keep track of the number of rows from each iteration, not yet in the solution, but which are about to be added
 	int i;								//misc loop and index control
 	int j;
 	int n;
@@ -140,7 +140,10 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 
-	//TODO:  free memory from the callocs
+	//free memory from the callocs
+	free(uncovered_rows);
+	free(unassigned_columns);
+	free(rows_to_be_covered_this_instance);
 
 }
 
@@ -221,6 +224,9 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 	for (int i = 0; i < *no_selected_rows; i++) {
 		selected_rows_for_this_iteration[i] = best_rows_to_be_covered[i];
 	}
+
+	free(current_rows_to_be_covered);
+	free(best_rows_to_be_covered);
 }
 
 void remove_column(int * unassigned_columns, int * best_col, int * no_unassigned_columns) {

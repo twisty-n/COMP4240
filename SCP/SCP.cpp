@@ -23,7 +23,7 @@
 #define FILE_OPEN_SUCCESS 0
 #define NO_FILE_FOUND_ERROR_CODE "error_code:1:no_file_found"
 #define INVALID_ARGUMENTS_ERROR_CODE "error_code:2:invalid_arguments"
-#define NO_OF_RUNS 20				//TODO:  remove this. It is a hack until cmd line argument defines the number of runs for each heuristic
+#define NO_OF_RUNS 3				//TODO:  remove this. It is a hack until cmd line argument defines the number of runs for each heuristic
 #define TRUE 1
 #define FALSE 0
 
@@ -46,8 +46,8 @@ int main(int argument_count, char * argv[])
 	boolean print_raw_output = FALSE;
 	FILE * file;
 	FILE * output_file;
-	//char * input_file_name = argv[1];
-	char * input_file_name = "21scp61.txt";
+	char * input_file_name = argv[1];
+	//char * input_file_name = "21scp61.txt";
 	//printf("loading file name %s\n", input_file_name);
 
 	char * output_file_path = generate_output_file_path(input_file_name);
@@ -126,8 +126,11 @@ int main(int argument_count, char * argv[])
 	}
 
 	// TODO: Free all the memory we allocated
-	free_instance(&instance);
 	free(output_file_path);
+	free_instance(&instance);
+	free_solution(&current_solution);
+	free_solution(&best_solution);
+	
 
 	return 0;
 }

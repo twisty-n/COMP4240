@@ -195,10 +195,10 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 			//now define if this is the best column you've seen so far.		
 			if (current_col_value >= best_value) {
 
-				if (current_col_value == best_value) {
-					if (tie_break(instance, &current_col_index, current_rows_to_be_covered, &no_current_rows, &best_col_local_index, best_rows_to_be_covered, &*no_selected_rows, &no_unassigned_columns, unassigned_columns) == best_col_local_index)
-						continue;
-				}
+				//if (current_col_value == best_value) {
+				//	if (tie_break(instance, &current_col_index, current_rows_to_be_covered, &no_current_rows, &best_col_local_index, best_rows_to_be_covered, &*no_selected_rows, &no_unassigned_columns, unassigned_columns) == best_col_local_index)
+				//		continue;
+				//}
 				
 				best_col_local_index = i;
 					

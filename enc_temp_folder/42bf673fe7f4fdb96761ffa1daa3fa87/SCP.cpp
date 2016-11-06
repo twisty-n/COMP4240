@@ -27,7 +27,6 @@
 #define TRUE 1
 #define FALSE 0
 
-
 typedef int boolean;
 
 /* Function prototypes */
@@ -43,7 +42,6 @@ int main(int argument_count, char * argv[])
 		return 0;
 	}
 
-	boolean print_raw_output = FALSE;
 	FILE * file;
 	FILE * output_file;
 	//char * input_file_name = argv[1];
@@ -119,11 +117,9 @@ int main(int argument_count, char * argv[])
 	}
 
 
-	if (print_raw_output) {
-		fopen_s(&output_file, output_file_path, "w");
-		print_solution_to_file(&best_solution, output_file, "random_construction");
-		fclose(output_file);
-	}
+//	fopen_s(&output_file, output_file_path, "w");
+//	print_solution_to_file(&best_solution, output_file, "random_construction");
+//	fclose(output_file);
 
 	// TODO: Free all the memory we allocated
 	free_instance(&instance);

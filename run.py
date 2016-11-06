@@ -111,7 +111,7 @@ def add_headings(worksheet, emphasis_formatting):
 		worksheet.write('A8', "performance gains (%)", emphasis_formatting)
 	worksheet.set_column(0, 0, 25)
 
-def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time)
+def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time):
 
 	# TODO:  Lauren - fix this so that you are not loading and reading from file each time - here now only because it 'works'
 	input_file = open(path_to_input_files+best_known_input_file, 'r')

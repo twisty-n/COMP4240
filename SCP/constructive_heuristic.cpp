@@ -62,7 +62,7 @@ void random_construction(Instance * instance, Solution * solution) {
 }
 
 
-void greedy_construction(Instance * instance, Solution * solution, boolean uni_cost) {
+void greedy_construction(Instance * instance, Solution * solution, boolean uni_cost, FILE * debug_log) {
 	
 	boolean solution_covered = FALSE;
 
@@ -116,10 +116,11 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 		//find the best column to add to the solution, and will update the rows_to_be_covered_at_each_instance array.
 		find_next_best_col(instance, &best_col, uncovered_rows, &no_uncovered_rows, unassigned_columns, no_unassigned_columns, rows_to_be_covered_this_instance, &no_current_rows, uni_cost);
 
-		//for (int z = 0; z < no_current_rows; z++) {
-		//	printf("row:  %d\n", rows_to_be_covered_this_instance[z]);
-		//}
-		//printf("\nend iter\n");
+		fprintf(debug_log, "\n\nCOL:  %d, COST:  %d,  COST THIS INSTANCE, %d\n", best_col, instance->column_costs[best_col], (instance->column_costs[best_col] / no_current_rows) );
+		fprintf(debug_log, "covering %d rows:  ", no_current_rows);
+		for (i = 0; i < no_current_rows; i++) {
+			fprintf(debug_log, "%d ", rows_to_be_covered_this_instance[i]);
+		}
 		
 		//add best col index to the solution
 		//remove it from the set of columns not currently in the solution
@@ -130,12 +131,11 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 		remove_column(unassigned_columns, &best_col, &no_unassigned_columns);
 		remove_rows(coverings, uncovered_rows, &no_uncovered_rows, rows_to_be_covered_this_instance, &no_current_rows, &best_col);
 
-		//printf("rows left\n");
-		//for (int z = 0; z < no_uncovered_rows; z++) {
-		//	printf("row:  %d\n", uncovered_rows[z]);
-		//}
-		//printf("end iter\n\n\n");
-
+		fprintf(debug_log, "\nuncovered rows: ");
+		for (i = 0; i < no_uncovered_rows; i++) {
+			fprintf(debug_log, "%d ", uncovered_rows[i]);
+		}
+		fprintf(debug_log, "\nend iter\n");
 
 		//building the solution is complete when all rows are considered covered by the soltuion
 		if (no_uncovered_rows == 0) {

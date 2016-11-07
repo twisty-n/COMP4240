@@ -20,7 +20,7 @@ uni_cost mode:	TRUE - the solution generated picks columns at each iteration whi
 				FALSE - the solution genrated picks columns at each iteration, taking
 				into account the column cost.
 */
-void greedy_construction(Instance * instance, Solution * solution, int uni_cost);
+void greedy_construction(Instance * instance, Solution * solution, int uni_cost, FILE * debug_log);
 
 /*
 Used by greedy_construction to determine the next best row to add to the solution.  Will return the index of the

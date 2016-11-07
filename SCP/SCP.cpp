@@ -42,6 +42,7 @@ typedef int boolean;
 boolean valid_arguments(int argument_count, char * arguments[]);
 void generate_problem_instance(Instance * instance, FILE * file);
 char * generate_output_file_path(char * input_file);
+char * generate_debug_file_path(char * input_file, char * h_code);
 time_t get_current_time();
 
 int main(int argument_count, char * argv[])
@@ -56,18 +57,22 @@ int main(int argument_count, char * argv[])
 	boolean print_raw_output = FALSE;				//TODO:  Keep this set as false when running from python until issue #5 on github is resolved.
 	FILE * file;
 	FILE * output_file;
+	FILE * debug_log;								//adhoc use during development to help with debug.  currently being used by greedy.
 	char * input_file_name;
 
 	boolean debug = atoi(argv[4]);
 	if (debug) {
-		input_file_name = "31scpb1.txt";			//use this when running in debug mode.  Make sure arg2 and arg3 for VS have values you can run with.
+		input_file_name = "scp42.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS have values you can run with.
 	}
 	else {
 		input_file_name = argv[1];
 	}
 	char * output_file_path = generate_output_file_path(input_file_name);
-	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
-	
+	char * debug_file_path = generate_debug_file_path(input_file_name, argv[2]);
+	fopen_s(&debug_log, debug_file_path, "w");
+
+
+	errno_t file_open_status = fopen_s(&file, input_file_name, "r");	
 	// Ensure that the input file opened correctly
 	if (file_open_status != FILE_OPEN_SUCCESS) {
 		printf("%s Opening input file %s failed\n", NO_FILE_FOUND_ERROR_CODE, input_file_name);
@@ -118,7 +123,7 @@ int main(int argument_count, char * argv[])
 			operation = "random_construction";
 			break;
 		case 2:			
-			greedy_construction(&instance, &current_solution, FALSE);	//TRUE == unicost, FALSE == NON-UNICOST
+			greedy_construction(&instance, &current_solution, FALSE, debug_log);	//TRUE == unicost, FALSE == NON-UNICOST
 			operation = "greedy_construction";
 			break;
 		case 3:
@@ -166,6 +171,7 @@ int main(int argument_count, char * argv[])
 		print_solution_to_file(&best_solution, output_file, operation);
 		fclose(output_file);
 	}
+	fclose(debug_log);
 
 	// TODO: Free all the memory we allocated
 	free(output_file_path);
@@ -200,6 +206,20 @@ char * generate_output_file_path(char * input_file) {
 	strcat_s(output_file_path, length, input_file);
 
 	return output_file_path;
+}
+
+char * generate_debug_file_path(char * input_file, char * h_code)
+{
+	static const char DEBUG_DIRECTORY[] = "..\\DEBUG\\";
+	int length = strlen(DEBUG_DIRECTORY) + strlen(input_file) + 7;
+	char * debug_file_path = (char *)calloc(length, sizeof(char));
+
+	strcpy_s(debug_file_path, length, DEBUG_DIRECTORY);
+	strcat_s(debug_file_path, length, h_code);
+	strcat_s(debug_file_path, length, "_");
+	strcat_s(debug_file_path, length, input_file); 
+
+	return debug_file_path;
 }
 
 // Checks the provided arguments, at minimum there should be a filename

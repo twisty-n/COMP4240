@@ -164,10 +164,10 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	solution->non_covering_columns = non_covering_columns;
 	solution->number_of_non_covering = no_unassigned_columns;
 
-	//free memory from the callocs
-	free(uncovered_rows);
-	free(unassigned_columns);
-	free(rows_to_be_covered_this_instance);
+	//free memory
+	//free(uncovered_rows);
+	//free(unassigned_columns);
+	//free(rows_to_be_covered_this_instance);
 
 }
 

@@ -62,6 +62,7 @@ def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs,
 	test_scp = subprocess.Popen([path_to_runner, path_to_test_files + filename, heuristic_code, number_of_runs, "0"], stdout=subprocess.PIPE)
 	output = test_scp.communicate()
 	try:
+		print("output: {}" .format(output))
 		output_list = output[0].split()
 		coverings_summary[BEST_COVER].append(float(output_list[BEST_COVER]))
 		coverings_summary[BEST_TIME].append(float(output_list[BEST_TIME]))
@@ -116,9 +117,7 @@ def add_worksheet(workbook, heuristic, best_cover_cost, best_cover_time, average
 	worksheet = workbook.add_worksheet(heuristic)
 	emphasis_formatting = workbook.add_format({'bold': True, 'bg_color': '#C0C0C0', 'border': True})
 	add_headings(worksheet, emphasis_formatting)
-	input_file = open(path_to_input_files + best_known_input_file, 'r')
-	fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, input_file)
-	input_file.close()
+	fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time)
 
 
 def add_headings(worksheet, emphasis_formatting):
@@ -133,10 +132,11 @@ def add_headings(worksheet, emphasis_formatting):
 		worksheet.write('A8', "performance gains (%)", emphasis_formatting)
 	worksheet.set_column(0, 0, 25)
 
-def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, input_file):
+def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time):
 	row = 0
 	i = 1  # i matches column reference workbook.  workbook is row/col indexed at 0, but we have headers in col 0
 		   # use i-1 for accessing data in lists
+	input_file = open(path_to_input_files + best_known_input_file, 'r')
 
 	for line in input_file:
 		input = line.split()
@@ -167,6 +167,8 @@ def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time,
 			worksheet.write_formula(row + 7, i, performance_gains_formula, emphasis_formatting)
 
 		i += 1
+		
+	input_file.close()
 
 	# add average performance gains
 	worksheet.write(row, i, "average performance gains (%)", emphasis_formatting)
@@ -246,7 +248,7 @@ if __name__ == "__main__":
 	heuristic_code = sys.argv[1]
 
 	no_runs = sys.argv[2]
-	if (int(no_runs) > 2):
+	if (int(no_runs) >= 2):
 		report_average = True
 	
 	#will hold the details to be written to each sheet of the xlsx

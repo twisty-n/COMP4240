@@ -4,8 +4,10 @@ import os
 import csv
 import sys
 import numpy
+import string
 import xlsxwriter
 from xlsxwriter.utility import xl_rowcol_to_cell  # used to generate A1 notations of cells
+import time
 
 # note for development: this xlsxwriter library will be highlighted in red because pycharm cannot find library
 # but it is probably installed.  You can check if it is listed using 'pip list'.  Can install with pip as well,
@@ -13,8 +15,6 @@ from xlsxwriter.utility import xl_rowcol_to_cell  # used to generate A1 notation
 # note:  with xls libraries in python - we cannot append to existing files, it will overwrite the existing
 # so if we want persistence of data, we may need to add a date/time to the workbook name
 # TODO - feature to add data/time to the workbook name.  Have a boolean flag to turn persistence on/off
-
-
 path_to_runner = "./Debug/SCP.exe"
 path_to_runner_x64 = "./x64/Debug/SCP.exe"
 path_to_test_files = "./test_data/"
@@ -24,25 +24,39 @@ path_to_input_files = "./input/"
 best_known_input_file = "best-known.txt"
 report_average = False
 
-
-# lists are required to store data - as this works best with the
-# csv module - however, I'm not sure if this is going to be the best
-# way to track the data.  We would need one list per row.
-# I will look into iterable data structures for storing and writing to csv
-# but at the moment, this is a 'working' csv write solution
-
-test_id = []
-# rows in data:
-best_known_solution = []
-best_cover_random_cost = []
-best_cover_random_time = []
-average_cover_random_cost = []
-average_cover_random_time = []
+#defines
+BEST_COVER = 0
+BEST_TIME = 1
+AVERAGE_COVER = 2
+AVERAGE_TIME = 3
 
 
 
+# This class provides the functionality for a switch statement
+# found at http://code.activestate.com/recipes/410692/
+class switch(object):
+    def __init__(self, value):
+        self.value = value
+        self.fall = False
 
-def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs):
+    def __iter__(self):
+        """Return the match method once, then stop"""
+        yield self.match
+        raise StopIteration
+
+    def match(self, *args):
+        """Indicate whether or not to enter a case suite"""
+        if self.fall or not args:
+            return True
+        elif self.value in args: # changed for v1.5, see below
+            self.fall = True
+            return True
+        else:
+            return False
+
+
+
+def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs, coverings_summary):
 	print("Launching SCP with {}, code {}, for {} iterations" .format(filename, heuristic_code, number_of_runs))
 
 	# Start the process with the filename and args
@@ -51,17 +65,17 @@ def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs)
 	output = test_scp.communicate()
 	try:
 		output_list = output[0].split()
-		# then added to to the summary lists
-		best_cover_random_cost.append(float(output_list[0]))
-		best_cover_random_time.append(float(output_list[1]))
+		coverings_summary[BEST_COVER].append(float(output_list[BEST_COVER]))
+		coverings_summary[BEST_TIME].append(float(output_list[BEST_TIME]))
 		if report_average:
-			average_cover_random_cost.append(float(output_list[2]))
-			average_cover_random_time.append(float(output_list[3]))
+			coverings_summary[AVERAGE_COVER].append(float(output_list[AVERAGE_COVER]))
+			coverings_summary[AVERAGE_TIME].append(float(output_list[AVERAGE_TIME]))
 	except ValueError:
-		print("could not process the test case due to\n\n{}\n" .format(output))
+		print("ValueError:  could not process the test case due to\n\n{}\n" .format(output))
 		exit()
-	except Exception:
-		print("could not process the test case due to\n\n{}\n" .format(output))
+	except Exception, e:
+		print("OtherError:  could not process the test case due to\n\n{}\n\n" .format(output))
+		print(e)
 		exit()
 
 def host_path():
@@ -75,39 +89,34 @@ def host_path():
 		exit()
 
 
-# for debug
-def print_lists_to_console():
-	print "best_cover_list: ", best_cover_random_cost
-	print "best_cover_time_list: ", best_cover_random_time
-	if report_average:
-		print "average_cover_list: ", average_cover_random_cost
-		print "average_cover_time: ", average_cover_random_time
+# will print a single heurtistic's output to a work book
+def print_single_heuristic_summary_to_xlsx(worksheet_name, output_summary):
+	local_time = time.localtime(time.time())
+	time_string = "{}{}{}_{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4])
+	input_file = open(path_to_input_files + best_known_input_file, 'r')
+	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
+	add_worksheet(workbook, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[BEST_COVER], output_summary[BEST_TIME], input_file)
+	workbook.close()
 
-
-def append_to_csv():
-	with open(path_to_output + summary_output_file, 'a') as csvfile:
-		wr = csv.writer(csvfile, dialect='excel', delimiter=',', quoting=csv.QUOTE_NONE, quotechar='', escapechar='')
-		wr.writerow(best_cover_random_cost)
-		wr.writerow(best_cover_random_time)
-		if report_average:
-			wr.writerow(average_cover_random_cost)
-			wr.writerow(average_cover_random_time)
-	csvfile.close()
-
-
-def print_summary_to_xlsx():
+# will bring all of the heuristics output to a workbook.  one sheet per heuristic.
+def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_point, population):
+	input_file = open(path_to_input_files + best_known_input_file, 'r')
 	workbook = xlsxwriter.Workbook(path_to_output + summary_output_file)
-	add_worksheet(workbook, "random constructive heuristic", best_cover_random_cost, best_cover_random_time,
-				  average_cover_random_cost, average_cover_random_time)
-	# will be able to add more sheets based on the other heuristics from here
+	add_worksheet(workbook, "random", random[BEST_COVER], random[BEST_TIME], random[AVERAGE_TIME], random[AVERAGE_COVER], input_file)
+	add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_TIME], greedy[AVERAGE_COVER], input_file)
+	add_worksheet(workbook, "local_1", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER], input_file)
+	add_worksheet(workbook, "local_2", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER], input_file)
+	add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER], input_file)
+	add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER], input_file)
 	workbook.close()
 
 
-def add_worksheet(workbook, heuristic, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time):
+
+def add_worksheet(workbook, heuristic, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, input_file):
 	worksheet = workbook.add_worksheet(heuristic)
 	emphasis_formatting = workbook.add_format({'bold': True, 'bg_color': '#C0C0C0', 'border': True})
 	add_headings(worksheet, emphasis_formatting)
-	fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time)
+	fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, input_file)
 
 
 def add_headings(worksheet, emphasis_formatting):
@@ -123,14 +132,10 @@ def add_headings(worksheet, emphasis_formatting):
 	worksheet.set_column(0, 0, 25)
 
 
-def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost,
-			   average_cover_time):
-	# TODO:  Lauren - fix this so that you are not loading and reading from file each time - here now only because it 'works'
-	input_file = open(path_to_input_files + best_known_input_file, 'r')
-
+def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, input_file):
 	row = 0
 	i = 1  # i matches column reference workbook.  workbook is row/col indexed at 0, but we have headers in col 0
-	# use i-1 for accessing data in lists
+		   # use i-1 for accessing data in lists
 
 	for line in input_file:
 		input = line.split()
@@ -176,6 +181,50 @@ def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time,
 	worksheet.set_column(0, i, 25)
 
 
+# will generate lists to hold the data when running
+# after a few goes at writing this, its actually just more maintaibable to set-up all the blank lists, then use
+# only what is required.
+def generate_data_structures():
+	random_heuristic = []
+	greedy_heuristic = []
+	local_search_tba = []
+	local_search__tba = []
+	single_point_meta = []
+	population_based_meta = []
+
+	best_cover_list = []
+	best_time_list = []
+
+	random_heuristic.append(list(best_cover_list))
+	random_heuristic.append(list(best_time_list))
+	greedy_heuristic.append(list(best_cover_list))
+	greedy_heuristic.append(list(best_time_list))
+	local_search_tba.append(list(best_cover_list))
+	local_search_tba.append(list(best_time_list))
+	local_search__tba.append(list(best_cover_list))
+	local_search__tba.append(list(best_time_list))
+	single_point_meta.append(list(best_cover_list))
+	single_point_meta.append(list(best_time_list))
+	population_based_meta.append(list(best_cover_list))
+	population_based_meta.append(list(best_time_list))
+
+	if report_average:
+		average_cover_list = []
+		average_time_list = []
+		random_heuristic.append(list(average_cover_list))
+		random_heuristic.append(list(average_time_list))
+		greedy_heuristic.append(list(average_cover_list))
+		greedy_heuristic.append(list(average_time_list))
+		local_search_tba.append(list(average_cover_list))
+		local_search_tba.append(list(average_time_list))
+		local_search__tba.append(list(average_cover_list))
+		local_search__tba.append(list(average_time_list))
+		single_point_meta.append(list(average_cover_list))
+		single_point_meta.append(list(average_time_list))
+		population_based_meta.append(list(average_cover_list))
+		population_based_meta.append(list(average_time_list))
+
+	return random_heuristic, greedy_heuristic, local_search_tba, local_search__tba, single_point_meta, population_based_meta
 
 # Program will run all of the covering problems listed in the test_data folder
 # Arguments:
@@ -190,28 +239,77 @@ def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time,
 #		2. int	Number of runs
 if __name__ == "__main__":
 
-	if len(sys.argv) != 2:
+	if len(sys.argv) < 2:
 		print "invalid arguments"
 
 	heuristic_code = sys.argv[1]
+
 	no_runs = sys.argv[2]
 	if no_runs > 1:
 		report_average = True
 
+	#will hold the details to be written to each sheet of the xlsx
+	random_heuristic, greedy_heuristic, local_search_tba, local_search__tba, single_point_meta, population_based_meta = generate_data_structures()
+
 	print("Launching tests\n")
 	path_to_runner = host_path()
 	for filename in os.listdir(path_to_test_files):
-		if heuristic_code == 7:
-			for code in heuristic_code:
-				launch_scp_program(path_to_runner, filename, code, no_runs)
-		else:
-			launch_scp_program(path_to_runner, filename, heuristic_code, no_runs)
+		for case in switch(int(heuristic_code)):
+			if case(1):
+				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, random_heuristic)
+				break
+			if case(2):
+				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, greedy_heuristic)
+				break
+			if case(3):
+				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search_tba)
+				break
+			if case(4):
+				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search__tba)
+				break
+			if case(5):
+				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, single_point_meta)
+				break
+			if case(6):
+				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, population_based_meta)
+				break
+			if case(7):
+				launch_scp_program(path_to_runner, filename, 1, no_runs, random_heuristic)
+				launch_scp_program(path_to_runner, filename, 2, no_runs, greedy_heuristic)
+				#still in devel
+				#launch_scp_program(path_to_runner, filename, 3, no_runs, local_search_tba)
+				#launch_scp_program(path_to_runner, filename, 4, no_runs, local_search__tba)
+				#launch_scp_program(path_to_runner, filename, 5, no_runs, single_point_meta)
+				#launch_scp_program(path_to_runner, filename, 6, no_runs, population_based_meta)
+				break
+			if case(): # default
+				print "error with input"
+				exit()
 
-
-	#  print_lists_to_console()
-	#  append_to_csv()
 	print("end tests")
-
 	print("printing summary")
-	print_summary_to_xlsx()
+	for case in switch(int(heuristic_code)):
+		if case(1):
+			print_single_heuristic_summary_to_xlsx("random", random_heuristic)
+			break
+		if case(2):
+			print_single_heuristic_summary_to_xlsx("greedy", greedy_heuristic)
+			break
+		if case(3):
+			print_single_heuristic_summary_to_xlsx("local_1", local_search_tba)
+			break
+		if case(4):
+			print_single_heuristic_summary_to_xlsx("local_2", local_search__tba)
+			break
+		if case(5):
+			print_single_heuristic_summary_to_xlsx("single_point_meta", single_point_meta)
+			break
+		if case(6):
+			print_single_heuristic_summary_to_xlsx("populartion_based", population_based_meta)
+			break
+		if case(7):
+			print_ALL_heuritic_summary_to_xlsx(random_heuristic, greedy_heuristic, local_search_tba, local_search__tba, single_point_meta, population_based_meta)
+		if case(): # default
+			print "error with input"
+			exit()
 	print("summary printed - details can be found in %s" % path_to_output + 'summary.xlsx')

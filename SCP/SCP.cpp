@@ -56,7 +56,7 @@ int main(int argument_count, char * argv[])
 	FILE * file;
 	FILE * output_file;
 	char * input_file_name = argv[1];
-	//char * input_file_name = "21scp61.txt";		//use this when running in debug mode.
+	//char * input_file_name = "21scp61.txt";			//use this when running in debug mode.  Make sure arg2 and arg3 for VS have values you can run with.
 	char * output_file_path = generate_output_file_path(input_file_name);
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
 	
@@ -66,7 +66,7 @@ int main(int argument_count, char * argv[])
 		return 0;
 	}
 
-	int operation_mode = int(*argv[2]);
+	int operation_mode = atoi(argv[2]);
 	//validate opreation mode
 	if (operation_mode < 0 || operation_mode > 6) {
 		printf("Invalid operation_mode %d", operation_mode);
@@ -74,7 +74,7 @@ int main(int argument_count, char * argv[])
 	}
 	char * operation = "";		//will be used populated and used later in program for raw output identification
 
-	int number_of_runs = int(*argv[3]);
+	int number_of_runs = atoi(argv[3]);
 	//validate number of runs
 	if (number_of_runs < 0) {
 		printf("Invalid number of runs");
@@ -84,6 +84,8 @@ int main(int argument_count, char * argv[])
 	Instance instance;
 	Solution current_solution;
 	Solution best_solution;
+	
+	
 	time_t start_formulate = get_current_time();
 	generate_problem_instance(&instance, file);
 	time_t end_formulate = get_current_time();
@@ -100,6 +102,7 @@ int main(int argument_count, char * argv[])
 	double total_time = 0;
 	
 	for (int i = 0; i < number_of_runs; i++) {
+
 		time_t start_sol = get_current_time();
 		
 		switch (operation_mode) {
@@ -128,6 +131,7 @@ int main(int argument_count, char * argv[])
 			//operation = " ?? _meta_heuristic";
 			break;
 		}
+		
 		time_t end_sol = get_current_time();
 		current_solution.time = difftime(end_sol, start_sol);
 		if (i == 0) {

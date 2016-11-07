@@ -49,8 +49,8 @@ def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs)
 	# output will be captured in a list
 	test_scp = subprocess.Popen([path_to_runner, path_to_test_files + filename, heuristic_code, number_of_runs], stdout=subprocess.PIPE)
 	output = test_scp.communicate()
-	output_list = output[0].split()
 	try:
+		output_list = output[0].split()
 		# then added to to the summary lists
 		best_cover_random_cost.append(float(output_list[0]))
 		best_cover_random_time.append(float(output_list[1]))
@@ -60,7 +60,9 @@ def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs)
 	except ValueError:
 		print("could not process the test case due to\n\n{}\n" .format(output))
 		exit()
-
+	except Exception:
+		print("could not process the test case due to\n\n{}\n" .format(output))
+		exit()
 
 def host_path():
 	if os.path.exists(path_to_runner):

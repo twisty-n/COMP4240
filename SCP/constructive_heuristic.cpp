@@ -116,6 +116,11 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 		//find the best column to add to the solution, and will update the rows_to_be_covered_at_each_instance array.
 		find_next_best_col(instance, &best_col, uncovered_rows, &no_uncovered_rows, unassigned_columns, no_unassigned_columns, rows_to_be_covered_this_instance, &no_current_rows, uni_cost);
 
+		//for (int z = 0; z < no_current_rows; z++) {
+		//	printf("row:  %d\n", rows_to_be_covered_this_instance[z]);
+		//}
+		//printf("\nend iter\n");
+		
 		//add best col index to the solution
 		//remove it from the set of columns not currently in the solution
 		//and update the list of uncovered rows based on what the column just covered
@@ -124,6 +129,13 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 		current_cost += instance->column_costs[best_col];
 		remove_column(unassigned_columns, &best_col, &no_unassigned_columns);
 		remove_rows(coverings, uncovered_rows, &no_uncovered_rows, rows_to_be_covered_this_instance, &no_current_rows, &best_col);
+
+		//printf("rows left\n");
+		//for (int z = 0; z < no_uncovered_rows; z++) {
+		//	printf("row:  %d\n", uncovered_rows[z]);
+		//}
+		//printf("end iter\n\n\n");
+
 
 		//building the solution is complete when all rows are considered covered by the soltuion
 		if (no_uncovered_rows == 0) {
@@ -185,7 +197,6 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 		}
 
 		//work out what this column is contributing to the solution in its current state:
-
 		if(no_current_rows > 0){//avoids divide by zero for non-unicost
 
 			if (uni_cost == TRUE) {
@@ -196,7 +207,7 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 			}
 
 			//now define if this is the best column you've seen so far.		
-			if (current_col_value >= best_value) {
+			if (current_col_value > best_value) {
 
 				//if (current_col_value == best_value) {
 				//	if (tie_break(instance, &current_col_index, current_rows_to_be_covered, &no_current_rows, &best_col_local_index, best_rows_to_be_covered, &*no_selected_rows, &no_unassigned_columns, unassigned_columns) == best_col_local_index)
@@ -245,7 +256,9 @@ void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows,
 
 	//traverse the set of rows going into the solution, and remove them from the larger rows not yet in the solution
 	//keep the larger array sorted as you go
-	for (int i = 0, j = 0; i < * no_current_rows; i++) {
+	int rows_to_be_removed = *no_current_rows;
+
+	for (int i = 0, j = 0; i < rows_to_be_removed; i++) {
 
 		//for each row to be covered, update its reference in coverings to define which col covered it
 		coverings[rows_to_be_covered_this_instance[i]] = *best_col;
@@ -261,9 +274,6 @@ void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows,
 			uncovered_rows[n] = uncovered_rows[n + 1];
 		}
 		*no_uncovered_rows -=1;
-
-		//push j along to the next element in the list
-		j++;
 	}
 }
 

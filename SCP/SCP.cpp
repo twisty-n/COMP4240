@@ -10,7 +10,8 @@
  *							5.  Single Point meta-heuristic
  *							6.  Population based meta-heuristic
  *		3. int				Number of runs
- *		4. int:optional:	The current best known solution for the given input file (only required
+ *      4. int				Will be used to indicate debug mode.		
+ *		5. int:optional:	The current best known solution for the given input file (only required
  *							if finding a solution and second argument is a search single-point or 
  *					        metaheurstic)
  */
@@ -55,8 +56,15 @@ int main(int argument_count, char * argv[])
 	boolean print_raw_output = FALSE;				//TODO:  Keep this set as false when running from python until issue #5 on github is resolved.
 	FILE * file;
 	FILE * output_file;
-	char * input_file_name = argv[1];
-	//char * input_file_name = "21scp61.txt";			//use this when running in debug mode.  Make sure arg2 and arg3 for VS have values you can run with.
+	char * input_file_name;
+
+	boolean debug = atoi(argv[4]);
+	if (debug) {
+		input_file_name = "31scpb1.txt";			//use this when running in debug mode.  Make sure arg2 and arg3 for VS have values you can run with.
+	}
+	else {
+		input_file_name = argv[1];
+	}
 	char * output_file_path = generate_output_file_path(input_file_name);
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
 	
@@ -83,8 +91,7 @@ int main(int argument_count, char * argv[])
 	
 	Instance instance;
 	Solution current_solution;
-	Solution best_solution;
-	
+	Solution best_solution;	
 	
 	time_t start_formulate = get_current_time();
 	generate_problem_instance(&instance, file);
@@ -199,7 +206,7 @@ char * generate_output_file_path(char * input_file) {
 // an operation mode, and the number of times you wish to run this heursitic for this file
 boolean valid_arguments(int argument_count, char * arguments[]) {
 	//printf("%d %s", argument_count, arguments[0]);
-	if (argument_count < 4) {
+	if (argument_count < 5) {
 		// Default argument is the program name
 		if (argument_count == 1) {
 			printf("%s Missing arguments \n", INVALID_ARGUMENTS_ERROR_CODE);

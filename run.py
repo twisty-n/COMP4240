@@ -61,7 +61,7 @@ def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs,
 
 	# Start the process with the filename and args
 	# output will be captured in a list
-	test_scp = subprocess.Popen([path_to_runner, path_to_test_files + filename, heuristic_code, number_of_runs], stdout=subprocess.PIPE)
+	test_scp = subprocess.Popen([path_to_runner, path_to_test_files + filename, heuristic_code, number_of_runs, "0"], stdout=subprocess.PIPE)
 	output = test_scp.communicate()
 	try:
 		output_list = output[0].split()

@@ -69,7 +69,7 @@ int main(int argument_count, char * argv[])
 	int operation_mode = int(*argv[2]);
 	//validate opreation mode
 	if (operation_mode < 0 || operation_mode > 6) {
-		printf("Invalid operation_mode");
+		printf("Invalid operation_mode %d", operation_mode);
 		return 0;
 	}
 	char * operation = "";		//will be used populated and used later in program for raw output identification

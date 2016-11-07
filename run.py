@@ -96,7 +96,7 @@ def add_worksheet(workbook, heuristic, best_cover_cost, best_cover_time, average
 	worksheet = workbook.add_worksheet(heuristic)
 	emphasis_formatting = workbook.add_format({'bold': True, 'bg_color': '#C0C0C0', 'border': True})
 	add_headings(worksheet, emphasis_formatting)
-	fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time) #think this is pass by reference, so think it might be okay
+	fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time)
 
 
 def add_headings(worksheet, emphasis_formatting):
@@ -144,7 +144,7 @@ def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time,
 			worksheet.write_number(row+5, i, average_cover_cost[i-1])
 			worksheet.write_number(row+6, i, average_cover_time[i-1])
 
-			#work out performance gains and as percentage
+			#work out performance gains as percentage
 			average_cover_cell = xl_rowcol_to_cell(row+5,i)
 			performance_gains_formula = "=100-(("+average_cover_cell+"/"+best_known_cell+")*100)"
 			worksheet.write_formula(row+7, i, performance_gains_formula, emphasis_formatting)

@@ -89,7 +89,7 @@ int main(int argument_count, char * argv[])
 		//printf("Solution generated started ");
 		time_t start_sol = print_current_time(); //printf("\n");
 		
-		//random_construction(&instance, &current_solution);
+	//	random_construction(&instance, &current_solution);
 		greedy_construction(&instance, &current_solution, FALSE);	//TRUE == unicost, FALSE == NON-UNICOST
 
 		//printf("Solution generation complete");
@@ -122,6 +122,7 @@ int main(int argument_count, char * argv[])
 	if (print_raw_output) {
 		fopen_s(&output_file, output_file_path, "w");
 		print_solution_to_file(&best_solution, output_file, "random_construction");
+		//print_solution_to_file(&best_solution, output_file, "greedy_construction");
 		fclose(output_file);
 	}
 

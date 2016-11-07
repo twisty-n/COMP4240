@@ -35,7 +35,7 @@ typedef int boolean;
 boolean valid_arguments(int argument_count, char * arguments[]);
 void generate_problem_instance(Instance * instance, FILE * file);
 char * generate_output_file_path(char * input_file);
-time_t print_current_time();
+time_t get_current_time();
 
 int main(int argument_count, char * argv[])
 {
@@ -48,8 +48,7 @@ int main(int argument_count, char * argv[])
 	FILE * output_file;
 	char * input_file_name = argv[1];
 	//char * input_file_name = "21scp61.txt";
-	//printf("loading file name %s\n", input_file_name);
-
+	
 	char * output_file_path = generate_output_file_path(input_file_name);
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
 
@@ -65,12 +64,12 @@ int main(int argument_count, char * argv[])
 	
 
 	//printf("Generating problem instance started "); 
-	time_t start_formulate = print_current_time(); //printf("\n");
+	time_t start_formulate = get_current_time();
 
 	generate_problem_instance(&instance, file);
 
 	//printf("Generating problem instance complete ");
-	time_t end_formulate = print_current_time(); //printf("\n");
+	time_t end_formulate = get_current_time();
 
 	fclose(file);
 
@@ -87,13 +86,13 @@ int main(int argument_count, char * argv[])
 	for (int i = 0; i < NO_OF_RUNS; i++) {
 		//print_instance(&instance);
 		//printf("Solution generated started ");
-		time_t start_sol = print_current_time(); //printf("\n");
+		time_t start_sol = get_current_time();
 		
 	//	random_construction(&instance, &current_solution);
 		greedy_construction(&instance, &current_solution, FALSE);	//TRUE == unicost, FALSE == NON-UNICOST
 
 		//printf("Solution generation complete");
-		time_t end_sol = print_current_time(); //printf("\n");
+		time_t end_sol = get_current_time();
 		//printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
 		current_solution.time = difftime(end_sol, start_sol);
 
@@ -122,7 +121,6 @@ int main(int argument_count, char * argv[])
 	if (print_raw_output) {
 		fopen_s(&output_file, output_file_path, "w");
 		print_solution_to_file(&best_solution, output_file, "random_construction");
-		//print_solution_to_file(&best_solution, output_file, "greedy_construction");
 		fclose(output_file);
 	}
 
@@ -136,7 +134,7 @@ int main(int argument_count, char * argv[])
 	return 0;
 }
 
-time_t print_current_time() {
+time_t get_current_time() {
 	// Get the current time
 	time_t now = time(0);
 	struct tm time_val;

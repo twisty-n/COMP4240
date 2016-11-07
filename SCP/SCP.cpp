@@ -177,8 +177,9 @@ int main(int argument_count, char * argv[])
 	free(output_file_path);
 	free_instance(&instance);
 	free_solution(&current_solution);
-	free_solution(&best_solution);
-	
+	if (number_of_runs > 1) {
+		free_solution(&best_solution);
+	}
 
 	return 0;
 }

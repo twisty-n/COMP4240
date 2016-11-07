@@ -245,9 +245,9 @@ if __name__ == "__main__":
 	heuristic_code = sys.argv[1]
 
 	no_runs = sys.argv[2]
-	if no_runs > 1:
+	if (int(no_runs) > 2):
 		report_average = True
-
+	
 	#will hold the details to be written to each sheet of the xlsx
 	random_heuristic, greedy_heuristic, local_search_tba, local_search__tba, single_point_meta, population_based_meta = generate_data_structures()
 

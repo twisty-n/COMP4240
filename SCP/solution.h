@@ -4,8 +4,9 @@ struct Solution {
 	int cost;
 	int * covering_columns;
 	int * minimal_cover;
-	int * non_covering_columns;
-	int number_of_covers;
+	int number_of_covers; 
+	int * non_covering_columns;		//greedy heuristic will update solution with the non_covering_columns
+	int number_of_non_covering;		
 	double time;
 };
 

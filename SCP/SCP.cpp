@@ -2,8 +2,15 @@
  * Program will operate on single instances of the set covering problem
  * Arguments:
  *		1. string:			Filename representing the input file to deal with
- *		2. string:			Represents the operation (section of part 2 of the assignment) to perform
- *		3. int:optional:	The current best known solution for the given input file (only required
+ *		2. int:				Represents the operation (section of part 2 of the assignment) to perform
+ *							1.  Random Constructive
+ *							2.  Greedy Constructive
+ *							3.  Local search 1 (tba)
+ *							4.  Local search 2 (tba)
+ *							5.  Single Point meta-heuristic
+ *							6.  Population based meta-heuristic
+ *		3. int				Number of runs
+ *		4. int:optional:	The current best known solution for the given input file (only required
  *							if finding a solution and second argument is a search single-point or 
  *					        metaheurstic)
  */
@@ -23,7 +30,6 @@
 #define FILE_OPEN_SUCCESS 0
 #define NO_FILE_FOUND_ERROR_CODE "error_code:1:no_file_found"
 #define INVALID_ARGUMENTS_ERROR_CODE "error_code:2:invalid_arguments"
-#define NO_OF_RUNS 3				//TODO:  remove this. It is a hack until cmd line argument defines the number of runs for each heuristic
 #define TRUE 1
 #define FALSE 0
 
@@ -39,63 +45,91 @@ time_t get_current_time();
 
 int main(int argument_count, char * argv[])
 {
+	
+	//validate number of arguments
 	if (!valid_arguments(argument_count, argv)) {
+		printf("Invalid arguments");
 		return 0;
 	}
 
-	boolean print_raw_output = FALSE;
+	boolean print_raw_output = FALSE;				//TODO:  Keep this set as false when running from python until issue #5 on github is resolved.
 	FILE * file;
 	FILE * output_file;
 	char * input_file_name = argv[1];
-	//char * input_file_name = "21scp61.txt";
-	
+	//char * input_file_name = "21scp61.txt";		//use this when running in debug mode.
 	char * output_file_path = generate_output_file_path(input_file_name);
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");
-
+	
 	// Ensure that the input file opened correctly
 	if (file_open_status != FILE_OPEN_SUCCESS) {
 		printf("%s Opening input file %s failed\n", NO_FILE_FOUND_ERROR_CODE, input_file_name);
+		return 0;
+	}
+
+	int operation_mode = int(*argv[2]);
+	//validate opreation mode
+	if (operation_mode < 0 || operation_mode > 6) {
+		printf("Invalid operation_mode");
+		return 0;
+	}
+	char * operation = "";		//will be used populated and used later in program for raw output identification
+
+	int number_of_runs = int(*argv[3]);
+	//validate number of runs
+	if (number_of_runs < 0) {
+		printf("Invalid number of runs");
 		return 0;
 	}
 	
 	Instance instance;
 	Solution current_solution;
 	Solution best_solution;
-	
-
-	//printf("Generating problem instance started "); 
 	time_t start_formulate = get_current_time();
-
 	generate_problem_instance(&instance, file);
-
-	//printf("Generating problem instance complete ");
 	time_t end_formulate = get_current_time();
-
 	fclose(file);
-
 	//printf("Generating problem instance took %f seconds\n", difftime(end_formulate, start_formulate));
 	//printf("Outputing instance representation to file\n");
-
 	//Open a file for output, write then close
 	//fopen_s(&output_file, output_file_path, "w");
 	//print_instance_to_file(&instance, output_file);
 	//fclose(output_file);
 
+
 	int total_cost = 0;
 	double total_time = 0;
-	for (int i = 0; i < NO_OF_RUNS; i++) {
-		//print_instance(&instance);
-		//printf("Solution generated started ");
+	
+	for (int i = 0; i < number_of_runs; i++) {
 		time_t start_sol = get_current_time();
 		
-	//	random_construction(&instance, &current_solution);
-		greedy_construction(&instance, &current_solution, FALSE);	//TRUE == unicost, FALSE == NON-UNICOST
-
-		//printf("Solution generation complete");
+		switch (operation_mode) {
+		case 1:
+			random_construction(&instance, &current_solution);
+			operation = "random_construction";
+			break;
+		case 2:			
+			greedy_construction(&instance, &current_solution, FALSE);	//TRUE == unicost, FALSE == NON-UNICOST
+			operation = "greedy_construction";
+			break;
+		case 3:
+			//todo
+			//operation = " ?? _search";
+			break;
+		case 4:
+			//todo
+			//operation = " ?? _search";
+			break;
+		case 5:
+			//todo
+			//operation = " ?? _meta_heuristic";
+			break;
+		case 6:
+			//todo
+			//operation = " ?? _meta_heuristic";
+			break;
+		}
 		time_t end_sol = get_current_time();
-		//printf("Generating a solution took %f seconds", difftime(end_sol, start_sol));
 		current_solution.time = difftime(end_sol, start_sol);
-
 		if (i == 0) {
 			best_solution = current_solution;
 		}
@@ -107,20 +141,18 @@ int main(int argument_count, char * argv[])
 	}
 
 	
-	double average_cost = (double)total_cost / NO_OF_RUNS;
-	double average_time = total_time / NO_OF_RUNS;
-
-	if (NO_OF_RUNS <= 1) {
+	double average_cost = (double)total_cost / number_of_runs;
+	double average_time = total_time / number_of_runs;
+	if (number_of_runs == 1) {
 		print_solution_stats(&best_solution);
 	}
 	else {
 		print_solution_stats(&best_solution, average_cost, average_time);
 	}
 
-
 	if (print_raw_output) {
 		fopen_s(&output_file, output_file_path, "w");
-		print_solution_to_file(&best_solution, output_file, "random_construction");
+		print_solution_to_file(&best_solution, output_file, operation);
 		fclose(output_file);
 	}
 
@@ -160,10 +192,10 @@ char * generate_output_file_path(char * input_file) {
 }
 
 // Checks the provided arguments, at minimum there should be a filename
-// and an operation mode
+// an operation mode, and the number of times you wish to run this heursitic for this file
 boolean valid_arguments(int argument_count, char * arguments[]) {
 	//printf("%d %s", argument_count, arguments[0]);
-	if (argument_count < 3) {
+	if (argument_count < 4) {
 		// Default argument is the program name
 		if (argument_count == 1) {
 			printf("%s Missing arguments \n", INVALID_ARGUMENTS_ERROR_CODE);

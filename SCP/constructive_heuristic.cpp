@@ -63,7 +63,7 @@ void random_construction(Instance * instance, Solution * solution) {
 }
 
 
-void greedy_construction(Instance * instance, Solution * solution, boolean uni_cost, FILE * debug_log) {
+void greedy_construction(Instance * instance, Solution * solution, boolean uni_cost) {
 	
 	boolean solution_covered = FALSE;
 

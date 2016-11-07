@@ -10,7 +10,7 @@
  *							5.  Single Point meta-heuristic
  *							6.  Population based meta-heuristic
  *		3. int				Number of runs
- *      4. int				Will be used to indicate debug mode.		
+ *      4. int				Will be used to indicate debug mode. 1 == TRUE 0 == FALSE		
  *		5. int:optional:	The current best known solution for the given input file (only required
  *							if finding a solution and second argument is a search single-point or 
  *					        metaheurstic)
@@ -57,19 +57,19 @@ int main(int argument_count, char * argv[])
 	boolean print_raw_output = FALSE;				//TODO:  Keep this set as false when running from python until issue #5 on github is resolved.
 	FILE * file;
 	FILE * output_file;
-	FILE * debug_log;								//adhoc use during development to help with debug.  currently being used by greedy.
+//	FILE * debug_log;								//adhoc use during development to help with debug.  currently being used by greedy.
 	char * input_file_name;
 
 	boolean debug = atoi(argv[4]);
 	if (debug) {
-		input_file_name = "scp42.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS have values you can run with.
+		input_file_name = "41scpd1.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS have values you can run with.
 	}
 	else {
 		input_file_name = argv[1];
 	}
 	char * output_file_path = generate_output_file_path(input_file_name);
-	char * debug_file_path = generate_debug_file_path(input_file_name, argv[2]);
-	fopen_s(&debug_log, debug_file_path, "w");
+//	char * debug_file_path = generate_debug_file_path(input_file_name, argv[2]);
+//	fopen_s(&debug_log, debug_file_path, "w");
 
 
 	errno_t file_open_status = fopen_s(&file, input_file_name, "r");	
@@ -123,7 +123,7 @@ int main(int argument_count, char * argv[])
 			operation = "random_construction";
 			break;
 		case 2:			
-			greedy_construction(&instance, &current_solution, FALSE, debug_log);	//TRUE == unicost, FALSE == NON-UNICOST
+			greedy_construction(&instance, &current_solution, FALSE);	//TRUE == unicost, FALSE == NON-UNICOST
 			operation = "greedy_construction";
 			break;
 		case 3:
@@ -171,7 +171,7 @@ int main(int argument_count, char * argv[])
 		print_solution_to_file(&best_solution, output_file, operation);
 		fclose(output_file);
 	}
-	fclose(debug_log);
+//	fclose(debug_log);
 
 	// TODO: Free all the memory we allocated
 	free(output_file_path);

@@ -205,12 +205,12 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 		}
 
 		//work out what this column is contributing to the solution in its current state:
-		if(no_current_rows > 0){//avoids divide by zero for non-unicost
+		if(no_current_rows > 0){  //avoids divide by zero for non-unicost
 
 			if (uni_cost == TRUE) {
 				current_col_value = no_current_rows;
 				//now define if this is the best column you've seen so far.		
-				if (current_col_value >= best_value) {
+				if (current_col_value > best_value) {
 
 					//if (current_col_value == best_value) {
 					//	if (tie_break(instance, &current_col_index, current_rows_to_be_covered, &no_current_rows, &best_col_local_index, best_rows_to_be_covered, &*no_selected_rows, &no_unassigned_columns, unassigned_columns) == best_col_local_index)
@@ -230,7 +230,7 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 			{
 				current_col_value = instance->column_costs[current_col_index] / (double)no_current_rows;
 
-				if (current_col_value <= best_value) {
+				if (current_col_value < best_value) {
 
 					//if (current_col_value == best_value) {
 					//	if (tie_break(instance, &current_col_index, current_rows_to_be_covered, &no_current_rows, &best_col_local_index, best_rows_to_be_covered, &*no_selected_rows, &no_unassigned_columns, unassigned_columns) == best_col_local_index)

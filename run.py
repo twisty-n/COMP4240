@@ -100,7 +100,10 @@ def print_single_heuristic_summary_to_xlsx(worksheet_name, output_summary):
 	
 # will bring all of the heuristics output to a workbook.  one sheet per heuristic.
 def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_point, population):
+	local_time = time.localtime(time.time())
+	time_string = "{}{}{}_{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4])
 	input_file = open(path_to_input_files + best_known_input_file, 'r')
+	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
 	workbook = xlsxwriter.Workbook(path_to_output + summary_output_file)
 	add_worksheet(workbook, "random", random[BEST_COVER], random[BEST_TIME], random[AVERAGE_TIME], random[AVERAGE_COVER], input_file)
 	add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_TIME], greedy[AVERAGE_COVER], input_file)
@@ -109,7 +112,6 @@ def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_
 	#add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER], input_file)
 	#add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER], input_file)
 	workbook.close()
-
 
 
 def add_worksheet(workbook, heuristic, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, input_file):
@@ -274,13 +276,13 @@ if __name__ == "__main__":
 				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, population_based_meta)
 				break
 			if case(7):
-				launch_scp_program(path_to_runner, filename, 1, no_runs, random_heuristic)
-				launch_scp_program(path_to_runner, filename, 2, no_runs, greedy_heuristic)
+				launch_scp_program(path_to_runner, filename, "1", no_runs, random_heuristic)
+				launch_scp_program(path_to_runner, filename, "2", no_runs, greedy_heuristic)
 				#still in devel
-				#launch_scp_program(path_to_runner, filename, 3, no_runs, local_search_tba)
-				#launch_scp_program(path_to_runner, filename, 4, no_runs, local_search__tba)
-				#launch_scp_program(path_to_runner, filename, 5, no_runs, single_point_meta)
-				#launch_scp_program(path_to_runner, filename, 6, no_runs, population_based_meta)
+				#launch_scp_program(path_to_runner, filename, "3", no_runs, local_search_tba)
+				#launch_scp_program(path_to_runner, filename, "4", no_runs, local_search__tba)
+				#launch_scp_program(path_to_runner, filename, "5", no_runs, single_point_meta)
+				#launch_scp_program(path_to_runner, filename, "6", no_runs, population_based_meta)
 				break
 			if case(): # default
 				print "error with input"

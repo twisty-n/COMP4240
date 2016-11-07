@@ -147,11 +147,20 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	//ensure minimal_coverings is sorted before passing to the solution
 	quick_sort(minimal_coverings, 1, number_of_coverings-1);
 
+	//tidy up the list of non-coveringing columns so you can pass it through to the solution
+	int * non_covering_columns = (int *)calloc(no_unassigned_columns, sizeof(int));
+	for (int i = 0; i < no_unassigned_columns; i++) {
+		non_covering_columns[i] = unassigned_columns[i];
+	}
+
+
 	//update solution details with results of the cover
 	solution->cost = current_cost;
 	solution->covering_columns = coverings;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
+	solution->non_covering_columns = non_covering_columns;
+	solution->number_of_non_covering = no_unassigned_columns;
 
 	//free memory from the callocs
 	free(uncovered_rows);

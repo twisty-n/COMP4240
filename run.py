@@ -92,9 +92,8 @@ def host_path():
 def print_single_heuristic_summary_to_xlsx(worksheet_name, output_summary):
 	local_time = time.localtime(time.time())
 	time_string = "{}{}{}_{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4])
-	input_file = open(path_to_input_files + best_known_input_file, 'r')
 	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
-	add_worksheet(workbook, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[BEST_COVER], output_summary[BEST_TIME], input_file)
+	add_worksheet(workbook, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[BEST_COVER], output_summary[BEST_TIME])
 	workbook.close()
 
 	
@@ -102,23 +101,24 @@ def print_single_heuristic_summary_to_xlsx(worksheet_name, output_summary):
 def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_point, population):
 	local_time = time.localtime(time.time())
 	time_string = "{}{}{}_{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4])
-	input_file = open(path_to_input_files + best_known_input_file, 'r')
 	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
 	workbook = xlsxwriter.Workbook(path_to_output + summary_output_file)
-	add_worksheet(workbook, "random", random[BEST_COVER], random[BEST_TIME], random[AVERAGE_TIME], random[AVERAGE_COVER], input_file)
-	add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_TIME], greedy[AVERAGE_COVER], input_file)
-	#add_worksheet(workbook, "local_1", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER], input_file)
-	#add_worksheet(workbook, "local_2", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER], input_file)
-	#add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER], input_file)
-	#add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER], input_file)
+	add_worksheet(workbook, "random", random[BEST_COVER], random[BEST_TIME], random[AVERAGE_TIME], random[AVERAGE_COVER])
+	add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_TIME], greedy[AVERAGE_COVER])
+	#add_worksheet(workbook, "local_1", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER])
+	#add_worksheet(workbook, "local_2", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER])
+	#add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER])
+	#add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER])
 	workbook.close()
 
 
-def add_worksheet(workbook, heuristic, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, input_file):
+def add_worksheet(workbook, heuristic, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time):
 	worksheet = workbook.add_worksheet(heuristic)
 	emphasis_formatting = workbook.add_format({'bold': True, 'bg_color': '#C0C0C0', 'border': True})
 	add_headings(worksheet, emphasis_formatting)
+	input_file = open(path_to_input_files + best_known_input_file, 'r')
 	fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, input_file)
+	input_file.close()
 
 
 def add_headings(worksheet, emphasis_formatting):

@@ -14,7 +14,7 @@ import time
 # even if it is highlighted in red, it should work fine (from CMD)
 # note:  with xls libraries in python - we cannot append to existing files, it will overwrite the existing
 # so if we want persistence of data, we may need to add a date/time to the workbook name
-# TODO - feature to add data/time to the workbook name.  Have a boolean flag to turn persistence on/off
+
 path_to_runner = "./Debug/SCP.exe"
 path_to_runner_x64 = "./x64/Debug/SCP.exe"
 path_to_test_files = "./test_data/"
@@ -29,8 +29,6 @@ BEST_COVER = 0
 BEST_TIME = 1
 AVERAGE_COVER = 2
 AVERAGE_TIME = 3
-
-
 
 # This class provides the functionality for a switch statement
 # found at http://code.activestate.com/recipes/410692/
@@ -78,6 +76,7 @@ def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs,
 		print(e)
 		exit()
 
+		
 def host_path():
 	if os.path.exists(path_to_runner):
 		return path_to_runner
@@ -98,16 +97,17 @@ def print_single_heuristic_summary_to_xlsx(worksheet_name, output_summary):
 	add_worksheet(workbook, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[BEST_COVER], output_summary[BEST_TIME], input_file)
 	workbook.close()
 
+	
 # will bring all of the heuristics output to a workbook.  one sheet per heuristic.
 def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_point, population):
 	input_file = open(path_to_input_files + best_known_input_file, 'r')
 	workbook = xlsxwriter.Workbook(path_to_output + summary_output_file)
 	add_worksheet(workbook, "random", random[BEST_COVER], random[BEST_TIME], random[AVERAGE_TIME], random[AVERAGE_COVER], input_file)
 	add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_TIME], greedy[AVERAGE_COVER], input_file)
-	add_worksheet(workbook, "local_1", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER], input_file)
-	add_worksheet(workbook, "local_2", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER], input_file)
-	add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER], input_file)
-	add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER], input_file)
+	#add_worksheet(workbook, "local_1", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER], input_file)
+	#add_worksheet(workbook, "local_2", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER], input_file)
+	#add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER], input_file)
+	#add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER], input_file)
 	workbook.close()
 
 

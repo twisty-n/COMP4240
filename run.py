@@ -131,7 +131,6 @@ def add_headings(worksheet, emphasis_formatting):
 		worksheet.write('A8', "performance gains (%)", emphasis_formatting)
 	worksheet.set_column(0, 0, 25)
 
-
 def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, input_file):
 	row = 0
 	i = 1  # i matches column reference workbook.  workbook is row/col indexed at 0, but we have headers in col 0

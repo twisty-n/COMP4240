@@ -102,13 +102,6 @@ int main(int argument_count, char * argv[])
 	generate_problem_instance(&instance, file);
 	time_t end_formulate = get_current_time();
 	fclose(file);
-	//printf("Generating problem instance took %f seconds\n", difftime(end_formulate, start_formulate));
-	//printf("Outputing instance representation to file\n");
-	//Open a file for output, write then close
-	//fopen_s(&output_file, output_file_path, "w");
-	//print_instance_to_file(&instance, output_file);
-	//fclose(output_file);
-
 
 	int total_cost = 0;
 	double total_time = 0;
@@ -156,7 +149,6 @@ int main(int argument_count, char * argv[])
 		total_time += current_solution.time;
 	}
 
-	
 	double average_cost = (double)total_cost / number_of_runs;
 	double average_time = total_time / number_of_runs;
 	if (number_of_runs == 1) {
@@ -171,9 +163,6 @@ int main(int argument_count, char * argv[])
 		print_solution_to_file(&best_solution, output_file, operation);
 		fclose(output_file);
 	}
-//	fclose(debug_log);
-
-	// TODO: Free all the memory we allocated
 	free(output_file_path);
 	free_instance(&instance);
 	free_solution(&current_solution);

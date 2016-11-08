@@ -26,6 +26,7 @@
 #include "problem_instance.h"
 #include "solution.h"
 #include "constructive_heuristic.h"
+#include "local_search.h"
 
 /* Constants */
 #define FILE_OPEN_SUCCESS 0
@@ -124,8 +125,8 @@ int main(int argument_count, char * argv[])
 			//operation = " ?? _search";
 			break;
 		case 4:
-			//todo
-			//operation = " ?? _search";
+			perform_local_search_first_accept(&instance, &current_solution);
+			operation = "local_search_first_accept";
 			break;
 		case 5:
 			//todo

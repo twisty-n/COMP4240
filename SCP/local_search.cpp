@@ -33,3 +33,11 @@ void local_search_1(Instance * instance, Solution * solution) {
 
 	}
 }
+
+void local_search_first_accept(Instance * instance, Solution * solution) {
+
+	//construct a random solution S0
+
+
+
+}

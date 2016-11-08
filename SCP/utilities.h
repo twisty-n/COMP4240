@@ -41,3 +41,10 @@ Solution deep_copy(Instance * instance, Solution * solution_s0);
 	returns a deep copy of an array
 */
 int * copy_array(int * array, int size);
+
+/*
+	returns the current time
+*/
+time_t get_current_time();
+
+

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "utilities.h"
 #include <stdlib.h>
+#include <time.h>
 
 
 //TODO:  has an off-by-one error.  It is not sorting the element at idex zero correctly.
@@ -75,4 +76,19 @@ int * copy_array(int * array, int size) {
 		new_array[i] = array[i];
 	}
 	return new_array;
+}
+
+
+time_t get_current_time() {
+	// Get the current time
+	time_t now = time(0);
+	struct tm time_val;
+	localtime_s(&time_val, &now);
+
+	char time_string[9];
+	strftime(time_string, sizeof(time_string), "%H:%M:%S", &time_val);
+
+	//printf("%s", time_string);
+
+	return now;
 }

@@ -75,6 +75,7 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	// also need to keep track of the current cost and the number of coverings in the solution
 	int * coverings = (int *)calloc(instance->row_count, sizeof(int));
 	int * minimal_coverings = (int *)calloc(instance->row_count, sizeof(int));
+	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
 	int current_cost = 0;
 	int number_of_coverings = 0;
 
@@ -128,7 +129,7 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 		//remove it from the set of columns not currently in the solution
 		//and update the list of uncovered rows based on what the column just covered
 		minimal_coverings[number_of_coverings] = best_col;
-		coverings[best_col] = 1;
+		columns_in_solution[best_col] = 1;
 		number_of_coverings++;
 		current_cost += instance->column_costs[best_col];
 		remove_column(unassigned_columns, &best_col, &no_unassigned_columns);
@@ -155,19 +156,19 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 		non_covering_columns[i] = unassigned_columns[i];
 	}
 
-
 	//update solution details with results of the cover
 	solution->cost = current_cost;
 	solution->covering_columns = coverings;
+	solution->columns_in_solution = columns_in_solution;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 	solution->non_covering_columns = non_covering_columns;
 	solution->number_of_non_covering = no_unassigned_columns;
 
 	//free memory
-	//free(uncovered_rows);
-	//free(unassigned_columns);
-	//free(rows_to_be_covered_this_instance);
+	free(uncovered_rows);
+	free(unassigned_columns);
+	free(rows_to_be_covered_this_instance);
 
 }
 

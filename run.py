@@ -62,7 +62,7 @@ def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs,
 	test_scp = subprocess.Popen([path_to_runner, path_to_test_files + filename, heuristic_code, number_of_runs, "0"], stdout=subprocess.PIPE)
 	output = test_scp.communicate()
 	try:
-		print("output: {}" .format(output))
+		#print("output: {}" .format(output))
 		output_list = output[0].split()
 		coverings_summary[BEST_COVER].append(float(output_list[BEST_COVER]))
 		coverings_summary[BEST_TIME].append(float(output_list[BEST_TIME]))
@@ -103,9 +103,8 @@ def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_
 	local_time = time.localtime(time.time())
 	time_string = "{}{}{}_{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4])
 	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
-	workbook = xlsxwriter.Workbook(path_to_output + summary_output_file)
-	add_worksheet(workbook, "random", random[BEST_COVER], random[BEST_TIME], random[AVERAGE_TIME], random[AVERAGE_COVER])
-	add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_TIME], greedy[AVERAGE_COVER])
+	add_worksheet(workbook, "random", random[BEST_COVER], random[BEST_TIME], random[AVERAGE_COVER], random[AVERAGE_TIME])
+	add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_COVER], greedy[AVERAGE_TIME])
 	#add_worksheet(workbook, "local_1", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER])
 	#add_worksheet(workbook, "local_2", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER])
 	#add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER])
@@ -211,21 +210,20 @@ def generate_data_structures():
 	population_based_meta.append(list(best_cover_list))
 	population_based_meta.append(list(best_time_list))
 
-	if report_average:
-		average_cover_list = []
-		average_time_list = []
-		random_heuristic.append(list(average_cover_list))
-		random_heuristic.append(list(average_time_list))
-		greedy_heuristic.append(list(average_cover_list))
-		greedy_heuristic.append(list(average_time_list))
-		local_search_tba.append(list(average_cover_list))
-		local_search_tba.append(list(average_time_list))
-		local_search__tba.append(list(average_cover_list))
-		local_search__tba.append(list(average_time_list))
-		single_point_meta.append(list(average_cover_list))
-		single_point_meta.append(list(average_time_list))
-		population_based_meta.append(list(average_cover_list))
-		population_based_meta.append(list(average_time_list))
+	average_cover_list = []
+	average_time_list = []
+	random_heuristic.append(list(average_cover_list))
+	random_heuristic.append(list(average_time_list))
+	greedy_heuristic.append(list(average_cover_list))
+	greedy_heuristic.append(list(average_time_list))
+	local_search_tba.append(list(average_cover_list))
+	local_search_tba.append(list(average_time_list))
+	local_search__tba.append(list(average_cover_list))
+	local_search__tba.append(list(average_time_list))
+	single_point_meta.append(list(average_cover_list))
+	single_point_meta.append(list(average_time_list))
+	population_based_meta.append(list(average_cover_list))
+	population_based_meta.append(list(average_time_list))
 
 	return random_heuristic, greedy_heuristic, local_search_tba, local_search__tba, single_point_meta, population_based_meta
 
@@ -290,29 +288,34 @@ if __name__ == "__main__":
 				exit()
 
 	print("end tests")
-	print("printing summary")
+	
 	for case in switch(int(heuristic_code)):
 		if case(1):
+			print("printing random summary")
 			print_single_heuristic_summary_to_xlsx("random", random_heuristic)
 			break
 		if case(2):
+			print("printing greedy summary")
 			print_single_heuristic_summary_to_xlsx("greedy", greedy_heuristic)
 			break
 		if case(3):
+			print("printing local_1 summary")
 			print_single_heuristic_summary_to_xlsx("local_1", local_search_tba)
 			break
 		if case(4):
+			print("printing local_2 summary")
 			print_single_heuristic_summary_to_xlsx("local_2", local_search__tba)
 			break
 		if case(5):
+			print("printing single_point summary")
 			print_single_heuristic_summary_to_xlsx("single_point_meta", single_point_meta)
 			break
 		if case(6):
+			print("printing populartion_based summary")
 			print_single_heuristic_summary_to_xlsx("populartion_based", population_based_meta)
 			break
 		if case(7):
+			print("printing ALL summary")
 			print_ALL_heuritic_summary_to_xlsx(random_heuristic, greedy_heuristic, local_search_tba, local_search__tba, single_point_meta, population_based_meta)
-		if case(): # default
-			print "error with input"
-			exit()
-	print("summary printed - details can be found in %s" % path_to_output + 'summary.xlsx')
+			
+	print("summary printed - details can be found in %s" % path_to_output)

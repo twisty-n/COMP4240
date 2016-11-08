@@ -48,5 +48,6 @@ void print_solution_to_file(Solution * solution, FILE * file, char * heuristic) 
 void free_solution(Solution * solution) {
 	free(solution->minimal_cover);
 	free(solution->covering_columns);
+	free(solution->columns_in_solution);
 }
 

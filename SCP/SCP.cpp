@@ -26,6 +26,7 @@
 #include "problem_instance.h"
 #include "solution.h"
 #include "constructive_heuristic.h"
+#include "local_search.h"
 
 /* Constants */
 #define FILE_OPEN_SUCCESS 0
@@ -62,7 +63,7 @@ int main(int argument_count, char * argv[])
 
 	boolean debug = atoi(argv[4]);
 	if (debug) {
-		input_file_name = "04scp44.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
+		input_file_name = "50scpnre5.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
 	}
 	else {
 		input_file_name = argv[1];
@@ -124,8 +125,8 @@ int main(int argument_count, char * argv[])
 			//operation = " ?? _search";
 			break;
 		case 4:
-			//todo
-			//operation = " ?? _search";
+			perform_local_search_first_accept(&instance, &current_solution);
+			operation = "local_search_first_accept";
 			break;
 		case 5:
 			//todo
@@ -165,10 +166,7 @@ int main(int argument_count, char * argv[])
 	}
 	free(output_file_path);
 	free_instance(&instance);
-//	free_solution(&current_solution);
-//	if (number_of_runs > 1) {
-//		free_solution(&best_solution);
-//	}
+	free_solution(&best_solution);
 
 	return 0;
 }

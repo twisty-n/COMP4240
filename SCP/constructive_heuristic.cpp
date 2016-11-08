@@ -156,7 +156,6 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 		non_covering_columns[i] = unassigned_columns[i];
 	}
 
-
 	//update solution details with results of the cover
 	solution->cost = current_cost;
 	solution->covering_columns = coverings;

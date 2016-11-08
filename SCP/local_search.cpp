@@ -1,11 +1,15 @@
+#include "stdafx.h"
 #include "local_search.h"
 #include "constructive_heuristic.h"
 #include "utilities.h"
 #include <stdlib.h>
 #include <time.h>
 
+
 #define TRUE 1
 #define FALSE 0
+#define NEIGHBOURHOOD 10		//currently has 10 solutions in a neighbourhood, can ammend if required
+
 
 void perform_local_search_1(Instance * instance, Solution * solution) {
 	// First we'll obtain an initial solution using a greedy approach
@@ -39,6 +43,7 @@ void local_search_1(Instance * instance, Solution * solution) {
 void perform_local_search_first_accept(Instance * instance, Solution * solution) {
 	
 	//construct a random solution S0
+	//TODO:  ensure time is added to the solution properly, so that deep copy will work.
 	random_construction(instance, solution);
 	
 	//go to local_search
@@ -46,16 +51,25 @@ void perform_local_search_first_accept(Instance * instance, Solution * solution)
 }
 
 
-void local_search_first_accept(Instance * instance, Solution * solution) {	
+void local_search_first_accept(Instance * instance, Solution * solution_S0) {	
 
-	//the solution currently represents s0.
+	for (int i = 0; i < NEIGHBOURHOOD; i++) {
+		
 
-	//
 
+	}
 }
 
-boolean check_feasibility(Solution * solution) {
+Solution * randomly_generate_neighbour(Instance * instance, Solution * solution_S0) {
 
-	//
+	int total_rows_to_swap = 10;
+	Solution neighbour = deep_copy(instance, solution_S0);
 
+
+	for (int i = 0; i < total_rows_to_swap; i++) {
+
+
+	}
+
+	return &neighbour;
 }

@@ -8,8 +8,8 @@ struct Solution {
 		0 indicates that the row is not covered
 
 		//todo - I can see a bug with using this - this only shows one column that is covering
-		//that row and does not account for the other colums covering that row.  We only update
-		//this one time.
+		//that row and does not account for the other colums in the solution which may also be 
+		//covering that row.  We only update this one time.
 
 		//I will update a feature in the neighborhood generation to ensure that this is
 		//kept up-to-date based on checking the other columns which are still in the

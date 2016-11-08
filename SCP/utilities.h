@@ -24,10 +24,20 @@ boolean check_feasibility(Instance * instance, Solution * solution);
 
 /*
 	will compare the cost of 2 solutions
-	reutrns
+	reutrns:
 	-1 if solution a is cheaper than solution b
 	0 if equal
 	1 if solution b is cheaper than solution a
 	
 */
 int compare(Solution * solution_a, Solution * solution_b);
+
+/*
+	returns a deep_copy of the solution.
+*/
+Solution deep_copy(Instance * instance, Solution * solution_s0);
+
+/*
+	returns a deep copy of an array
+*/
+int * copy_array(int * array, int size);

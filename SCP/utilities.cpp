@@ -42,3 +42,17 @@ boolean check_feasibility(Instance * instance, Solution * solution) {
 	}
 	return TRUE;
 }
+
+
+int compare(Solution * solution_a, Solution * solution_b) {
+	
+	if (solution_a->cost == solution_b->cost) {
+		return 0;
+	}
+	else if (solution_a->cost < solution_b->cost) {
+		return -1;
+	}
+	else {
+		return 1;
+	}
+}

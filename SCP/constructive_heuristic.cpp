@@ -32,8 +32,6 @@ void random_construction(Instance * instance, Solution * solution) {
 		int * column_covers_for_row = instance->raw_coverings[row];
 		srand(time(NULL)); // Seed the RNG
 
-		// Now pick the random column - using notation as per http://www.c-faq.com/lib/randrange.html
-		// selected_column = column_covers_for_row[(int)((double)rand() / (((double)RAND_MAX + 1) * coverings_for_row))];
 		selected_column = column_covers_for_row[rand() % coverings_for_row];
 		columns_in_solution[selected_column] = 1; // Flip the bit
 		coverings[row] = selected_column;

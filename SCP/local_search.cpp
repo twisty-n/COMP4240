@@ -24,11 +24,33 @@ void local_search_1(Instance * instance, Solution * solution) {
 	// number of columns in the soltuion
 	int repetitions = instance->row_count * solution->number_of_covers;
 	srand(time(NULL));
+	boolean remove_redundant_column = TRUE;
+	for (int i = 0; i < repetitions; i++, remove_redundant_column = TRUE) {
 
-	for (int i = 0; i < repetitions; i++) {
+		while (remove_redundant_column) {
 
-		// The first step in the process is to select a set at random, and 
-		// remove it from the solution. 
+			// The first step in the process is to select a set at random, and 
+			// "remove" it from the solution. 
+
+			// If the new solution is valid
+			if (TRUE) {
+				// Find the updated, without the removed column and update the solution cost
+				// Update the solution with the removed column
+			}
+			else {
+				// Otherwise, leave the removed column from the solution and continue
+			}
+
+		}
+
+		// 
+		for (int i = 0; i < K; i++) {
+			// Randomly select a column from one of the unselected columns
+			
+			// See if the solution with this column, and still the one removed from before 
+			// is a valid solution
+
+		}
 		
 
 	}

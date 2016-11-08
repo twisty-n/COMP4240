@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define TRUE 1
 #define FALSE 0
 
 void perform_local_search_1(Instance * instance, Solution * solution) {
@@ -47,6 +48,14 @@ void perform_local_search_first_accept(Instance * instance, Solution * solution)
 
 void local_search_first_accept(Instance * instance, Solution * solution) {	
 
+	//the solution currently represents s0.
 
+	//
+
+}
+
+boolean check_feasibility(Solution * solution) {
+
+	//
 
 }

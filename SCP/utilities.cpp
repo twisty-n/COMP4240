@@ -30,3 +30,15 @@ void quick_sort(int * arr, int left, int right) {
 	if (i < right)
 		quick_sort(arr, i, right);
 }
+
+
+boolean check_feasibility(Instance * instance, Solution * solution) {
+	//will return TRUE if all rows in the solution it is checking are covered
+
+	for (int i = 0; i < instance->row_count; i++) {
+		if (solution->covering_columns[i] == 0) {
+			return FALSE;
+		}
+	}
+	return TRUE;
+}

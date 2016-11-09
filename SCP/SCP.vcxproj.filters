@@ -42,7 +42,11 @@
     <ClInclude Include="local_search.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="simulated_annealing.h">
+=======
+    <ClInclude Include="jpso.h">
+>>>>>>> f27fc6feff9570cc9351c9ecef482945f64d2530
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,7 +75,11 @@
     <ClCompile Include="local_search.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="simulated_annealing.cpp">
+=======
+    <ClCompile Include="jpso.cpp">
+>>>>>>> f27fc6feff9570cc9351c9ecef482945f64d2530
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

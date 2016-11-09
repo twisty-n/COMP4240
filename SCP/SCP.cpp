@@ -29,6 +29,7 @@
 #include "local_search.h"
 #include "simulated_annealing.h"
 #include "utilities.h"
+#include "jpso.h"
 
 /* Constants */
 #define FILE_OPEN_SUCCESS 0
@@ -66,7 +67,7 @@ int main(int argument_count, char * argv[])
 
 	boolean debug = atoi(argv[4]);
 	if (debug) {
-		input_file_name = "15scp55.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
+		input_file_name = "01scp41.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
 	}
 	else {
 		input_file_name = argv[1];
@@ -142,8 +143,8 @@ int main(int argument_count, char * argv[])
 			current_solution = *best;
 			break;
 		case 6:
-			//todo
-			//operation = " ?? _meta_heuristic";
+			current_solution = jpso(&instance, 10);
+			operation = "meta_jpso";
 			break;
 		}
 		

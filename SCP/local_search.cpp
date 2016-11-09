@@ -29,10 +29,11 @@ Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 	// Now we need to figure out the number of iterations to run the thing gor
 	// from what I can make out, it is the number of elements times the 
 	// number of columns in the soltuion
+
 	int repetitions = 200; // instance->row_count * solution->number_of_covers;
 	boolean remove_redundant_column = TRUE;
 
-	int K = 700; //Because why not. 
+	int K = 1000; //Because why not. 
 	
 	// Persist the solution as it currently is 
 	Solution current_best = deep_copy(instance, solution);
@@ -80,7 +81,7 @@ Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 			// is a valid solution
 			int compare_result = compare(&working_solution, &current_best);
 
-			//printf("Iteration: %d. Hill Climb Iteration: %d. Current best cost: %d. Working best cost: %d \n", current_repetition, i, current_best.cost, working_solution.cost);
+			printf("Iteration: %d. Hill Climb Iteration: %d. Current best cost: %d. Working best cost: %d \n", current_repetition, i, current_best.cost, working_solution.cost);
 
 			if (is_feasible(instance, &working_solution) && ((compare_result == 0) || (compare_result == -1))) {
 				// This good

@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constructive_heuristic.h" />
+    <ClInclude Include="jpso.h" />
     <ClInclude Include="local_search.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="problem_instance.h" />
@@ -157,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="constructive_heuristic.cpp" />
+    <ClCompile Include="jpso.cpp" />
     <ClCompile Include="local_search.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="problem_instance.cpp" />

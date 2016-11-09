@@ -111,8 +111,8 @@ Solution * perform_local_search_first_accept(Instance * instance, Solution * sol
 	
 	//construct a random solution S0
 	//TODO:  ensure time is added to the solution properly, so that deep copy will work.
-	//greedy_construction(instance, solution, FALSE);
-	random_construction(instance, solution);
+	greedy_construction(instance, solution, FALSE);
+	//random_construction(instance, solution);
 	time_t end_sol = get_current_time();
 	solution->time = difftime(end_sol, start_sol);
 	
@@ -160,9 +160,9 @@ Solution * local_search_first_accept(Instance * instance, Solution * solution_S0
 
 Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0) {
 
-	int total_rows_to_swap = 10;				
-	int non_feasible = 0;					//counter for the number of non-feasible solutions generated
-	int non_feasible_max = 2500;				//max number of non-feasible solutions allowed.  When maxed, return s0.
+	int total_rows_to_swap = 5;				
+	int non_feasible = 0;						//counter for the number of non-feasible solutions generated
+	int non_feasible_max = 2000;				//max number of non-feasible solutions allowed.  When maxed, return s0.
 	boolean solution_found = FALSE;
 	Solution neighbour = deep_copy(instance, solution_S0);
 

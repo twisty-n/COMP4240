@@ -94,7 +94,7 @@ def print_single_heuristic_summary_to_xlsx(worksheet_name, output_summary):
 	local_time = time.localtime(time.time())
 	time_string = "{}{}{}_{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4])
 	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
-	add_worksheet(workbook, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[BEST_COVER], output_summary[BEST_TIME])
+	add_worksheet(workbook, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME])
 	workbook.close()
 
 
@@ -119,7 +119,7 @@ def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_
 
 	add_worksheet(workbook, "best_accept_greedy", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER])
 
-	add_worksheet(workbook, "first_accept_greedy", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER])
+	add_worksheet(workbook, "first_accept_random", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER])
 
 	#add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER])
 	#add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER])
@@ -325,7 +325,7 @@ if __name__ == "__main__":
 			break
 		if case(4):
 			print("printing local_2 summary")
-			print_single_heuristic_summary_to_xlsx("first_accept_greedy", local_search_first_accept)
+			print_single_heuristic_summary_to_xlsx("first_accept_random", local_search_first_accept)
 			break
 		if case(5):
 			print("printing single_point summary")

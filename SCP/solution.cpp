@@ -1,20 +1,21 @@
 #include "stdafx.h"
 #include <stdlib.h>
 #include "solution.h"
+#include "utilities.h"
 
-void print_solution(Solution * solution) {
+void print_solution(Instance * instance, Solution * solution) {
 	printf("\n");
 	printf("Total Cost: %d\n", solution->cost);
 	printf("Required Covers %d\n", solution->number_of_covers);
 	printf("Minimal Covering Columns: \n");
-	for (int i = 1; i < solution->number_of_covers; i++) {
-		// Plus 1 so that the columns are displayed sensibly
-		printf("%5d ", solution->minimal_cover[i-1]+1);
-		if (i % 6 == 0 && i != 0) {	
-			// Prints 6 per row (arbitarily) to fit into the console window
-			printf("\n");
-		}
-	}
+	print_array_real_column_labels(solution->minimal_cover, solution->number_of_covers);
+	printf("Non covering Covering Columns: \n");
+	print_array_real_column_labels(solution->non_covering_columns, solution->number_of_non_covering);
+	printf("1 indicates row is covered by col:  \n");
+	print_array(solution->columns_in_solution, instance->row_count);
+	printf("\n");
+	printf("indicates which col is covering which row:  \n");
+	print_array_real_column_labels(solution->covering_columns, instance->row_count);
 	printf("\n");
 }
 

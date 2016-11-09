@@ -27,6 +27,7 @@
 #include "solution.h"
 #include "constructive_heuristic.h"
 #include "local_search.h"
+#include "utilities.h"
 
 /* Constants */
 #define FILE_OPEN_SUCCESS 0
@@ -44,7 +45,6 @@ boolean valid_arguments(int argument_count, char * arguments[]);
 void generate_problem_instance(Instance * instance, FILE * file);
 char * generate_output_file_path(char * input_file);
 char * generate_debug_file_path(char * input_file, char * h_code);
-time_t get_current_time();
 
 int main(int argument_count, char * argv[])
 {
@@ -63,7 +63,7 @@ int main(int argument_count, char * argv[])
 
 	boolean debug = atoi(argv[4]);
 	if (debug) {
-		input_file_name = "50scpnre5.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
+		input_file_name = "01scp41.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
 	}
 	else {
 		input_file_name = argv[1];
@@ -125,7 +125,7 @@ int main(int argument_count, char * argv[])
 			//operation = " ?? _search";
 			break;
 		case 4:
-			perform_local_search_first_accept(&instance, &current_solution);
+			perform_local_search_first_accept(&instance, &current_solution, start_sol);
 			operation = "local_search_first_accept";
 			break;
 		case 5:
@@ -169,20 +169,6 @@ int main(int argument_count, char * argv[])
 	free_solution(&best_solution);
 
 	return 0;
-}
-
-time_t get_current_time() {
-	// Get the current time
-	time_t now = time(0);
-	struct tm time_val;
-	localtime_s(&time_val, &now);
-
-	char time_string[9];
-	strftime(time_string, sizeof(time_string), "%H:%M:%S", &time_val);
-
-	//printf("%s", time_string);
-
-	return now;
 }
 
 char * generate_output_file_path(char * input_file) {

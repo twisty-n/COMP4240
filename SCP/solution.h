@@ -1,11 +1,14 @@
 #pragma once
 
+#include "problem_instance.h"
+
+
 struct Solution {
 	int cost;
 
 	/*
 		Each cell represents a row, the value represents the column covering that row
-		0 indicates that the row is not covered
+		-1 indicates that the row is not covered
 
 		//todo - I can see a bug with using this - this only shows one column that is covering
 		//that row and does not account for the other colums in the solution which may also be 
@@ -20,19 +23,24 @@ struct Solution {
 	/*
 		An array holding the minimal columns required for the solution
 		Holds the same information as columns_in_solution, but is 
-		more of a list, where the unfilled indexes are not part of the solution
+		more of a list, where the unfilled indexes are not part of the solution.
+		array is the size of the rows in the solution.  -1 is flag which indicates
+		the end of the covering olumns.  Can also be managed using the logical
+		size, number_of_covers.
 	*/
 	int * minimal_cover;
 	
 	/*
 		An array holding the non_covering_columns listed the solution
 		holds the same information as columns_in_solution, but is more of
-		a list, where the filled indexes are not part of this list
+		a list, where the filled indexes are not part of this list.  Is the size of
+		the rows in the instance. -1 indicates end of valid columns.  Can also
+		be managed by the logical size number_of_non_covering.
 	*/
 	int * non_covering_columns;		
 	/*
 		Each cell represents a column, a value of 1 indicates a column is in the solution
-		a value of 0 indicates a column is outside of the solution
+		a value of -1 indicates a column is outside of the solution
 	*/
 	int * columns_in_solution;
 
@@ -54,7 +62,7 @@ struct Solution {
 
 typedef struct Solution Solution;
 
-void print_solution(Solution * solution);
+void print_solution(Instance * instance, Solution * solution);
 
 void print_solution_stats(Solution * solution);
 

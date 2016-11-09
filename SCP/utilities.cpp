@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "utilities.h"
 #include <stdlib.h>
+#include <time.h>
 
 
 //TODO:  has an off-by-one error.  It is not sorting the element at idex zero correctly.
@@ -71,11 +72,11 @@ int * copy_array(int * array, int size) {
 #define NOT_COVERED 0
 #define COVERED 1
 boolean is_feasible(Instance * instance, Solution * solution) {
-	
+
 	// Array for all the rows that need to be covered, assume all uncovered
-	int * rows_in_instance = (int *) calloc(instance->row_count, sizeof(int));
+	int * rows_in_instance = (int *)calloc(instance->row_count, sizeof(int));
 	int number_of_columns = instance->column_count;
-	
+
 	// For each column in the solution, see which rows it covers
 	for (int i = 0; i < number_of_columns; i++) {
 		// Inspect each one to see if it is in the solution
@@ -97,9 +98,51 @@ boolean is_feasible(Instance * instance, Solution * solution) {
 			return FALSE;
 		}
 	}
-	
+
 	// Otherwise everthing is all good
 	free(rows_in_instance);
 	return TRUE;
+}
 
+void set_to_minus_ones(int * array, int size) {
+	for (int i = 0; i < size; i++) {
+		array[i] = -1;
+	}
+}
+
+
+void print_array(int * array, int size) {
+	for (int i = 0; i < size; i++) {
+		// Plus 1 so that the columns are displayed sensibly
+		printf("%5d ", array[i]);
+		if (i % 6 == 0 && i != 0) {
+			// Prints 6 per row (arbitarily) to fit into the console window
+			printf("\n");
+		}
+	}
+}
+
+void print_array_real_column_labels(int * array, int size) {
+	for (int i = 1; i <= size; i++) {
+		// Plus 1 so that the columns are displayed sensibly
+		printf("%5d ", array[i - 1] + 1);
+		if (i % 6 == 0 && i != 0) {
+			// Prints 6 per row (arbitarily) to fit into the console window
+			printf("\n");
+		}
+	}
+}
+
+time_t get_current_time() {
+	// Get the current time
+	time_t now = time(0);
+	struct tm time_val;
+	localtime_s(&time_val, &now);
+
+	char time_string[9];
+	strftime(time_string, sizeof(time_string), "%H:%M:%S", &time_val);
+
+	//printf("%s", time_string);
+
+	return now;
 }

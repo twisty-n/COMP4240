@@ -76,37 +76,23 @@ void local_search_1(Instance * instance, Solution * solution) {
 			// is a valid solution
 			int compare_result = compare(&working_solution, &current_best);
 			if (is_feasible(instance, &working_solution) && ((compare_result == 0) || (compare_result == 1))) {
-				// This good 
+				// This good
+				// Working solution is up to date 
+				current_best = working_solution;
 			}
 			else {
 				// Roll back changes
-			}
-			
-			// if it isn't, go back to 55 otherwise
-			// Find the new cost. If the cost is better, maintain it, and the new solution
-			// then go back to fifty three
-
-		}
-		
-		// If the current best solution is WORSE then the one that we have found this run, 
-		// update the current best solution to the one we have worked on
-		int comparison_result = compare(&current_best, &working_solution);
-		if (comparison_result != 1) {
-			if (comparison_result == 0) {
-				// They were equal, chose the one with the least number of columns
-				current_best = current_best.number_of_covers < working_solution.number_of_covers ? current_best : working_solution;
-			}
-			else {
-				//The new one is better, use it instead
-				current_best = working_solution;
+				// TODO:
+				// Update minimal cover, non-covering columns and all that
+				working_solution.columns_in_solution[column_to_add] = FALSE;
+				working_solution.cost -= instance->column_costs[column_to_add];
 			}
 		}
-		// Implicit else, the current_solution is better, so don't change it
-
 	}
 
 	// Lets hope this doesn't screw itself
 	solution = &current_best;
+	remove_redundant_column = TRUE;
 }
 
 

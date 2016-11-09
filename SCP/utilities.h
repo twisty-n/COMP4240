@@ -20,7 +20,7 @@ void quick_sort(int * array, int p, int r);
 /*
 	will return ture is all rows are covered by a column
 */
-boolean check_feasibility(Instance * instance, Solution * solution);
+boolean is_feasible(Instance * instance, Solution * solution);
 
 /*
 	will compare the cost of 2 solutions

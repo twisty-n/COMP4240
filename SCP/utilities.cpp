@@ -43,7 +43,7 @@ int compare(Solution * solution_a, Solution * solution_b) {
 	}
 }
 
-Solution deep_copy(Instance * instance,Solution * solution_s0) {
+Solution deep_copy(Instance * instance, Solution * solution_s0) {
 
 	Solution deep_copy;
 	deep_copy.cost = solution_s0->cost;
@@ -70,7 +70,7 @@ int * copy_array(int * array, int size) {
 
 #define NOT_COVERED 0
 #define COVERED 1
-boolean check_feasability(Instance * instance, Solution * solution) {
+boolean is_feasible(Instance * instance, Solution * solution) {
 	
 	// Array for all the rows that need to be covered, assume all uncovered
 	int * rows_in_instance = (int *) calloc(instance->row_count, sizeof(int));

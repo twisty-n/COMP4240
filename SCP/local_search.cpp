@@ -30,22 +30,35 @@ void local_search_1(Instance * instance, Solution * solution) {
 	int repetitions = instance->row_count * solution->number_of_covers;
 	srand(time(NULL));
 	boolean remove_redundant_column = TRUE;
+
+	int K = 50; // Because why not. 
+	
+	// Persist the solution as it currently is 
+	Solution current_best = deep_copy(instance, solution);
 	for (int i = 0; i < repetitions; i++, remove_redundant_column = TRUE) {
 
+		Solution working_solution = deep_copy(instance, &current_best);
 		while (remove_redundant_column) {
 
 			// The first step in the process is to select a set at random, and 
 			// "remove" it from the solution. 
-
+			int column_to_remove = working_solution.minimal_cover[rand() % solution->number_of_covers];
+			
+			// TODO: Clean up after myself!!!!!
+			working_solution.columns_in_solution[column_to_remove] = FALSE;
+			int cost_of_removed = instance->column_costs[column_to_remove];
+			working_solution.cost -= cost_of_removed;
+			
 			// If the new solution is valid
-			if (TRUE) {
+			if (is_feasible(instance, &working_solution)) {
 				// Find the updated, without the removed column and update the solution cost
 				// Update the solution with the removed column
+				remove_redundant_column = TRUE;
 			}
 			else {
 				// Otherwise, leave the removed column from the solution and continue
+				remove_redundant_column = FALSE;
 			}
-
 		}
 
 		// 
@@ -61,8 +74,25 @@ void local_search_1(Instance * instance, Solution * solution) {
 
 		}
 		
+		// If the current best solution is WORSE then the one that we have found this run, 
+		// update the current best solution to the one we have worked on
+		int comparison_result = compare(&current_best, &working_solution);
+		if (comparison_result != 1) {
+			if (comparison_result == 0) {
+				// They were equal, chose the one with the least number of columns
+				current_best = current_best.number_of_covers < working_solution.number_of_covers ? current_best : working_solution;
+			}
+			else {
+				//The new one is better, use it instead
+				current_best = working_solution;
+			}
+		}
+		// Implicit else, the current_solution is better, so don't change it
 
 	}
+
+	// Lets hope this doesn't screw itself
+	solution = &current_best;
 }
 
 

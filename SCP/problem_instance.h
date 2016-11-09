@@ -3,6 +3,7 @@
 struct Instance {
 	
 	// A full matrix representing the given coverings
+	// matrix[row][column]
 	int ** matrix;
 
 	// A grid in which a raw_coverings[x] represents the xth row and raw_coverings[x][y] represents a column with a cost

@@ -31,16 +31,6 @@ void quick_sort(int * arr, int left, int right) {
 		quick_sort(arr, i, right);
 }
 
-
-boolean check_feasibility(Instance * instance, Solution * solution) {
-	for (int i = 0; i < instance->row_count; i++) {
-		if (solution->covering_columns[i] == 0) {
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
 int compare(Solution * solution_a, Solution * solution_b) {
 	if (solution_a->cost == solution_b->cost) {
 		return 0;
@@ -75,4 +65,41 @@ int * copy_array(int * array, int size) {
 		new_array[i] = array[i];
 	}
 	return new_array;
+}
+
+
+#define NOT_COVERED 0
+#define COVERED 1
+boolean check_feasability(Instance * instance, Solution * solution) {
+	
+	// Array for all the rows that need to be covered, assume all uncovered
+	int * rows_in_instance = (int *) calloc(instance->row_count, sizeof(int));
+	int number_of_columns = instance->column_count;
+	
+	// For each column in the solution, see which rows it covers
+	for (int i = 0; i < number_of_columns; i++) {
+		// Inspect each one to see if it is in the solution
+		if (solution->columns_in_solution[i] == TRUE) {
+			// Mark each row that this guy covers as covered
+			int column = i;
+			for (int i = 0; i < instance->row_count; i++) {
+				if (instance->matrix[i][column] == COVERED) {
+					rows_in_instance[i] = COVERED;
+				}
+			}
+		}
+	}
+
+	// Once this is done, iterate over the rows_in_instance and see if any are 0
+	for (int i = 0; i < instance->row_count; i++) {
+		if (rows_in_instance[i] == NOT_COVERED) {
+			free(rows_in_instance);
+			return FALSE;
+		}
+	}
+	
+	// Otherwise everthing is all good
+	free(rows_in_instance);
+	return TRUE;
+
 }

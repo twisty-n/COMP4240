@@ -54,6 +54,10 @@ void local_search_1(Instance * instance, Solution * solution) {
 			
 			// See if the solution with this column, and still the one removed from before 
 			// is a valid solution
+			
+			// if it isn't, go back to 55 otherwise
+			// Find the new cost. If the cost is better, maintain it, and the new solution
+			// then go back to fifty three
 
 		}
 		

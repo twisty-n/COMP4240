@@ -11,30 +11,31 @@
 #define NEIGHBOURHOOD_SIZE 10		//currently has 10 solutions in a neighbourhood, can ammend if required
 
 
-void perform_local_search_best_accept(Instance * instance, Solution * solution) {
+Solution * perform_local_search_best_accept(Instance * instance, Solution * solution) {
 	// First we'll obtain an initial solution using a greedy approach
 	greedy_construction(instance, solution, FALSE);
-
+	//random_construction(instance, solution);
 	// Then we'll actually perform the local search given our greedy instance
-	local_search_best_accept(instance, solution);
+	return local_search_best_accept(instance, solution);
 }
 
 
-void local_search_best_accept(Instance * instance, Solution * solution) {
+Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 	// We need to keep a track of the best found cost, and the current state of the solution
 	// This is already done, as being stored in the solution file. 
 	
 	// Now we need to figure out the number of iterations to run the thing gor
 	// from what I can make out, it is the number of elements times the 
 	// number of columns in the soltuion
-	int repetitions = instance->row_count * solution->number_of_covers;
+	int repetitions = 200; // instance->row_count * solution->number_of_covers;
 	srand(time(NULL));
 	boolean remove_redundant_column = TRUE;
 
-	int K = 50; // Because why not. 
+	int K = 700; //Because why not. 
 	
 	// Persist the solution as it currently is 
 	Solution current_best = deep_copy(instance, solution);
+
 	for (int i = 0; i < repetitions; i++, remove_redundant_column = TRUE) {
 
 		Solution working_solution = deep_copy(instance, &current_best);
@@ -65,7 +66,7 @@ void local_search_best_accept(Instance * instance, Solution * solution) {
 				remove_redundant_column = FALSE;
 			}
 		}
-
+		int current_repetition = i;
 		//Goal of part two is to randombly add a column from the non-covering columns
 		for (int i = 0; i < K; i++) {
 			// Randomly select a column from one of the unselected columns
@@ -77,9 +78,13 @@ void local_search_best_accept(Instance * instance, Solution * solution) {
 			// See if the solution with this column, and still the one removed from before 
 			// is a valid solution
 			int compare_result = compare(&working_solution, &current_best);
-			if (is_feasible(instance, &working_solution) && ((compare_result == 0) || (compare_result == 1))) {
+
+			//printf("Iteration: %d. Hill Climb Iteration: %d. Current best cost: %d. Working best cost: %d \n", current_repetition, i, current_best.cost, working_solution.cost);
+
+			if (is_feasible(instance, &working_solution) && ((compare_result == 0) || (compare_result == -1))) {
 				// This good
-				// Working solution is up to date 
+				// Working solution is up to date
+				printf("Iteration: %d. Hill Climb Iteration: %d. Current best cost: %d. Working best cost: %d \n", current_repetition, i, current_best.cost, working_solution.cost);
 				current_best = working_solution;
 			}
 			else {
@@ -93,8 +98,11 @@ void local_search_best_accept(Instance * instance, Solution * solution) {
 	}
 
 	// Lets hope this doesn't screw itself
+	// update LC:  lol - it totally screwed itself the first time :P
 	solution = &current_best;
 	remove_redundant_column = TRUE;
+
+	return solution;
 }
 
 

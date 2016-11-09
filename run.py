@@ -117,9 +117,8 @@ def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_
 	else:
 		add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_COVER], greedy[AVERAGE_TIME])
 
+	add_worksheet(workbook, "local_best_accept_greedy_construct", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER])
 
-
-	#add_worksheet(workbook, "local_1", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER])
 	#add_worksheet(workbook, "local_2", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER])
 	#add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER])
 	#add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER])
@@ -300,8 +299,9 @@ if __name__ == "__main__":
 				if (int(no_runs) >= 2):
 					report_average = True
 
+				launch_scp_program(path_to_runner, filename, "3", no_runs, local_search_tba)
+
 				#still in devel
-				#launch_scp_program(path_to_runner, filename, "3", no_runs, local_search_tba)
 				#launch_scp_program(path_to_runner, filename, "4", no_runs, local_search__tba)
 				#launch_scp_program(path_to_runner, filename, "5", no_runs, single_point_meta)
 				#launch_scp_program(path_to_runner, filename, "6", no_runs, population_based_meta)
@@ -324,7 +324,7 @@ if __name__ == "__main__":
 			break
 		if case(3):
 			print("printing local_1 summary")
-			print_single_heuristic_summary_to_xlsx("local_1", local_search_tba)
+			print_single_heuristic_summary_to_xlsx("local_best_accept_from_greedy_construction", local_search_tba)
 			break
 		if case(4):
 			print("printing local_2 summary")
@@ -335,8 +335,8 @@ if __name__ == "__main__":
 			print_single_heuristic_summary_to_xlsx("single_point_meta", single_point_meta)
 			break
 		if case(6):
-			print("printing populartion_based summary")
-			print_single_heuristic_summary_to_xlsx("populartion_based", population_based_meta)
+			print("printing population_based summary")
+			print_single_heuristic_summary_to_xlsx("population_based", population_based_meta)
 			break
 		if case(7):
 			print("printing ALL summary")

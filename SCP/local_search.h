@@ -8,13 +8,13 @@
 	This is the interface which SCP should call when trying to implement a best_accept local search.
 	Runs a greedy construction on the solution to generate S0, then calls to local_search_1
 */
-void perform_local_search_best_accept(Instance * instance, Solution * solution);
+Solution * perform_local_search_best_accept(Instance * instance, Solution * solution);
 
 /*
 	will find other solutions in the neighbourhood, evaluate fitness and accept using a hill climbing
 	best fit method.
 */
-void local_search_best_accept(Instance * instance, Solution * solution);
+Solution * local_search_best_accept(Instance * instance, Solution * solution);
 
 /*
 	This is the interface which SCP should call when trying to implement a first_accept local search.

@@ -63,7 +63,7 @@ int main(int argument_count, char * argv[])
 
 	boolean debug = atoi(argv[4]);
 	if (debug) {
-		input_file_name = "01scp41.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
+		input_file_name = "15scp55.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
 	}
 	else {
 		input_file_name = argv[1];
@@ -97,7 +97,9 @@ int main(int argument_count, char * argv[])
 	
 	Instance instance;
 	Solution current_solution;
-	Solution best_solution;	
+	Solution best_solution;
+
+	Solution * best;
 	
 	time_t start_formulate = get_current_time();
 	generate_problem_instance(&instance, file);
@@ -122,8 +124,9 @@ int main(int argument_count, char * argv[])
 			operation = "greedy_construction";
 			break;
 		case 3:
-			perform_local_search_best_accept(&instance, &current_solution);
+			best = perform_local_search_best_accept(&instance, &current_solution);
 			operation = "local_search_best_accept";
+			current_solution = *best;
 			break;
 		case 4:
 			perform_local_search_first_accept(&instance, &current_solution, start_sol);

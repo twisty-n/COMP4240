@@ -111,8 +111,8 @@ Solution * perform_local_search_first_accept(Instance * instance, Solution * sol
 	
 	//construct a random solution S0
 	//TODO:  ensure time is added to the solution properly, so that deep copy will work.
-	greedy_construction(instance, solution, FALSE);
-	//random_construction(instance, solution);
+	//greedy_construction(instance, solution, FALSE);
+	random_construction(instance, solution);
 	time_t end_sol = get_current_time();
 	solution->time = difftime(end_sol, start_sol);
 	
@@ -167,6 +167,46 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 	Solution neighbour = deep_copy(instance, solution_S0);
 
 	
+
+	while (!solution_found && non_feasible < non_feasible_max) {
+		for (int i = 0; i < total_rows_to_swap; i++) {
+			//pick a random row from the minimal coverings
+			int column_to_remove_index = rand() % neighbour.number_of_covers;
+			int column_to_remove = neighbour.minimal_cover[column_to_remove_index];
+
+			//pick a random row from the non-covering
+			int column_to_add_index = rand() % neighbour.number_of_non_covering;
+			int column_to_add = neighbour.non_covering_columns[column_to_add_index];
+
+			//Swap cols in the solution
+			neighbour.non_covering_columns[column_to_add_index] = column_to_remove;
+			neighbour.minimal_cover[column_to_remove_index] = column_to_add;
+
+			//update
+			neighbour.columns_in_solution[column_to_add] = COVERED;
+			neighbour.columns_in_solution[column_to_remove] = NOT_COVERED;
+		}
+		if (is_feasible(instance, &neighbour)) {
+			solution_found = TRUE;
+		}
+		else {
+			non_feasible++;
+		}
+	}
+
+	return neighbour;
+}
+
+
+Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * solution_S0) {
+
+	int total_rows_to_swap = 5;
+	int non_feasible = 0;						//counter for the number of non-feasible solutions generated
+	int non_feasible_max = 2000;				//max number of non-feasible solutions allowed.  When maxed, return s0.
+	boolean solution_found = FALSE;
+	Solution neighbour = deep_copy(instance, solution_S0);
+
+
 
 	while (!solution_found && non_feasible < non_feasible_max) {
 		for (int i = 0; i < total_rows_to_swap; i++) {

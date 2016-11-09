@@ -27,6 +27,7 @@
 #include "solution.h"
 #include "constructive_heuristic.h"
 #include "local_search.h"
+#include "simulated_annealing.h"
 #include "utilities.h"
 
 /* Constants */
@@ -136,7 +137,9 @@ int main(int argument_count, char * argv[])
 			current_solution = *best;
 			break;
 		case 5:
-			
+			best = perform_simulated_annealing(&instance, &current_solution);
+			operation = "local_search_first_accept";
+			current_solution = *best;
 			break;
 		case 6:
 			//todo

@@ -33,3 +33,10 @@ Solution * local_search_first_accept(Instance * instance, Solution * solution);
 	{x: 0 <= x < non_feasibile_max attempts} a the original solution will be returned.
 */
 Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0);
+
+/*
+	will be used to generate neighbours in a more strategic way.
+	strategy to be defined.
+*/
+
+Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * solution_S0);

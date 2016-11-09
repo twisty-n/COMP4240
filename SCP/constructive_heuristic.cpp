@@ -15,10 +15,10 @@ void random_construction(Instance * instance, Solution * solution) {
 	// First we create an array for the covering columns
 	// This will be at most the number of rows, most likely less
 	// The ith row will be covered by the value
-	int * coverings = (int *) calloc(instance->row_count, sizeof(int));
+	int * columns_coverings_rows = (int *) calloc(instance->row_count, sizeof(int));
 	int * minimal_coverings = (int *) calloc(instance->row_count, sizeof(int));
 	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
-	set_to_minus_ones(coverings, instance->row_count);
+	set_to_minus_ones(columns_coverings_rows, instance->row_count);
 	set_to_minus_ones(minimal_coverings, instance->row_count);
 
 	//create a set of un_assigned columns so it is easy to find out which columns are not in the solution
@@ -47,7 +47,7 @@ void random_construction(Instance * instance, Solution * solution) {
 		
 		//add column to the solution
 		columns_in_solution[selected_column] = 1; // Flip the bit
-		coverings[row] = selected_column;
+		columns_coverings_rows[row] = selected_column;
 
 		// Determine if the selected column exists in the current set of minimal coverings
 		boolean column_exists = FALSE;
@@ -76,7 +76,7 @@ void random_construction(Instance * instance, Solution * solution) {
 	}
 
 	solution->cost = current_cost;
-	solution->covering_columns = coverings;
+	solution->covering_columns = columns_coverings_rows;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 	solution->columns_in_solution = columns_in_solution;

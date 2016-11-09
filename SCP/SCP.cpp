@@ -28,6 +28,7 @@
 #include "constructive_heuristic.h"
 #include "local_search.h"
 #include "utilities.h"
+#include "jpso.h"
 
 /* Constants */
 #define FILE_OPEN_SUCCESS 0
@@ -49,6 +50,8 @@ char * generate_debug_file_path(char * input_file, char * h_code);
 int main(int argument_count, char * argv[])
 {
 	
+	srand(time(NULL));								//Seed the RNG for the program
+
 	//validate number of arguments
 	if (!valid_arguments(argument_count, argv)) {
 		printf("Invalid arguments");
@@ -63,7 +66,7 @@ int main(int argument_count, char * argv[])
 
 	boolean debug = atoi(argv[4]);
 	if (debug) {
-		input_file_name = "15scp55.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
+		input_file_name = "01scp41.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
 	}
 	else {
 		input_file_name = argv[1];
@@ -129,15 +132,16 @@ int main(int argument_count, char * argv[])
 			current_solution = *best;
 			break;
 		case 4:
-			perform_local_search_first_accept(&instance, &current_solution, start_sol);
+			best = perform_local_search_first_accept(&instance, &current_solution, start_sol);
 			operation = "local_search_first_accept";
+			current_solution = *best;
 			break;
 		case 5:
 			
 			break;
 		case 6:
-			//todo
-			//operation = " ?? _meta_heuristic";
+			current_solution = jpso(&instance, 10);
+			operation = "meta_jpso";
 			break;
 		}
 		

@@ -20,12 +20,12 @@ Solution * local_search_best_accept(Instance * instance, Solution * solution);
 	This is the interface which SCP should call when trying to implement a first_accept local search.
 	Runs a random construction on the solution to generation S0, then calls local_search_first_accept.
 */
-void perform_local_search_first_accept(Instance * instance, Solution * solution, time_t start_sol);
+Solution * perform_local_search_first_accept(Instance * instance, Solution * solution, time_t start_sol);
 
 /*
 	will find other solutions in the neighbourhood, evaluate fitness and accept using a first accept method.
 */
-void local_search_first_accept(Instance * instance, Solution * solution);
+Solution * local_search_first_accept(Instance * instance, Solution * solution);
 
 /*
 	will randomly generate neighbours of a solution s0, by randomly swapping x columns {x: 0 < x < total_rows_to_swap} from

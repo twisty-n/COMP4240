@@ -24,7 +24,7 @@ struct Solution {
 		An array holding the minimal columns required for the solution
 		Holds the same information as columns_in_solution, but is 
 		more of a list, where the unfilled indexes are not part of the solution.
-		array is the size of the rows in the solution.  -1 is flag which indicates
+		array is the size of the rows in the solution.  0 is flag which indicates
 		the end of the covering olumns.  Can also be managed using the logical
 		size, number_of_covers.
 	*/

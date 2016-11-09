@@ -8,6 +8,8 @@
 
 #define TRUE 1
 #define FALSE 0
+#define NOT_COVERED 0
+#define COVERED 1
 #define NEIGHBOURHOOD_SIZE 10		//currently has 10 solutions in a neighbourhood, can ammend if required
 
 
@@ -27,8 +29,8 @@ Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 	// Now we need to figure out the number of iterations to run the thing gor
 	// from what I can make out, it is the number of elements times the 
 	// number of columns in the soltuion
-	int repetitions = 500; // instance->row_count * solution->number_of_covers;
-	srand(time(NULL));
+
+	int repetitions = 200; // instance->row_count * solution->number_of_covers;
 	boolean remove_redundant_column = TRUE;
 
 	int K = 1000; //Because why not. 
@@ -106,48 +108,92 @@ Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 }
 
 
-void perform_local_search_first_accept(Instance * instance, Solution * solution, time_t start_sol) {
+Solution * perform_local_search_first_accept(Instance * instance, Solution * solution, time_t start_sol) {
 	
 	//construct a random solution S0
 	//TODO:  ensure time is added to the solution properly, so that deep copy will work.
+	//greedy_construction(instance, solution, FALSE);
 	random_construction(instance, solution);
 	time_t end_sol = get_current_time();
 	solution->time = difftime(end_sol, start_sol);
 	
 	//go to local_search
-	local_search_first_accept(instance, solution);
+	return local_search_first_accept(instance, solution);
 }
 
 
-void local_search_first_accept(Instance * instance, Solution * solution_S0) {	
+Solution * local_search_first_accept(Instance * instance, Solution * solution_S0) {	
 
-	//define the neighbourhood
+	Solution current = *solution_S0;
+	Solution best_neighbour;
+	boolean terminate_search = FALSE;
 	struct Solution neighbourhood[NEIGHBOURHOOD_SIZE];
-	for (int i = 0; i < NEIGHBOURHOOD_SIZE; i++) {
-		neighbourhood[i] = randomly_generate_neighbour(instance, solution_S0);
-	}
+
+	while (!terminate_search) {
+		
+		best_neighbour = current;
+
+		//define the neighbourhood	
+		for (int i = 0; i < NEIGHBOURHOOD_SIZE; i++) {
+			neighbourhood[i] = randomly_generate_neighbour(instance, &current);
+		}
+
+		//for each solution in the neighbourhood
+		for (int i = 0; i < NEIGHBOURHOOD_SIZE; i++) {
+			//check costs, if you found a better guy, then set as your best neighbour
+			if (compare(&neighbourhood[i], &best_neighbour) < 0){
+				best_neighbour = neighbourhood[i];
+				break;
+			}
+		}
+
+		//if it turns out the current solution was the best solution you already had in your neighbourhood
+		if(compare(&current, &best_neighbour) == 0) {
+			terminate_search = TRUE;
+		}
+		else {
+			current = best_neighbour;
+		}
+	}//end while
+
+	return &best_neighbour;
 }
 
 Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0) {
 
 	int total_rows_to_swap = 10;				
 	int non_feasible = 0;					//counter for the number of non-feasible solutions generated
-	int non_feasibile_max = 15;				//max number of non-feasible solutions allowed.  When maxed, return s0.
+	int non_feasible_max = 2500;				//max number of non-feasible solutions allowed.  When maxed, return s0.
 	boolean solution_found = FALSE;
-	
-	srand(time(NULL));						//Seed the RNG
-
 	Solution neighbour = deep_copy(instance, solution_S0);
 
-	for (int i = 0; i < total_rows_to_swap; i++) {
+	
 
-		//pick a random row from the minimal coverings
+	while (!solution_found && non_feasible < non_feasible_max) {
+		for (int i = 0; i < total_rows_to_swap; i++) {
+			//pick a random row from the minimal coverings
+			int column_to_remove_index = rand() % neighbour.number_of_covers;
+			int column_to_remove = neighbour.minimal_cover[column_to_remove_index];
 
-		//pick a random row from the non-covering
+			//pick a random row from the non-covering
+			int column_to_add_index = rand() % neighbour.number_of_non_covering;
+			int column_to_add = neighbour.non_covering_columns[column_to_add_index];
 
-		//Swap rows
+			//Swap cols in the solution
+			neighbour.non_covering_columns[column_to_add_index] = column_to_remove;
+			neighbour.minimal_cover[column_to_remove_index] = column_to_add;
+
+			//update
+			neighbour.columns_in_solution[column_to_add] = COVERED;
+			neighbour.columns_in_solution[column_to_remove] = NOT_COVERED;
+		}
+		if (is_feasible(instance, &neighbour)) {
+			solution_found = TRUE;
+		}
+		else {
+			non_feasible++;
+		}
 	}
-	//check feasibility
 
 	return neighbour;
 }

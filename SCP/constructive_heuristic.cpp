@@ -42,7 +42,6 @@ void random_construction(Instance * instance, Solution * solution) {
 		int selected_column;
 		int coverings_for_row = instance->row_covering_count[row];
 		int * column_covers_for_row = instance->raw_coverings[row];
-		srand(time(NULL)); // Seed the RNG
 
 		selected_column = column_covers_for_row[rand() % coverings_for_row];
 		

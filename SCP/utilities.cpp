@@ -32,16 +32,6 @@ void quick_sort(int * arr, int left, int right) {
 		quick_sort(arr, i, right);
 }
 
-
-boolean check_feasibility(Instance * instance, Solution * solution) {
-	for (int i = 0; i < instance->row_count; i++) {
-		if (solution->covering_columns[i] == 0) {
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
 int compare(Solution * solution_a, Solution * solution_b) {
 	if (solution_a->cost == solution_b->cost) {
 		return 0;
@@ -79,13 +69,34 @@ int * copy_array(int * array, int size) {
 }
 
 
-void init_to_minus_ones(int * array, int size) {
+void set_to_minus_ones(int * array, int size) {
 	for (int i = 0; i < size; i++) {
 		array[i] = -1;
 	}
 }
 
 
+void print_array(int * array, int size) {
+	for (int i = 0; i < size; i++) {
+		// Plus 1 so that the columns are displayed sensibly
+		printf("%5d ", array[i]);
+		if (i % 6 == 0 && i != 0) {
+			// Prints 6 per row (arbitarily) to fit into the console window
+			printf("\n");
+		}
+	}
+}
+
+void print_array_real_column_labels(int * array, int size) {
+	for (int i = 1; i <= size; i++) {
+		// Plus 1 so that the columns are displayed sensibly
+		printf("%5d ", array[i - 1] + 1);
+		if (i % 6 == 0 && i != 0) {
+			// Prints 6 per row (arbitarily) to fit into the console window
+			printf("\n");
+		}
+	}
+}
 
 time_t get_current_time() {
 	// Get the current time

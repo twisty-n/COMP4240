@@ -18,6 +18,8 @@ void random_construction(Instance * instance, Solution * solution) {
 	int * coverings = (int *) calloc(instance->row_count, sizeof(int));
 	int * minimal_coverings = (int *) calloc(instance->row_count, sizeof(int));
 	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
+	set_to_minus_ones(coverings, instance->row_count);
+	set_to_minus_ones(minimal_coverings, instance->row_count);
 
 	// Keep a track of the current cost
 	int current_cost = 0;
@@ -76,6 +78,8 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	int * coverings = (int *)calloc(instance->row_count, sizeof(int));
 	int * minimal_coverings = (int *)calloc(instance->row_count, sizeof(int));
 	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
+	set_to_minus_ones(coverings, instance->row_count);
+	set_to_minus_ones(minimal_coverings, instance->row_count);
 	int current_cost = 0;
 	int number_of_coverings = 0;
 
@@ -148,10 +152,11 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	}
 	
 	//ensure minimal_coverings is sorted before passing to the solution
-	quick_sort(minimal_coverings, 1, number_of_coverings-1);
+	//quick_sort(minimal_coverings, 0, number_of_coverings-1);
 
 	//tidy up the list of non-coveringing columns so you can pass it through to the solution
-	int * non_covering_columns = (int *)calloc(no_unassigned_columns, sizeof(int));
+	int * non_covering_columns = (int *)calloc(instance->column_count, sizeof(int));
+	set_to_minus_ones(non_covering_columns, instance->column_count);
 	for (int i = 0; i < no_unassigned_columns; i++) {
 		non_covering_columns[i] = unassigned_columns[i];
 	}
@@ -169,6 +174,8 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	free(uncovered_rows);
 	free(unassigned_columns);
 	free(rows_to_be_covered_this_instance);
+
+	//print_solution(instance, solution);
 
 }
 

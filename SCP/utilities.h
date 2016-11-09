@@ -45,13 +45,17 @@ int * copy_array(int * array, int size);
 /*
 	sets a calloced array to -1's
 */
-void init_to_minus_ones(int * array, int size);
+void set_to_minus_ones(int * array, int size);
 
 
 /*
 	returns the current time
 */
 time_t get_current_time();
+
+void print_array(int * array, int size);
+
+void print_array_real_column_labels(int * array, int size);
 
 
 

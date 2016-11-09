@@ -84,7 +84,7 @@ Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 			if (is_feasible(instance, &working_solution) && ((compare_result == 0) || (compare_result == -1))) {
 				// This good
 				// Working solution is up to date
-				printf("Iteration: %d. Hill Climb Iteration: %d. Current best cost: %d. Working best cost: %d \n", current_repetition, i, current_best.cost, working_solution.cost);
+				//printf("Iteration: %d. Hill Climb Iteration: %d. Current best cost: %d. Working best cost: %d \n", current_repetition, i, current_best.cost, working_solution.cost);
 				current_best = working_solution;
 			}
 			else {

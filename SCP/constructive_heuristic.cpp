@@ -21,6 +21,14 @@ void random_construction(Instance * instance, Solution * solution) {
 	set_to_minus_ones(coverings, instance->row_count);
 	set_to_minus_ones(minimal_coverings, instance->row_count);
 
+	//create a set of un_assigned columns so it is easy to find out which columns are not in the solution
+	//by the end of the construction.
+	int * unassigned_columns = (int *)calloc(instance->column_count, sizeof(int));
+	int no_unassigned_columns = instance->column_count;
+	for (int i = 0; i < no_unassigned_columns; i++) {
+		unassigned_columns[i] = i;
+	}
+
 	// Keep a track of the current cost
 	int current_cost = 0;
 	
@@ -37,6 +45,8 @@ void random_construction(Instance * instance, Solution * solution) {
 		srand(time(NULL)); // Seed the RNG
 
 		selected_column = column_covers_for_row[rand() % coverings_for_row];
+		
+		//add column to the solution
 		columns_in_solution[selected_column] = 1; // Flip the bit
 		coverings[row] = selected_column;
 
@@ -54,8 +64,16 @@ void random_construction(Instance * instance, Solution * solution) {
 		if (!column_exists) {
 			minimal_coverings[number_of_coverings] = selected_column;
 			current_cost += instance->column_costs[selected_column];
+			remove_column(unassigned_columns, &selected_column, &no_unassigned_columns);
 			number_of_coverings++;
 		}
+	}
+
+	//tidy up the list of non-coveringing columns so you can pass it through to the solution
+	int * non_covering_columns = (int *)calloc(instance->column_count, sizeof(int));
+	set_to_minus_ones(non_covering_columns, instance->column_count);
+	for (int i = 0; i < no_unassigned_columns; i++) {
+		non_covering_columns[i] = unassigned_columns[i];
 	}
 
 	solution->cost = current_cost;
@@ -63,6 +81,9 @@ void random_construction(Instance * instance, Solution * solution) {
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 	solution->columns_in_solution = columns_in_solution;
+	solution->non_covering_columns = non_covering_columns;
+	solution->number_of_non_covering = no_unassigned_columns;
+
 }
 
 

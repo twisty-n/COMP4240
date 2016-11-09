@@ -263,7 +263,7 @@ if __name__ == "__main__":
 		report_average = True
 	
 	#will hold the details to be written to each sheet of the xlsx
-	random_heuristic, greedy_heuristic, local_search_tba, local_search__tba, single_point_meta, population_based_meta = generate_data_structures()
+	random_heuristic, greedy_heuristic, local_search, local_search__tba, single_point_meta, population_based_meta = generate_data_structures()
 
 	print("Launching tests\n")
 	path_to_runner = host_path()
@@ -277,7 +277,7 @@ if __name__ == "__main__":
 				launch_scp_program(path_to_runner, filename, heuristic_code, "1", greedy_heuristic)
 				break
 			if case(3):
-				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search_tba)
+				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search)
 				break
 			if case(4):
 				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search__tba)
@@ -299,7 +299,7 @@ if __name__ == "__main__":
 				if (int(no_runs) >= 2):
 					report_average = True
 
-				launch_scp_program(path_to_runner, filename, "3", no_runs, local_search_tba)
+				launch_scp_program(path_to_runner, filename, "3", no_runs, local_search)
 
 				#still in devel
 				#launch_scp_program(path_to_runner, filename, "4", no_runs, local_search__tba)
@@ -324,7 +324,7 @@ if __name__ == "__main__":
 			break
 		if case(3):
 			print("printing local_1 summary")
-			print_single_heuristic_summary_to_xlsx("local_best_accept_from_greedy_construction", local_search_tba)
+			print_single_heuristic_summary_to_xlsx("local_best_accept_from_greedy_construction", local_search)
 			break
 		if case(4):
 			print("printing local_2 summary")
@@ -340,6 +340,6 @@ if __name__ == "__main__":
 			break
 		if case(7):
 			print("printing ALL summary")
-			print_ALL_heuritic_summary_to_xlsx(random_heuristic, greedy_heuristic, local_search_tba, local_search__tba, single_point_meta, population_based_meta)
+			print_ALL_heuritic_summary_to_xlsx(random_heuristic, greedy_heuristic, local_search, local_search__tba, single_point_meta, population_based_meta)
 			
 	print("summary printed - details can be found in %s" % path_to_output)

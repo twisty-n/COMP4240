@@ -110,6 +110,7 @@ int main(int argument_count, char * argv[])
 	for (int i = 0; i < number_of_runs; i++) {
 
 		time_t start_sol = get_current_time();
+		current_solution.time = start_sol;
 		
 		switch (operation_mode) {
 		case 1:
@@ -121,16 +122,15 @@ int main(int argument_count, char * argv[])
 			operation = "greedy_construction";
 			break;
 		case 3:
-			//todo
-			//operation = " ?? _search";
+			perform_local_search_best_accept(&instance, &current_solution);
+			operation = "local_search_best_accept";
 			break;
 		case 4:
 			perform_local_search_first_accept(&instance, &current_solution, start_sol);
 			operation = "local_search_first_accept";
 			break;
 		case 5:
-			//todo
-			//operation = " ?? _meta_heuristic";
+			
 			break;
 		case 6:
 			//todo

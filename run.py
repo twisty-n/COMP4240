@@ -117,9 +117,10 @@ def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_
 	else:
 		add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_COVER], greedy[AVERAGE_TIME])
 
-	add_worksheet(workbook, "local_best_accept_greedy_construct", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER])
+	add_worksheet(workbook, "best_accept_greedy", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER])
 
-	#add_worksheet(workbook, "local_2", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER])
+	add_worksheet(workbook, "first_accept_greedy", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER])
+
 	#add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER])
 	#add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER])
 	workbook.close()
@@ -197,7 +198,7 @@ def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time,
 
 
 # will generate lists to hold the data when running
-# after a few goes at writing this, its actually just more maintaibable to set-up all the blank lists, then use
+# after a few goes at writing this, its actually just more maintainable to set-up all the blank lists, then use
 # only what is required.
 def generate_data_structures():
 	random_heuristic = []
@@ -263,7 +264,7 @@ if __name__ == "__main__":
 		report_average = True
 	
 	#will hold the details to be written to each sheet of the xlsx
-	random_heuristic, greedy_heuristic, local_search, local_search__tba, single_point_meta, population_based_meta = generate_data_structures()
+	random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta = generate_data_structures()
 
 	print("Launching tests\n")
 	path_to_runner = host_path()
@@ -277,10 +278,10 @@ if __name__ == "__main__":
 				launch_scp_program(path_to_runner, filename, heuristic_code, "1", greedy_heuristic)
 				break
 			if case(3):
-				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search)
+				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search_best_accept)
 				break
 			if case(4):
-				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search__tba)
+				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search_first_accept)
 				break
 			if case(5):
 				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, single_point_meta)
@@ -289,20 +290,16 @@ if __name__ == "__main__":
 				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, population_based_meta)
 				break
 			if case(7):
-
 				#Run all for case 7
 				launch_scp_program(path_to_runner, filename, "1", no_runs, random_heuristic)
-
 				#when running greedy - you want to ensure you are only ever running 1
 				report_average = False;
 				launch_scp_program(path_to_runner, filename, "2", "1", greedy_heuristic)
 				if (int(no_runs) >= 2):
 					report_average = True
-
-				launch_scp_program(path_to_runner, filename, "3", no_runs, local_search)
-
+				launch_scp_program(path_to_runner, filename, "3", no_runs, local_search_best_accept)
+				launch_scp_program(path_to_runner, filename, "4", no_runs, local_search_first_accept)
 				#still in devel
-				#launch_scp_program(path_to_runner, filename, "4", no_runs, local_search__tba)
 				#launch_scp_program(path_to_runner, filename, "5", no_runs, single_point_meta)
 				#launch_scp_program(path_to_runner, filename, "6", no_runs, population_based_meta)
 				break
@@ -324,11 +321,11 @@ if __name__ == "__main__":
 			break
 		if case(3):
 			print("printing local_1 summary")
-			print_single_heuristic_summary_to_xlsx("local_best_accept_from_greedy_construction", local_search)
+			print_single_heuristic_summary_to_xlsx("best_accept_greedy", local_search_best_accept)
 			break
 		if case(4):
 			print("printing local_2 summary")
-			print_single_heuristic_summary_to_xlsx("local_2", local_search__tba)
+			print_single_heuristic_summary_to_xlsx("first_accept_greedy", local_search_first_accept)
 			break
 		if case(5):
 			print("printing single_point summary")
@@ -340,6 +337,6 @@ if __name__ == "__main__":
 			break
 		if case(7):
 			print("printing ALL summary")
-			print_ALL_heuritic_summary_to_xlsx(random_heuristic, greedy_heuristic, local_search, local_search__tba, single_point_meta, population_based_meta)
+			print_ALL_heuritic_summary_to_xlsx(random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta)
 			
 	print("summary printed - details can be found in %s" % path_to_output)

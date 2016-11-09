@@ -11,16 +11,16 @@
 #define NEIGHBOURHOOD_SIZE 10		//currently has 10 solutions in a neighbourhood, can ammend if required
 
 
-void perform_local_search_1(Instance * instance, Solution * solution) {
+void perform_local_search_best_accept(Instance * instance, Solution * solution) {
 	// First we'll obtain an initial solution using a greedy approach
 	greedy_construction(instance, solution, FALSE);
 
 	// Then we'll actually perform the local search given our greedy instance
-	local_search_1(instance, solution);
+	local_search_best_accept(instance, solution);
 }
 
 
-void local_search_1(Instance * instance, Solution * solution) {
+void local_search_best_accept(Instance * instance, Solution * solution) {
 	// We need to keep a track of the best found cost, and the current state of the solution
 	// This is already done, as being stored in the solution file. 
 	
@@ -38,6 +38,8 @@ void local_search_1(Instance * instance, Solution * solution) {
 	for (int i = 0; i < repetitions; i++, remove_redundant_column = TRUE) {
 
 		Solution working_solution = deep_copy(instance, &current_best);
+		
+		//Goal of part one is to remove columns from the solution until an unfeasible solution is generated.
 		while (remove_redundant_column) {
 
 			// The first step in the process is to select a set at random, and 
@@ -64,7 +66,7 @@ void local_search_1(Instance * instance, Solution * solution) {
 			}
 		}
 
-		// 
+		//Goal of part two is to randombly add a column from the non-covering columns
 		for (int i = 0; i < K; i++) {
 			// Randomly select a column from one of the unselected columns
 			int column_to_add = working_solution.non_covering_columns[rand() % solution->number_of_non_covering];
@@ -121,11 +123,11 @@ void local_search_first_accept(Instance * instance, Solution * solution_S0) {
 Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0) {
 
 	int total_rows_to_swap = 10;				
-	int non_feasible = 0; 
-	int non_feasibile_max = 15;
+	int non_feasible = 0;					//counter for the number of non-feasible solutions generated
+	int non_feasibile_max = 15;				//max number of non-feasible solutions allowed.  When maxed, return s0.
 	boolean solution_found = FALSE;
 	
-	srand(time(NULL));					// Seed the RNG
+	srand(time(NULL));						//Seed the RNG
 
 	Solution neighbour = deep_copy(instance, solution_S0);
 

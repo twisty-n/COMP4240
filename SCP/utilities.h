@@ -43,8 +43,17 @@ Solution deep_copy(Instance * instance, Solution * solution_s0);
 int * copy_array(int * array, int size);
 
 /*
+	sets a calloced array to -1's
+*/
+void init_to_minus_ones(int * array, int size);
+
+
+/*
 	returns the current time
 */
 time_t get_current_time();
+
+
+
 
 

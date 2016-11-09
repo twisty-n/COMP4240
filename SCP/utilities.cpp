@@ -79,6 +79,14 @@ int * copy_array(int * array, int size) {
 }
 
 
+void init_to_minus_ones(int * array, int size) {
+	for (int i = 0; i < size; i++) {
+		array[i] = -1;
+	}
+}
+
+
+
 time_t get_current_time() {
 	// Get the current time
 	time_t now = time(0);

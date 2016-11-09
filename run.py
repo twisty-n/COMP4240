@@ -97,14 +97,28 @@ def print_single_heuristic_summary_to_xlsx(worksheet_name, output_summary):
 	add_worksheet(workbook, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[BEST_COVER], output_summary[BEST_TIME])
 	workbook.close()
 
-	
+
 # will bring all of the heuristics output to a workbook.  one sheet per heuristic.
 def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_point, population):
+
+	global report_average
+
 	local_time = time.localtime(time.time())
-	time_string = "{}{}{}_{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4])
+	time_string = "{}{}{}_{}{}_" .format(local_time[0], local_time[1], local_time[2], local_time[3], local_time[4])
 	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
+
 	add_worksheet(workbook, "random", random[BEST_COVER], random[BEST_TIME], random[AVERAGE_COVER], random[AVERAGE_TIME])
-	add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_COVER], greedy[AVERAGE_TIME])
+
+	# when adding the greedy worksheet -ensure it is only once (deterministic)
+	if report_average:
+		report_average = False
+		add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_COVER], greedy[AVERAGE_TIME])
+		report_average = True
+	else:
+		add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_COVER], greedy[AVERAGE_TIME])
+
+
+
 	#add_worksheet(workbook, "local_1", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER])
 	#add_worksheet(workbook, "local_2", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER])
 	#add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER])
@@ -260,7 +274,8 @@ if __name__ == "__main__":
 				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, random_heuristic)
 				break
 			if case(2):
-				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, greedy_heuristic)
+				report_average = False	#ensure you only ever run 1 run for the greedy - since its deterministic
+				launch_scp_program(path_to_runner, filename, heuristic_code, "1", greedy_heuristic)
 				break
 			if case(3):
 				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search_tba)
@@ -275,8 +290,16 @@ if __name__ == "__main__":
 				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, population_based_meta)
 				break
 			if case(7):
+
+				#Run all for case 7
 				launch_scp_program(path_to_runner, filename, "1", no_runs, random_heuristic)
-				launch_scp_program(path_to_runner, filename, "2", no_runs, greedy_heuristic)
+
+				#when running greedy - you want to ensure you are only ever running 1
+				report_average = False;
+				launch_scp_program(path_to_runner, filename, "2", "1", greedy_heuristic)
+				if (int(no_runs) >= 2):
+					report_average = True
+
 				#still in devel
 				#launch_scp_program(path_to_runner, filename, "3", no_runs, local_search_tba)
 				#launch_scp_program(path_to_runner, filename, "4", no_runs, local_search__tba)
@@ -296,6 +319,7 @@ if __name__ == "__main__":
 			break
 		if case(2):
 			print("printing greedy summary")
+			report_average = False	#ensure you only ever run 1 run for the greedy - since its deterministic
 			print_single_heuristic_summary_to_xlsx("greedy", greedy_heuristic)
 			break
 		if case(3):

@@ -119,10 +119,6 @@ int main(int argument_count, char * argv[])
 		case 2:			
 			greedy_construction(&instance, &current_solution, FALSE);	//TRUE == unicost, FALSE == NON-UNICOST
 			operation = "greedy_construction";
-			//enforce greedy to only run once since its deterministic and doesnt need to run multiple times.
-			if (number_of_runs > 1) {
-				number_of_runs = 1;
-			}
 			break;
 		case 3:
 			//todo

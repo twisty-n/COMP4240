@@ -48,6 +48,9 @@ void local_search_1(Instance * instance, Solution * solution) {
 			working_solution.columns_in_solution[column_to_remove] = FALSE;
 			int cost_of_removed = instance->column_costs[column_to_remove];
 			working_solution.cost -= cost_of_removed;
+
+			// TODO: Update minimal_covers
+			// Covering columns
 			
 			// If the new solution is valid
 			if (is_feasible(instance, &working_solution)) {
@@ -64,9 +67,20 @@ void local_search_1(Instance * instance, Solution * solution) {
 		// 
 		for (int i = 0; i < K; i++) {
 			// Randomly select a column from one of the unselected columns
-			
+			int column_to_add = working_solution.non_covering_columns[rand() % solution->number_of_non_covering];
+			// TODO:
+			// Update minimal cover, non-covering columns and all that
+			working_solution.columns_in_solution[column_to_add] = TRUE;
+			working_solution.cost += instance->column_costs[column_to_add];
 			// See if the solution with this column, and still the one removed from before 
 			// is a valid solution
+			int compare_result = compare(&working_solution, &current_best);
+			if (is_feasible(instance, &working_solution) && ((compare_result == 0) || (compare_result == 1))) {
+				// This good 
+			}
+			else {
+				// Roll back changes
+			}
 			
 			// if it isn't, go back to 55 otherwise
 			// Find the new cost. If the cost is better, maintain it, and the new solution

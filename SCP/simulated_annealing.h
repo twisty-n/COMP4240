@@ -5,18 +5,20 @@
 #include "problem_instance.h"
 
 
-#define T_INIT  
-#define T_FINAL 0.0001
-#define ALPHA
-
-
 /*
 	And thus begins the simulated annealing
 */
 Solution * perform_simulated_annealing(Instance * instance, Solution * solution);
 
 /*
-	will find other solutions in the neighbourhood, evaluate fitness and accept using a hill climbing
-	best fit method.
+	Will perform the probability funciton on 2 states:
+	Note: The probability function must return a positive value even when e' is greater than e.
+	This feature prevents the method from becoming stuck at a local minimum that is worse than the global one.
+
+	Engery of the state is the evalatuion of the cost of the state.
+
+	The formulation of the probably is the method by Kirkpatrick et al. the acceptance probability
+	function P(e,e',T) was defined as 1 if e' < e, and exp(-(e'-e)/T) otherwise. 
+
 */
-int probaility(Solution * Scurrent, Solution * Snew, double T);
+double probaility(Solution * Scurrent, Solution * Snew, double T);

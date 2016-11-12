@@ -90,7 +90,7 @@ int main(int argument_count, char * argv[])
 		printf("Invalid operation_mode %d", operation_mode);
 		return 0;
 	}
-	char * operation = "";		//will be used populated and used later in program for raw output identification
+	char * operation = "";					//will be used populated and used later in program for raw output identification
 
 	int number_of_runs = atoi(argv[3]);
 	//validate number of runs
@@ -100,10 +100,9 @@ int main(int argument_count, char * argv[])
 	}
 	
 	Instance instance;
-	Solution current_solution;
-	Solution best_solution;
-
-	Solution * best;
+	Solution current_solution;				//keeps track of the current solution from multiple runs
+	Solution best_solution_multiple_runs;	//holds the best solutions from multiple runs
+	Solution * best_returned;				//the best solution returned from the local searches or heuristic options
 	
 	time_t start_formulate = get_current_time();
 	generate_problem_instance(&instance, file);
@@ -128,19 +127,19 @@ int main(int argument_count, char * argv[])
 			operation = "greedy_construction";
 			break;
 		case 3:
-			best = perform_local_search_best_accept(&instance, &current_solution);
+			best_returned = perform_local_search_best_accept(&instance, &current_solution);
 			operation = "local_search_best_accept";
-			current_solution = *best;
+			current_solution = *best_returned;
 			break;
 		case 4:
-			best = perform_local_search_first_accept(&instance, &current_solution, start_sol);
+			best_returned = perform_local_search_first_accept(&instance, &current_solution, start_sol);
 			operation = "local_search_first_accept";
-			current_solution = *best;
+			current_solution = *best_returned;
 			break;
 		case 5:
-			best = perform_simulated_annealing(&instance, &current_solution);
-			operation = "local_search_first_accept";
-			current_solution = *best;
+			best_returned = perform_simulated_annealing(&instance, &current_solution);
+			operation = "simulated_annealing";
+			current_solution = *best_returned;
 			break;
 		case 6:
 			current_solution = jpso(&instance, 10);
@@ -151,10 +150,10 @@ int main(int argument_count, char * argv[])
 		time_t end_sol = get_current_time();
 		current_solution.time = difftime(end_sol, start_sol);
 		if (i == 0) {
-			best_solution = current_solution;
+			best_solution_multiple_runs = current_solution;
 		}
-		else if (current_solution.cost < best_solution.cost) {
-			best_solution = current_solution;
+		else if (current_solution.cost < best_solution_multiple_runs.cost) {
+			best_solution_multiple_runs = current_solution;
 		}
 		total_cost += current_solution.cost;
 		total_time += current_solution.time;
@@ -163,20 +162,20 @@ int main(int argument_count, char * argv[])
 	double average_cost = (double)total_cost / number_of_runs;
 	double average_time = total_time / number_of_runs;
 	if (number_of_runs == 1) {
-		print_solution_stats(&best_solution);
+		print_solution_stats(&best_solution_multiple_runs);
 	}
 	else {
-		print_solution_stats(&best_solution, average_cost, average_time);
+		print_solution_stats(&best_solution_multiple_runs, average_cost, average_time);
 	}
 
 	if (print_raw_output) {
 		fopen_s(&output_file, output_file_path, "w");
-		print_solution_to_file(&best_solution, output_file, operation);
+		print_solution_to_file(&best_solution_multiple_runs, output_file, operation);
 		fclose(output_file);
 	}
 	free(output_file_path);
 	free_instance(&instance);
-	free_solution(&best_solution);
+	free_solution(&best_solution_multiple_runs);
 
 	return 0;
 }

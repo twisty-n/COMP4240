@@ -146,3 +146,8 @@ time_t get_current_time() {
 
 	return now;
 }
+
+
+double bounded_rand() {
+	return ((double)rand() / (RAND_MAX));
+}

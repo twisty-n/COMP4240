@@ -111,7 +111,6 @@ Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 Solution * perform_local_search_first_accept(Instance * instance, Solution * solution, time_t start_sol) {
 	
 	//construct a random solution S0
-	//TODO:  ensure time is added to the solution properly, so that deep copy will work.
 	//greedy_construction(instance, solution, FALSE);
 	random_construction(instance, solution);
 	time_t end_sol = get_current_time();
@@ -141,13 +140,13 @@ Solution * local_search_first_accept(Instance * instance, Solution * solution_S0
 		//for each solution in the neighbourhood
 		for (int i = 0; i < NEIGHBOURHOOD_SIZE; i++) {
 			//check costs, if you found a better guy, then set as your best neighbour
-			if (compare(&neighbourhood[i], &best_neighbour) < 0){
+			if (compare(&neighbourhood[i], &best_neighbour) == -1){
 				best_neighbour = neighbourhood[i];
 				break;
 			}
 		}
 
-		//if it turns out the current solution was the best solution you already had in your neighbourhood
+		//if it turns out the current solution happens to be the best solution you already had in your neighbourhood
 		if(compare(&current, &best_neighbour) == 0) {
 			terminate_search = TRUE;
 		}
@@ -163,7 +162,7 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 
 	int total_rows_to_swap = 5;				
 	int non_feasible = 0;						//counter for the number of non-feasible solutions generated
-	int non_feasible_max = 2000;				//max number of non-feasible solutions allowed.  When maxed, return s0.
+	int non_feasible_max = 500;					//max number of non-feasible solutions allowed.  When maxed, return s0.
 	boolean solution_found = FALSE;
 	Solution neighbour = deep_copy(instance, solution_S0);
 
@@ -183,9 +182,12 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 			neighbour.non_covering_columns[column_to_add_index] = column_to_remove;
 			neighbour.minimal_cover[column_to_remove_index] = column_to_add;
 
-			//update
+			//updates
 			neighbour.columns_in_solution[column_to_add] = COVERED;
 			neighbour.columns_in_solution[column_to_remove] = NOT_COVERED;
+			neighbour.cost -= column_to_remove;
+			neighbour.cost += column_to_add;
+
 		}
 		if (is_feasible(instance, &neighbour)) {
 			solution_found = TRUE;

@@ -187,18 +187,18 @@ def add_headings(worksheet, heuristic, emphasis_formatting, number_of_runs):
 			worksheet.write('A1', "test id", emphasis_formatting)
 			worksheet.write('A2', "best known", emphasis_formatting)
 			worksheet.write('A3', "constructive", emphasis_formatting)
-			worksheet.write('A3', "best cost", emphasis_formatting)
-			worksheet.write('A4', "time (seconds)", emphasis_formatting)
-			worksheet.write('A5', "performance vs best-known (%)", emphasis_formatting)
-			worksheet.write('A6', "performance vs constructive (%)", emphasis_formatting)
+			worksheet.write('A4', "best cost", emphasis_formatting)
+			worksheet.write('A5', "time (seconds)", emphasis_formatting)
+			worksheet.write('A6', "performance vs best-known (%)", emphasis_formatting)
+			worksheet.write('A7', "performance vs constructive (%)", emphasis_formatting)
 			if report_average:
-				worksheet.write('A7', "average cost - {} iterations", emphasis_formatting)
-				worksheet.write('A8', "time (seconds)", emphasis_formatting)
-				worksheet.write('A9', "performance vs best-known (%)", emphasis_formatting)
-				worksheet.write('A10', "performance vs constructive (%)", emphasis_formatting)
-				worksheet.write('A11', "Duration - seconds", emphasis_formatting)
+				worksheet.write('A8', "average cost - {} iterations", emphasis_formatting)
+				worksheet.write('A9', "time (seconds)", emphasis_formatting)
+				worksheet.write('A10', "performance vs best-known (%)", emphasis_formatting)
+				worksheet.write('A11', "performance vs constructive (%)", emphasis_formatting)
+				worksheet.write('A12', "Duration - seconds", emphasis_formatting)
 			else:
-				worksheet.write('A7', "Duration - seconds", emphasis_formatting)
+				worksheet.write('A8', "Duration - seconds", emphasis_formatting)
 			
 			break
 		worksheet.set_column(0, 0, 35)
@@ -286,7 +286,7 @@ def fill_sheet_others(worksheet, heuristic, emphasis_formatting, best_cover_cost
 		best_cover_cell = xl_rowcol_to_cell(row + 3, i)
 		performance_gains_formula = "=100-((" + best_cover_cell + "/" + best_known_cell + ")*100)"
 		worksheet.write_formula(row + 5, i, performance_gains_formula, emphasis_formatting)
-		performance_gains_vs_constructive = "="+ constructive_cell + "/" + best_cover_cell
+		performance_gains_vs_constructive = "=100-(("+ constructive_cell + "/" + best_cover_cell + ")*100"
 		worksheet.write_formula(row + 6, i, performance_gains_vs_constructive, emphasis_formatting)
 
 		# include average details if necessary
@@ -298,7 +298,7 @@ def fill_sheet_others(worksheet, heuristic, emphasis_formatting, best_cover_cost
 			average_cover_cell = xl_rowcol_to_cell(row + 7, i)
 			performance_gains_formula = "=100-((" + average_cover_cell + "/" + best_known_cell + ")*100)"
 			worksheet.write_formula(row + 9, i, performance_gains_formula, emphasis_formatting)
-			performance_gains_vs_constructive = "="+ constructive_cell + "/" + average_cover_cell
+			performance_gains_vs_constructive = "=100-((" + constructive_cell + "/" + average_cover_cell + ")*100)"
 			worksheet.write_formula(row + 10, i, performance_gains_formula, emphasis_formatting)
 		
 			if (i == 1):
@@ -309,18 +309,28 @@ def fill_sheet_others(worksheet, heuristic, emphasis_formatting, best_cover_cost
 		i += 1
 	# add average performance gains
 	worksheet.write(row, i, "average performance gains (%)", emphasis_formatting)
-	best_performance_percentage_final_cell = xl_rowcol_to_cell(row + 4, i - 1)
-	cell_range = 'A5:' + best_performance_percentage_final_cell
+	best_performance_percentage_final_cell = xl_rowcol_to_cell(row + 5, i - 1)
+	cell_range = 'A6:' + best_performance_percentage_final_cell
 	average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
-	worksheet.write_formula(row + 4, i, average_performance_gains_formula, emphasis_formatting)
-	if report_average:
-		average_performance_percentage_final_cell = xl_rowcol_to_cell(row + 7, i - 1)
-		cell_range = 'A8:' + average_performance_percentage_final_cell
-		average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
-		worksheet.write_formula(row + 7, i, average_performance_gains_formula, emphasis_formatting)
+	worksheet.write_formula(row + 5, i, average_performance_gains_formula, emphasis_formatting)
 	
-	worksheet.set_column(0, i, 30)
+	constructive_improvement_percentage_final_cell = xl_rowcol_to_cell(row + 6, i - 1)
+	cell_range = 'A7:' + best_performance_percentage_final_cell
+	average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
+	worksheet.write_formula(row + 6, i, average_performance_gains_formula, emphasis_formatting)
+	
+	if report_average:
+		average_performance_percentage_final_cell = xl_rowcol_to_cell(row + 9, i - 1)
+		cell_range = 'A10:' + average_performance_percentage_final_cell
+		average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
+		worksheet.write_formula(row + 9, i, average_performance_gains_formula, emphasis_formatting)
+		
+		constructive_improvement_percentage_final_cell = xl_rowcol_to_cell(row + 10, i - 1)
+		cell_range = 'A11:' + best_performance_percentage_final_cell
+		average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
+		worksheet.write_formula(row + 10, i, average_performance_gains_formula, emphasis_formatting)
 
+	worksheet.set_column(0, i, 30)
 	input_file.close()
 	
 	
@@ -498,19 +508,19 @@ if __name__ == "__main__":
 			output_file = print_single_heuristic_summary_to_xlsx("greedy", heuristic_code, greedy_heuristic, duration, "1")
 			break
 		if case(3):
-			print("printing local_1 summary")
+			print("printing local_search_best_accept summary")
 			output_file = print_single_heuristic_summary_to_xlsx("best_accept_greedy", heuristic_code, local_search_best_accept, duration, number_of_runs)
 			break
 		if case(4):
-			print("printing local_2 summary")
+			print("printing local_search_first_accept summary")
 			output_file = print_single_heuristic_summary_to_xlsx("first_accept_random", heuristic_code, local_search_first_accept, duration, number_of_runs)
 			break
 		if case(5):
-			print("printing single_point summary")
-			output_file = print_single_heuristic_summary_to_xlsx("single_point_meta", heuristic_code, single_point_meta, duration, number_of_runs)
+			print("printing simulated_annelaing summary")
+			output_file = print_single_heuristic_summary_to_xlsx("simulated_annelaing", heuristic_code, single_point_meta, duration, number_of_runs)
 			break
 		if case(6):
-			print("printing population_based summary")
+			print("printing jumping_particle_swarm_summary")
 			output_file = print_single_heuristic_summary_to_xlsx("population_based", heuristic_code, population_based_meta, duration, number_of_runs)
 			break
 		if case(7):
@@ -523,5 +533,5 @@ if __name__ == "__main__":
 			#print_single_heuristic_summary_to_xlsx("first_accept_random", local_search_first_accept)
 			print_ALL_heuritic_summary_to_xlsx(random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, duration)
 	
-	print(blue("summary printed - details can be found in {}") .format(path_to_output))
+	print(blue("summary printed - details can be found in {}") .format(path_to_output + output_file))
 		

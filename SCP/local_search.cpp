@@ -189,8 +189,8 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 			//updates
 			neighbour.columns_in_solution[column_to_add] = COVERED;
 			neighbour.columns_in_solution[column_to_remove] = NOT_COVERED;
-			neighbour.cost -= column_to_remove;
-			neighbour.cost += column_to_add;
+			neighbour.cost -= instance->column_costs[column_to_remove];
+			neighbour.cost += instance->column_costs[column_to_add];
 
 		}
 		if (is_feasible(instance, &neighbour)) {

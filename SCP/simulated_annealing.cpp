@@ -16,6 +16,7 @@ Solution * perform_simulated_annealing(Instance * instance, Solution * solution)
 	Solution neighbour;
 	//random_construction(instance, solution);
 	greedy_construction(instance, solution, FALSE);
+	printf("%d ", solution->cost);
 	current_sol = deep_copy(instance, solution);
 	neighbour = deep_copy(instance, solution);
 	int solution_not_found = 0;					//will keep track of the number of times an agreeable solution is not found.

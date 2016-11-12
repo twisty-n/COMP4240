@@ -76,7 +76,7 @@ def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs,
 		output_list = output[0].split()
 		
 		for case in switch(int(heuristic_code)):
-			
+		
 			#note:  case 1 and case 2 will operate based on case 2
 			if case (1):
 				pass
@@ -121,73 +121,91 @@ def host_path():
 		return path_to_runner_x64
 	else:
 		print(
-		"path to SCP executable not found\nenvironment settings are not correct\ncontact your support administrator for further details")
+		"path to SCP executable not found\nenvironment settings are not correct\ncontact your support administrator for further details :P")
 		exit()
 
 
 # will print a single heurtistic's output to a work book
-def print_single_heuristic_summary_to_xlsx(worksheet_name, output_summary, duration, number_of_runs):
+# returns the name of the file generated
+def print_single_heuristic_summary_to_xlsx(worksheet_name, heuristic, output_summary, duration, number_of_runs):
 	local_time = time.localtime(time.time())
 	time_string = "{}{}{}_{}{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4], local_time[5])
 	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
-	add_worksheet(workbook, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME], duration, number_of_runs)
-	workbook.close()
-
-
-# will bring all of the heuristics output to a workbook.  one sheet per heuristic.
-def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_point, population):
-
-	global report_average
-
-	local_time = time.localtime(time.time())
-	time_string = "{}{}{}_{}{}{}_" .format(local_time[0], local_time[1], local_time[2], local_time[3], local_time[4], local_time[5])
-	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
-
-	add_worksheet(workbook, "random", random[BEST_COVER], random[BEST_TIME], random[AVERAGE_COVER], random[AVERAGE_TIME])
-
-	# when adding the greedy worksheet -ensure it is only once (deterministic)
-	if report_average:
-		report_average = False
-		add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_COVER], greedy[AVERAGE_TIME])
-		report_average = True
+	if int(heuristic) == 1 or int(heuristic) == 2:
+		add_worksheet_constructive(workbook, heuristic, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME], duration, number_of_runs)
 	else:
-		add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_COVER], greedy[AVERAGE_TIME])
-
-	add_worksheet(workbook, "best_accept_greedy", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER])
-
-	add_worksheet(workbook, "first_accept_random", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER])
-
-	add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER])
+		add_worksheet_others(workbook, heuristic, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME], output_summary[CONSTRUCTIVE], duration, number_of_runs)
 	
-	#add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER])
 	workbook.close()
+	return time_string + summary_output_file;
 
 
-def add_worksheet(workbook, heuristic, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, duration, number_of_runs):
-	worksheet = workbook.add_worksheet(heuristic)
+#  function is overloaded, dependingon which heuristic is running:
+#  this first one if for code 1 and 2
+def add_worksheet_constructive(workbook, heuristic, worksheet_name, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, duration, number_of_runs):
+	worksheet = workbook.add_worksheet(worksheet_name)
 	emphasis_formatting = workbook.add_format({'bold': True, 'bg_color': '#C0C0C0', 'border': True})
-	add_headings(worksheet, emphasis_formatting, number_of_runs)
-	fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, duration)
+	add_headings(worksheet, heuristic, emphasis_formatting, number_of_runs)
+	fill_sheet_constructive(worksheet, heuristic, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, duration, number_of_runs)
 
+#  This second is for codes 3, 4, 5 and 6
+def add_worksheet_others(workbook, heuristic, worksheet_name, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, construction_cost, duration, number_of_runs):
+	worksheet = workbook.add_worksheet(worksheet_name)
+	emphasis_formatting = workbook.add_format({'bold': True, 'bg_color': '#C0C0C0', 'border': True})
+	add_headings(worksheet, heuristic, emphasis_formatting, number_of_runs)
+	fill_sheet_others(worksheet, heuristic, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, construction_cost, duration, number_of_runs)
 
-def add_headings(worksheet, emphasis_formatting, number_of_runs):
-	worksheet.write('A1', "test id", emphasis_formatting)
-	worksheet.write('A2', "best known", emphasis_formatting)
-	worksheet.write('A3', "best cost", emphasis_formatting)
-	worksheet.write('A4', "time (seconds)", emphasis_formatting)
-	worksheet.write('A5', "performance gains (%)", emphasis_formatting)
-	if report_average:
-		worksheet.write('A6', "average cost - {} iterations", emphasis_formatting)
-		worksheet.write('A7', "time (seconds)", emphasis_formatting)
-		worksheet.write('A8', "performance gains (%)", emphasis_formatting)
-		worksheet.write('A9', "Duration - seconds", emphasis_formatting)
-	else:
-		worksheet.write('A6', "Duration - seconds", emphasis_formatting)
-		
-	worksheet.set_column(0, 0, 25)
-
-def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, duration):
 	
+def add_headings(worksheet, heuristic, emphasis_formatting, number_of_runs):
+	for case in switch(int(heuristic_code)):
+		#note:  case 1 and case 2 will operate based on case 2
+		if case (1):
+			pass
+		if case (2):
+			worksheet.write('A1', "test id", emphasis_formatting)
+			worksheet.write('A2', "best known", emphasis_formatting)
+			worksheet.write('A3', "best cost", emphasis_formatting)
+			worksheet.write('A4', "time (seconds)", emphasis_formatting)
+			worksheet.write('A5', "performance vs best-known (%)", emphasis_formatting)
+			if report_average:
+				worksheet.write('A6', "average cost - {} iterations", emphasis_formatting)
+				worksheet.write('A7', "time (seconds)", emphasis_formatting)
+				worksheet.write('A8', "performance gains (%)", emphasis_formatting)
+				worksheet.write('A9', "Duration - seconds", emphasis_formatting)
+			else:
+				worksheet.write('A6', "Duration - seconds", emphasis_formatting)
+			break
+			
+		#cases 3, 4, 5 and 6 will opreate based on case 6
+		if case (3):
+			pass
+		if case (4):
+			pass
+		if case (5):
+			pass
+		if case (6):
+			worksheet.write('A1', "test id", emphasis_formatting)
+			worksheet.write('A2', "best known", emphasis_formatting)
+			worksheet.write('A3', "constructive", emphasis_formatting)
+			worksheet.write('A3', "best cost", emphasis_formatting)
+			worksheet.write('A4', "time (seconds)", emphasis_formatting)
+			worksheet.write('A5', "performance vs best-known (%)", emphasis_formatting)
+			worksheet.write('A6', "performance vs constructive (%)", emphasis_formatting)
+			if report_average:
+				worksheet.write('A7', "average cost - {} iterations", emphasis_formatting)
+				worksheet.write('A8', "time (seconds)", emphasis_formatting)
+				worksheet.write('A9', "performance vs best-known (%)", emphasis_formatting)
+				worksheet.write('A10', "performance vs constructive (%)", emphasis_formatting)
+				worksheet.write('A11', "Duration - seconds", emphasis_formatting)
+			else:
+				worksheet.write('A7', "Duration - seconds", emphasis_formatting)
+			
+			break
+		worksheet.set_column(0, 0, 35)
+	
+	
+# This function is also overloaded, depending on which code it runs for:  This will services codes 1 and 2
+def fill_sheet_constructive(worksheet, heuristic, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, duration, number_of_runs):
 	row = 0
 	i = 1  # i matches column reference workbook.  workbook is row/col indexed at 0, but we have headers in col 0
 		   # use i-1 for accessing data in lists
@@ -215,7 +233,6 @@ def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time,
 			# data from runtime
 			worksheet.write_number(row + 5, i, average_cover_cost[i - 1])
 			worksheet.write_number(row + 6, i, average_cover_time[i - 1])
-
 			# work out performance gains as percentage
 			average_cover_cell = xl_rowcol_to_cell(row + 5, i)
 			performance_gains_formula = "=100-((" + average_cover_cell + "/" + best_known_cell + ")*100)"
@@ -227,9 +244,6 @@ def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time,
 			if(i == 1):
 				worksheet.write_number(row +5, i, duration)
 		i += 1
-		
-	input_file.close()
-
 	# add average performance gains
 	worksheet.write(row, i, "average performance gains (%)", emphasis_formatting)
 	best_performance_percentage_final_cell = xl_rowcol_to_cell(row + 4, i - 1)
@@ -241,9 +255,76 @@ def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time,
 		cell_range = 'A8:' + average_performance_percentage_final_cell
 		average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
 		worksheet.write_formula(row + 7, i, average_performance_gains_formula, emphasis_formatting)
-	worksheet.set_column(0, i, 25)
+	
+	worksheet.set_column(0, i, 30)
+
+	input_file.close()
 
 
+# This function is also overloaded, depending on which code it runs for:  This will services codes 1 and 2
+def fill_sheet_others(worksheet, heuristic, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, construction_cost, duration, number_of_runs):
+	row = 0
+	i = 1  # i matches column reference workbook.  workbook is row/col indexed at 0, but we have headers in col 0
+		   # use i-1 for accessing data in lists
+	input_file = open(path_to_input_files + best_known_input_file, 'r')
+
+	for line in input_file:
+		input = line.split()
+
+		# add test case and best known
+		worksheet.write(row, i, input[0], emphasis_formatting)
+		worksheet.write_number(row + 1, i, float(input[1]), emphasis_formatting)
+
+		# add best cover cost from construction, program and associated time
+		worksheet.write_number(row + 2, i, construction_cost[i - 1])
+		worksheet.write_number(row + 3, i, best_cover_cost[i - 1])
+		worksheet.write_number(row + 4, i, best_cover_time[i - 1])
+
+		# generate formula to show the performance gains as percentages
+		best_known_cell = xl_rowcol_to_cell(row + 1, i)
+		constructive_cell = xl_rowcol_to_cell(row + 2, i)
+		best_cover_cell = xl_rowcol_to_cell(row + 3, i)
+		performance_gains_formula = "=100-((" + best_cover_cell + "/" + best_known_cell + ")*100)"
+		worksheet.write_formula(row + 5, i, performance_gains_formula, emphasis_formatting)
+		performance_gains_vs_constructive = "="+ constructive_cell + "/" + best_cover_cell
+		worksheet.write_formula(row + 6, i, performance_gains_vs_constructive, emphasis_formatting)
+
+		# include average details if necessary
+		if report_average:
+			# data from runtime
+			worksheet.write_number(row + 7, i, average_cover_cost[i - 1])
+			worksheet.write_number(row + 8, i, average_cover_time[i - 1])
+			# work out performance gains as percentage
+			average_cover_cell = xl_rowcol_to_cell(row + 7, i)
+			performance_gains_formula = "=100-((" + average_cover_cell + "/" + best_known_cell + ")*100)"
+			worksheet.write_formula(row + 9, i, performance_gains_formula, emphasis_formatting)
+			performance_gains_vs_constructive = "="+ constructive_cell + "/" + average_cover_cell
+			worksheet.write_formula(row + 10, i, performance_gains_formula, emphasis_formatting)
+		
+			if (i == 1):
+				worksheet.write_number(row +11, i, duration)	
+		else:
+			if(i == 1):
+				worksheet.write_number(row +7, i, duration)
+		i += 1
+	# add average performance gains
+	worksheet.write(row, i, "average performance gains (%)", emphasis_formatting)
+	best_performance_percentage_final_cell = xl_rowcol_to_cell(row + 4, i - 1)
+	cell_range = 'A5:' + best_performance_percentage_final_cell
+	average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
+	worksheet.write_formula(row + 4, i, average_performance_gains_formula, emphasis_formatting)
+	if report_average:
+		average_performance_percentage_final_cell = xl_rowcol_to_cell(row + 7, i - 1)
+		cell_range = 'A8:' + average_performance_percentage_final_cell
+		average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
+		worksheet.write_formula(row + 7, i, average_performance_gains_formula, emphasis_formatting)
+	
+	worksheet.set_column(0, i, 30)
+
+	input_file.close()
+	
+	
+		
 # will generate lists to hold the data when running
 # after a few goes at writing this, its actually just more maintainable to set-up all the blank lists, then use
 # only what is required.
@@ -409,28 +490,28 @@ if __name__ == "__main__":
 	for case in switch(int(heuristic_code)):
 		if case(1):
 			print("printing random summary")
-			output_file = print_single_heuristic_summary_to_xlsx("random", random_heuristic, duration, number_of_runs)
+			output_file = print_single_heuristic_summary_to_xlsx("random", heuristic_code, random_heuristic, duration, number_of_runs)
 			break
 		if case(2):
 			print("printing greedy summary")
 			report_average = False	#ensure you only ever run 1 run for the greedy - since its deterministic
-			output_file = print_single_heuristic_summary_to_xlsx("greedy", greedy_heuristic, duration, "1")
+			output_file = print_single_heuristic_summary_to_xlsx("greedy", heuristic_code, greedy_heuristic, duration, "1")
 			break
 		if case(3):
 			print("printing local_1 summary")
-			output_file = print_single_heuristic_summary_to_xlsx("best_accept_greedy", local_search_best_accept, duration, number_of_runs)
+			output_file = print_single_heuristic_summary_to_xlsx("best_accept_greedy", heuristic_code, local_search_best_accept, duration, number_of_runs)
 			break
 		if case(4):
 			print("printing local_2 summary")
-			output_file = print_single_heuristic_summary_to_xlsx("first_accept_random", local_search_first_accept, duration, number_of_runs)
+			output_file = print_single_heuristic_summary_to_xlsx("first_accept_random", heuristic_code, local_search_first_accept, duration, number_of_runs)
 			break
 		if case(5):
 			print("printing single_point summary")
-			output_file = print_single_heuristic_summary_to_xlsx("single_point_meta", single_point_meta, duration, number_of_runs)
+			output_file = print_single_heuristic_summary_to_xlsx("single_point_meta", heuristic_code, single_point_meta, duration, number_of_runs)
 			break
 		if case(6):
 			print("printing population_based summary")
-			output_file = print_single_heuristic_summary_to_xlsx("population_based", population_based_meta, duration, number_of_runs)
+			output_file = print_single_heuristic_summary_to_xlsx("population_based", heuristic_code, population_based_meta, duration, number_of_runs)
 			break
 		if case(7):
 			print("printing ALL summary")

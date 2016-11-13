@@ -4,7 +4,6 @@
 #include "solution.h"
 #include "problem_instance.h"
 
-
 /*
 	will find other solutions in the neighbourhood, evaluate fitness and accept using a hill climbing
 	best fit method.

@@ -14,9 +14,6 @@ Solution * perform_simulated_annealing(Instance * instance, Solution * solution)
 	//Init solutions to work with
 	Solution current_sol;
 	Solution neighbour;
-	random_construction(instance, solution);
-
-	//greedy_construction(instance, solution, FALSE);
 	
 	current_sol = deep_copy(instance, solution);
 	neighbour = deep_copy(instance, solution);

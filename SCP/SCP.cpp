@@ -146,6 +146,11 @@ int main(int argument_count, char * argv[])
 			current_solution = *returned;
 			break;
 		case 5:
+			random_construction(&instance, &current_solution);	//TRUE == unicost, FALSE == NON-UNICOST
+			//printout required for python report
+			if (i == 0) {
+				printf("%d ", current_solution.cost);
+			}
 			returned = perform_simulated_annealing(&instance, &current_solution);
 			operation = "simulated_annealing";
 			current_solution = *returned;

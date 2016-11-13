@@ -17,9 +17,6 @@ Solution * perform_local_search_best_accept(Instance * instance, Solution * solu
 	// First we'll obtain an initial solution using a greedy approach
 	//greedy_construction(instance, solution, FALSE);
 	random_construction(instance, solution);
-
-	printf("%d", solution->cost);			//required for output to python/excel
-
 	// Then we'll actually perform the local search given our greedy instance
 	return local_search_best_accept(instance, solution);
 }
@@ -116,7 +113,6 @@ Solution * perform_local_search_first_accept(Instance * instance, Solution * sol
 	//construct a random solution S0
 	//greedy_construction(instance, solution, FALSE);
 	random_construction(instance, solution);
-	printf("%d ", solution->cost);			//required for output to python/excel
 	time_t end_sol = get_current_time();
 	solution->time = difftime(end_sol, start_sol);
 	

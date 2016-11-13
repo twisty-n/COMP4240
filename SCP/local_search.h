@@ -4,23 +4,12 @@
 #include "solution.h"
 #include "problem_instance.h"
 
-/*
-	This is the interface which SCP should call when trying to implement a best_accept local search.
-	Runs a greedy construction on the solution to generate S0, then calls to local_search_1
-*/
-Solution * perform_local_search_best_accept(Instance * instance, Solution * solution);
 
 /*
 	will find other solutions in the neighbourhood, evaluate fitness and accept using a hill climbing
 	best fit method.
 */
 Solution * local_search_best_accept(Instance * instance, Solution * solution);
-
-/*
-	This is the interface which SCP should call when trying to implement a first_accept local search.
-	Runs a random construction on the solution to generation S0, then calls local_search_first_accept.
-*/
-Solution * perform_local_search_first_accept(Instance * instance, Solution * solution, time_t start_sol);
 
 /*
 	will find other solutions in the neighbourhood, evaluate fitness and accept using a first accept method.

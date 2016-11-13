@@ -15,8 +15,8 @@
 
 Solution * perform_local_search_best_accept(Instance * instance, Solution * solution) {
 	// First we'll obtain an initial solution using a greedy approach
-	greedy_construction(instance, solution, FALSE);
-	//random_construction(instance, solution);
+	//greedy_construction(instance, solution, FALSE);
+	random_construction(instance, solution);
 
 	printf("%d", solution->cost);			//required for output to python/excel
 

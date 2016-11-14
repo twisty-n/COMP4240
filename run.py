@@ -136,8 +136,8 @@ def host_path():
 def print_single_heuristic_summary_to_xlsx(worksheet_name, operation_mode, output_summary, duration, number_of_runs, report_average):
 	local_time = time.localtime(time.time())
 	time_string = "{}{}{}_{}{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4], local_time[5])
-	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
-	if (int(heuristic) <= 2):
+	workbook = xlsxwriter.Workbook(path_to_output + time_string + worksheet_name + summary_output_file)
+	if (int(operation_mode) <= 2):
 		add_worksheet_constructive(workbook, operation_mode, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME], duration, number_of_runs, report_average)
 	else:
 		add_worksheet_others(workbook, operation_mode, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME], output_summary[CONSTRUCTIVE], duration, number_of_runs, report_average)
@@ -523,12 +523,12 @@ if __name__ == "__main__":
 			break
 		if case(): # default - prints all
 			print(magenta("printing results_summary now"))
-			random_output_file = print_single_heuristic_summary_to_xlsx("random", heuristic_code, random_heuristic, random_duration, number_of_runs, report_average)
-			greedy_output_file = print_single_heuristic_summary_to_xlsx("greedy", heuristic_code, greedy_heuristic, greedy_duration, "1", False)
-			best_accept_output_file = print_single_heuristic_summary_to_xlsx("best_accept_greedy", heuristic_code, local_search_best_accept, best_accept_duration, number_of_runs, report_average)
-			first_accept_output_file = print_single_heuristic_summary_to_xlsx("first_accept_random", heuristic_code, local_search_first_accept, first_accept_duration, number_of_runs, report_average)
-			simulated_annelaing_output_file = print_single_heuristic_summary_to_xlsx("simulated_annelaing", heuristic_code, single_point_meta, simulated_annelaing_duration, number_of_runs, report_average)
-			#jps_output_file = print_single_heuristic_summary_to_xlsx("jumping_particle_swarm", heuristic_code, population_based_meta, jumping_particle_swarm_duration, number_of_runs, report_average)
+			random_output_file = print_single_heuristic_summary_to_xlsx("random", "1", random_heuristic, random_duration, number_of_runs, report_average)
+			greedy_output_file = print_single_heuristic_summary_to_xlsx("greedy", "2", greedy_heuristic, greedy_duration, "1", False)
+			best_accept_output_file = print_single_heuristic_summary_to_xlsx("best_accept_greedy", "3", local_search_best_accept, best_accept_duration, number_of_runs, report_average)
+			first_accept_output_file = print_single_heuristic_summary_to_xlsx("first_accept_random", "4", local_search_first_accept, first_accept_duration, number_of_runs, report_average)
+			simulated_annelaing_output_file = print_single_heuristic_summary_to_xlsx("simulated_annelaing", "5", single_point_meta, simulated_annelaing_duration, number_of_runs, report_average)
+			#jps_output_file = print_single_heuristic_summary_to_xlsx("jumping_particle_swarm", "7", population_based_meta, jumping_particle_swarm_duration, number_of_runs, report_average)
 			print(blue("summary printed - details can be found in {}\n{}\n{}\n{}\n{}\n{}\n") .format( path_to_output, random_output_file, greedy_output_file, best_accept_output_file, first_accept_output_file, simulated_annelaing_output_file))
 			#print(blue("summary printed - details can be found in {}\n{}\n{}\n{}\n{}\n{}\n{}\n") .format( path_to_output, random_output_file, greedy_output_file, best_accept_output_file, first_accept_output_file, simulated_annelaing_output_file, jps_output_file ))
 	

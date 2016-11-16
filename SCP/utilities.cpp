@@ -51,12 +51,16 @@ Solution deep_copy(Instance * instance, Solution * solution_s0) {
 	deep_copy.number_of_covers = solution_s0->number_of_covers;
 	deep_copy.number_of_non_covering = solution_s0->number_of_non_covering;
 	deep_copy.time = solution_s0->time;
-
-	deep_copy.covering_columns = copy_array(solution_s0->covering_columns, instance->row_count);
+	deep_copy.covering_column = copy_array(solution_s0->covering_column, instance->row_count);
 	deep_copy.minimal_cover = copy_array(solution_s0->minimal_cover, instance->row_count);
 	deep_copy.columns_in_solution = copy_array(solution_s0->columns_in_solution, instance->column_count);
 	deep_copy.non_covering_columns = copy_array(solution_s0->non_covering_columns, solution_s0->number_of_non_covering);
-		
+	try {
+		deep_copy.number_of_columns_covering_rows = copy_array(solution_s0->number_of_columns_covering_rows, instance->row_count);
+	} catch ( ... ) {
+		//do nothing
+	}
+
 	return deep_copy;
 }
 

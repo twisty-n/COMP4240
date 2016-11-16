@@ -7,10 +7,20 @@ struct Solution {
 	int cost;
 
 	/*
-		Each cell represents a row, the value represents the column covering that row
+		Each cell represents a row, the value represents the first column covering that row.
+		When generated from a greedy constructive, it will denote the first column found
+		which was considered the cheapest.
 		-1 indicates that the row is not covered
 	*/
-	int * covering_columns;
+	int * first_covering_column;
+
+	/*
+		Each cell represents a row, the value represents how many columns in the solution
+		are covering that row
+		-1 indicates that the row is not covered
+	*/
+	int * number_of_columns_covering_rows;
+
 
 	/*
 		An array holding the minimal columns required for the solution

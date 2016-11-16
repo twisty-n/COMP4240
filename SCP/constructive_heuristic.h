@@ -36,7 +36,7 @@ void remove_column(int * unassigned_columns, int * best_col, int * no_unassigned
 /*
 will be used to help remove a row from the set of row not yet covered by the solution
 */
-void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows, int * rows_to_be_covered_this_instance, int * no_current_rows, int * best_col);
+void remove_rows(int * coverings, int * number_of_columns_covering_rows, int * uncovered_rows, int * no_uncovered_rows, int * rows_to_be_covered_this_instance, int * no_current_rows, int * best_col);
 
 /*
 will be used to help work out the best column in cases of tie break.  Currently the column covering rows which have the lowest probability of being

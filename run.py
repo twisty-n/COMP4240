@@ -22,13 +22,13 @@ path_to_output = "./output/"
 summary_output_file = "summary.xlsx"
 path_to_input_files = "./input/"
 best_known_input_file = "best-known.txt"
-report_average = False
 
-#defines
+#defines - will be used for defining the list required in a data,structure
 BEST_COVER = 0
 BEST_TIME = 1
 AVERAGE_COVER = 2
 AVERAGE_TIME = 3
+CONSTRUCTIVE = 4
 
 # This class provides the functionality for a switch statement
 # found at http://code.activestate.com/recipes/410692/
@@ -53,22 +53,57 @@ class switch(object):
             return False
 
 
+			
+# Colours for console prettiness
+def blue(text): return "\033[1;34m" + str(text) + "\033[1;m"
+def magenta(text): return "\033[1;35m" + str(text) + "\033[1;m"
+def green(text): return "\033[1;32m" + str(text) + "\033[1;m"
+def yellow(text): return "\033[1;33m" + str(text) + "\033[1;m"
+def red(text): return "\033[1;31m" + str(text) + "\033[1;m"
+def white(text): return "\033[1;37m" + str(text) + "\033[1;m"
 
-def launch_scp_program(path_to_runner, filename, heuristic_code, number_of_runs, coverings_summary):
-	print("Launching SCP with {}, code {}, for {} iterations" .format(filename, heuristic_code, number_of_runs))
 
+def launch_scp_program(path_to_runner, filename, operation_mode, number_of_runs, coverings_summary, report_average):
+	print(white("Launching {}") .format(filename))
 	# Start the process with the filename and args
 	# output will be captured in a list
-	test_scp = subprocess.Popen([path_to_runner, path_to_test_files + filename, heuristic_code, number_of_runs, "0"], stdout=subprocess.PIPE)
+	test_scp = subprocess.Popen([path_to_runner, path_to_test_files + filename, operation_mode, number_of_runs, "0"], stdout=subprocess.PIPE)
 	output = test_scp.communicate()
+	
 	try:
 		#print("output: {}" .format(output))
 		output_list = output[0].split()
-		coverings_summary[BEST_COVER].append(float(output_list[BEST_COVER]))
-		coverings_summary[BEST_TIME].append(float(output_list[BEST_TIME]))
-		if report_average:
-			coverings_summary[AVERAGE_COVER].append(float(output_list[AVERAGE_COVER]))
-			coverings_summary[AVERAGE_TIME].append(float(output_list[AVERAGE_TIME]))
+		
+		for case in switch(int(operation_mode)):
+		
+			#note:  case 1 and case 2 will operate based on case 2
+			if case (1):
+				pass
+			if case (2):
+				coverings_summary[BEST_COVER].append(float(output_list[0]))
+				coverings_summary[BEST_TIME].append(float(output_list[1]))
+				if report_average:
+					coverings_summary[AVERAGE_COVER].append(float(output_list[2]))
+					coverings_summary[AVERAGE_TIME].append(float(output_list[3]))				
+				break
+			
+			#cases 3, 4, 5 and 6 will opreate based on case 6
+			if case (3):
+				pass
+			if case (4):
+				pass
+			if case (5):
+				pass
+			if case (6):
+				coverings_summary[CONSTRUCTIVE].append(float(output_list[0]))				#takes original construction cost
+				coverings_summary[BEST_COVER].append(float(output_list[1]))					#takes best solution cost
+				coverings_summary[BEST_TIME].append(float(output_list[2]))					#takes best solution time
+				if report_average:
+					coverings_summary[AVERAGE_COVER].append(float(output_list[3]))			#takes average solution cost
+					coverings_summary[AVERAGE_TIME].append(float(output_list[4]))			#takes average solution time
+				break
+				
+		
 	except ValueError:
 		print("ValueError:  could not process the test case due to\n\n{}\n" .format(output))
 		exit()
@@ -85,67 +120,98 @@ def host_path():
 		return path_to_runner_x64
 	else:
 		print(
-		"path to SCP executable not found\nenvironment settings are not correct\ncontact your support administrator for further details")
+		"path to SCP executable not found\nenvironment settings are not correct\ncontact your support administrator for further details :P")
 		exit()
 
 
 # will print a single heurtistic's output to a work book
-def print_single_heuristic_summary_to_xlsx(worksheet_name, output_summary):
+# returns the name of the file generated
+# note:  ALL report generation is currently quite hardcoded and will not work well using a different dataset.
+# apologies for poor design - but this is my first time with this library and I had some learning curves.
+# 
+# MAINTENANCE NOTE:
+# if you wish to run the program on different data-sets, a few of the excel functions would need to be re-worked.
+# Things to review:  generation of the test-ID and best known - this is currently loaded from file
+# The file would need to be udpated to match the new data-sets you wish to run.
+def print_single_heuristic_summary_to_xlsx(worksheet_name, operation_mode, output_summary, duration, number_of_runs, report_average):
 	local_time = time.localtime(time.time())
-	time_string = "{}{}{}_{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4])
-	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
-	add_worksheet(workbook, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME])
-	workbook.close()
-
-
-# will bring all of the heuristics output to a workbook.  one sheet per heuristic.
-def print_ALL_heuritic_summary_to_xlsx(random, greedy, local_1, local_2, single_point, population):
-
-	global report_average
-
-	local_time = time.localtime(time.time())
-	time_string = "{}{}{}_{}{}_" .format(local_time[0], local_time[1], local_time[2], local_time[3], local_time[4])
-	workbook = xlsxwriter.Workbook(path_to_output + time_string + summary_output_file)
-
-	add_worksheet(workbook, "random", random[BEST_COVER], random[BEST_TIME], random[AVERAGE_COVER], random[AVERAGE_TIME])
-
-	# when adding the greedy worksheet -ensure it is only once (deterministic)
-	if report_average:
-		report_average = False
-		add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_COVER], greedy[AVERAGE_TIME])
-		report_average = True
+	time_string = "{}{}{}_{}{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4], local_time[5])
+	workbook = xlsxwriter.Workbook(path_to_output + time_string + worksheet_name + summary_output_file)
+	if (int(operation_mode) <= 2):
+		add_worksheet_constructive(workbook, operation_mode, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME], duration, number_of_runs, report_average)
 	else:
-		add_worksheet(workbook, "greedy", greedy[BEST_COVER], greedy[BEST_TIME], greedy[AVERAGE_COVER], greedy[AVERAGE_TIME])
-
-	add_worksheet(workbook, "best_accept_greedy", local_1[BEST_COVER], local_1[BEST_TIME], local_1[AVERAGE_TIME], local_1[AVERAGE_COVER])
-
-	add_worksheet(workbook, "first_accept_random", local_2[BEST_COVER], local_2[BEST_TIME], local_2[AVERAGE_TIME], local_2[AVERAGE_COVER])
-
-	#add_worksheet(workbook, "single_point", single_point[BEST_COVER], single_point[BEST_TIME], single_point[AVERAGE_TIME], single_point[AVERAGE_COVER])
-	#add_worksheet(workbook, "population", population[BEST_COVER], population[BEST_TIME], population[AVERAGE_TIME], population[AVERAGE_COVER])
+		add_worksheet_others(workbook, operation_mode, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME], output_summary[CONSTRUCTIVE], duration, number_of_runs, report_average)
+	
 	workbook.close()
+	return time_string + summary_output_file;
 
 
-def add_worksheet(workbook, heuristic, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time):
-	worksheet = workbook.add_worksheet(heuristic)
+#  function is overloaded, dependingon which heuristic is running:
+#  this first one if for code 1 and 2
+def add_worksheet_constructive(workbook, operation_mode, worksheet_name, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, duration, number_of_runs, report_average):
+	worksheet = workbook.add_worksheet(worksheet_name)
 	emphasis_formatting = workbook.add_format({'bold': True, 'bg_color': '#C0C0C0', 'border': True})
-	add_headings(worksheet, emphasis_formatting)
-	fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time)
+	add_headings(worksheet, operation_mode, emphasis_formatting, number_of_runs, report_average)
+	fill_sheet_constructive(worksheet, operation_mode, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, duration, number_of_runs, report_average)
 
+#  This second is for codes 3, 4, 5 and 6
+def add_worksheet_others(workbook, operation_mode, worksheet_name, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, construction_cost, duration, number_of_runs, report_average):
+	worksheet = workbook.add_worksheet(worksheet_name)
+	emphasis_formatting = workbook.add_format({'bold': True, 'bg_color': '#C0C0C0', 'border': True})
+	add_headings(worksheet, operation_mode, emphasis_formatting, number_of_runs, report_average)
+	fill_sheet_others(worksheet, operation_mode, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, construction_cost, duration, number_of_runs, report_average)
 
-def add_headings(worksheet, emphasis_formatting):
-	worksheet.write('A1', "test id", emphasis_formatting)
-	worksheet.write('A2', "best known", emphasis_formatting)
-	worksheet.write('A3', "best cost", emphasis_formatting)
-	worksheet.write('A4', "time (seconds)", emphasis_formatting)
-	worksheet.write('A5', "performance gains (%)", emphasis_formatting)
-	if report_average:
-		worksheet.write('A6', "average cost", emphasis_formatting)
-		worksheet.write('A7', "time (seconds)", emphasis_formatting)
-		worksheet.write('A8', "performance gains (%)", emphasis_formatting)
-	worksheet.set_column(0, 0, 25)
-
-def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time):
+	
+def add_headings(worksheet, operation_mode, emphasis_formatting, number_of_runs, report_average):
+	for case in switch(int(operation_mode)):
+		#note:  case 1 and case 2 will operate based on case 2
+		if case (1):
+			pass
+		if case (2):
+			worksheet.write('A1', "test id", emphasis_formatting)
+			worksheet.write('A2', "best known", emphasis_formatting)
+			worksheet.write('A3', "best cost", emphasis_formatting)
+			worksheet.write('A4', "time (seconds)", emphasis_formatting)
+			worksheet.write('A5', "performance vs best-known (%)", emphasis_formatting)
+			if report_average:
+				worksheet.write('A6', "average cost - {} iterations", emphasis_formatting)
+				worksheet.write('A7', "time (seconds)", emphasis_formatting)
+				worksheet.write('A8', "performance gains (%)", emphasis_formatting)
+				worksheet.write('A9', "Duration - seconds", emphasis_formatting)
+			else:
+				worksheet.write('A6', "Duration - seconds", emphasis_formatting)
+			break
+			
+		#cases 3, 4, 5 and 6 will opreate based on case 6
+		if case (3):
+			pass
+		if case (4):
+			pass
+		if case (5):
+			pass
+		if case (6):
+			worksheet.write('A1', "test id", emphasis_formatting)
+			worksheet.write('A2', "best known", emphasis_formatting)
+			worksheet.write('A3', "constructive", emphasis_formatting)
+			worksheet.write('A4', "best cost", emphasis_formatting)
+			worksheet.write('A5', "time (seconds)", emphasis_formatting)
+			worksheet.write('A6', "performance vs best-known (%)", emphasis_formatting)
+			worksheet.write('A7', "performance vs constructive (%)", emphasis_formatting)
+			if report_average:
+				worksheet.write('A8', "average cost - {} iterations", emphasis_formatting)
+				worksheet.write('A9', "time (seconds)", emphasis_formatting)
+				worksheet.write('A10', "performance vs best-known (%)", emphasis_formatting)
+				worksheet.write('A11', "performance vs constructive (%)", emphasis_formatting)
+				worksheet.write('A12', "Duration - seconds", emphasis_formatting)
+			else:
+				worksheet.write('A8', "Duration - seconds", emphasis_formatting)
+			
+			break
+		worksheet.set_column(0, 0, 35)
+	
+	
+# This function is also overloaded, depending on which code it runs for:  This will services codes 1 and 2
+def fill_sheet_constructive(worksheet, operation_mode, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, duration, number_of_runs, report_average):
 	row = 0
 	i = 1  # i matches column reference workbook.  workbook is row/col indexed at 0, but we have headers in col 0
 		   # use i-1 for accessing data in lists
@@ -173,16 +239,17 @@ def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time,
 			# data from runtime
 			worksheet.write_number(row + 5, i, average_cover_cost[i - 1])
 			worksheet.write_number(row + 6, i, average_cover_time[i - 1])
-
 			# work out performance gains as percentage
 			average_cover_cell = xl_rowcol_to_cell(row + 5, i)
 			performance_gains_formula = "=100-((" + average_cover_cell + "/" + best_known_cell + ")*100)"
 			worksheet.write_formula(row + 7, i, performance_gains_formula, emphasis_formatting)
-
-		i += 1
 		
-	input_file.close()
-
+			if (i == 1):
+				worksheet.write_number(row +8, i, duration)	
+		else:
+			if(i == 1):
+				worksheet.write_number(row +5, i, duration)
+		i += 1
 	# add average performance gains
 	worksheet.write(row, i, "average performance gains (%)", emphasis_formatting)
 	best_performance_percentage_final_cell = xl_rowcol_to_cell(row + 4, i - 1)
@@ -194,17 +261,93 @@ def fill_sheet(worksheet, emphasis_formatting, best_cover_cost, best_cover_time,
 		cell_range = 'A8:' + average_performance_percentage_final_cell
 		average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
 		worksheet.write_formula(row + 7, i, average_performance_gains_formula, emphasis_formatting)
-	worksheet.set_column(0, i, 25)
+	
+	worksheet.set_column(0, i, 30)
+	input_file.close()
 
 
+# This function is also overloaded, depending on which code it runs for:  This will service codes 3, 4, 5, & 6
+def fill_sheet_others(worksheet, heuristic, emphasis_formatting, best_cover_cost, best_cover_time, average_cover_cost, average_cover_time, construction_cost, duration, number_of_runs, report_average):
+	row = 0
+	i = 1  # i matches column reference workbook.  workbook is row/col indexed at 0, but we have headers in col 0
+		   # use i-1 for accessing data in lists
+	input_file = open(path_to_input_files + best_known_input_file, 'r')
+
+	for line in input_file:
+		input = line.split()
+
+		# add test case and best known
+		worksheet.write(row, i, input[0], emphasis_formatting)
+		worksheet.write_number(row + 1, i, float(input[1]), emphasis_formatting)
+
+		# add best cover cost from construction, program and associated time
+		worksheet.write_number(row + 2, i, construction_cost[i - 1])
+		worksheet.write_number(row + 3, i, best_cover_cost[i - 1])
+		worksheet.write_number(row + 4, i, best_cover_time[i - 1])
+
+		# generate formula to show the performance gains as percentages
+		best_known_cell = xl_rowcol_to_cell(row + 1, i)
+		constructive_cell = xl_rowcol_to_cell(row + 2, i)
+		best_cover_cell = xl_rowcol_to_cell(row + 3, i)
+		performance_gains_formula = "=100-((" + best_cover_cell + "/" + best_known_cell + ")*100)"
+		worksheet.write_formula(row + 5, i, performance_gains_formula, emphasis_formatting)
+		performance_gains_vs_constructive = "=100-(("+ best_cover_cell + "/" + constructive_cell + ")*100)"
+		worksheet.write_formula(row + 6, i, performance_gains_vs_constructive, emphasis_formatting)
+
+		# include average details if necessary
+		if report_average:
+			# data from runtime
+			worksheet.write_number(row + 7, i, average_cover_cost[i - 1])
+			worksheet.write_number(row + 8, i, average_cover_time[i - 1])
+			# work out performance gains as percentage
+			average_cover_cell = xl_rowcol_to_cell(row + 7, i)
+			performance_gains_formula = "=100-((" + average_cover_cell + "/" + best_known_cell + ")*100)"
+			worksheet.write_formula(row + 9, i, performance_gains_formula, emphasis_formatting)
+			performance_gains_vs_constructive = "=100-((" + constructive_cell + "/" + average_cover_cell + ")*100)"
+			worksheet.write_formula(row + 10, i, performance_gains_vs_constructive, emphasis_formatting)
+		
+			if (i == 1):
+				worksheet.write_number(row +11, i, duration)	
+		else:
+			if(i == 1):
+				worksheet.write_number(row +7, i, duration)
+		i += 1
+		
+	# add average performance gains
+	worksheet.write(row, i, "average performance gains (%)", emphasis_formatting)
+	best_performance_percentage_final_cell = xl_rowcol_to_cell(row + 5, i - 1)
+	cell_range = 'A6:' + best_performance_percentage_final_cell
+	average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
+	worksheet.write_formula(row + 5, i, average_performance_gains_formula, emphasis_formatting)
+	
+	constructive_improvement_percentage_final_cell = xl_rowcol_to_cell(row + 6, i - 1)
+	improvement_cell_range = 'A7:' + constructive_improvement_percentage_final_cell
+	average_performance_gains_formula = '=SUM(' + improvement_cell_range + ')/COUNT(' + improvement_cell_range + ')'
+	worksheet.write_formula(row + 6, i, average_performance_gains_formula, emphasis_formatting)
+	
+	if report_average:
+		average_performance_percentage_final_cell = xl_rowcol_to_cell(row + 9, i - 1)
+		cell_range = 'A10:' + average_performance_percentage_final_cell
+		average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
+		worksheet.write_formula(row + 9, i, average_performance_gains_formula, emphasis_formatting)
+		
+		constructive_improvement_percentage_final_cell = xl_rowcol_to_cell(row + 10, i - 1)
+		improvement_cell_range = 'A11:' + constructive_improvement_percentage_final_cell
+		average_performance_gains_formula = '=SUM(' + improvement_cell_range + ')/COUNT(' + improvement_cell_range + ')'
+		worksheet.write_formula(row + 10, i, average_performance_gains_formula, emphasis_formatting)
+
+	worksheet.set_column(0, i, 30)
+	input_file.close()
+	
+	
 # will generate lists to hold the data when running
 # after a few goes at writing this, its actually just more maintainable to set-up all the blank lists, then use
 # only what is required.
 def generate_data_structures():
 	random_heuristic = []
 	greedy_heuristic = []
-	local_search_tba = []
-	local_search__tba = []
+	local_search_best_accept = []
+	local_search__first_accept = []
 	single_point_meta = []
 	population_based_meta = []
 
@@ -215,10 +358,10 @@ def generate_data_structures():
 	random_heuristic.append(list(best_time_list))
 	greedy_heuristic.append(list(best_cover_list))
 	greedy_heuristic.append(list(best_time_list))
-	local_search_tba.append(list(best_cover_list))
-	local_search_tba.append(list(best_time_list))
-	local_search__tba.append(list(best_cover_list))
-	local_search__tba.append(list(best_time_list))
+	local_search_best_accept.append(list(best_cover_list))
+	local_search_best_accept.append(list(best_time_list))
+	local_search__first_accept.append(list(best_cover_list))
+	local_search__first_accept.append(list(best_time_list))
 	single_point_meta.append(list(best_cover_list))
 	single_point_meta.append(list(best_time_list))
 	population_based_meta.append(list(best_cover_list))
@@ -230,16 +373,82 @@ def generate_data_structures():
 	random_heuristic.append(list(average_time_list))
 	greedy_heuristic.append(list(average_cover_list))
 	greedy_heuristic.append(list(average_time_list))
-	local_search_tba.append(list(average_cover_list))
-	local_search_tba.append(list(average_time_list))
-	local_search__tba.append(list(average_cover_list))
-	local_search__tba.append(list(average_time_list))
+	local_search_best_accept.append(list(average_cover_list))
+	local_search_best_accept.append(list(average_time_list))
+	local_search__first_accept.append(list(average_cover_list))
+	local_search__first_accept.append(list(average_time_list))
 	single_point_meta.append(list(average_cover_list))
 	single_point_meta.append(list(average_time_list))
 	population_based_meta.append(list(average_cover_list))
 	population_based_meta.append(list(average_time_list))
+	
+	original_construct_cost = []										#some heuristics need to report the base from which it worked.
+	local_search_best_accept.append(list(original_construct_cost))		#POC - in devel.
+	local_search__first_accept.append(list(original_construct_cost))
+	single_point_meta.append(list(original_construct_cost))
+	population_based_meta.append(list(original_construct_cost))
 
-	return random_heuristic, greedy_heuristic, local_search_tba, local_search__tba, single_point_meta, population_based_meta
+	return random_heuristic, greedy_heuristic, local_search_best_accept, local_search__first_accept, single_point_meta, population_based_meta
+
+	
+def print_header_to_console(operation_mode, no_runs):
+	for case in switch(int(operation_mode)):
+		if case(1):
+			print(blue("Currently running {} for {} iterations") .format("random_constructive", no_runs))
+			break
+		if case(2):
+			print(blue("Currently running {} for {} iteration") .format("greedy_constructive", 1))
+			break
+		if case(3):
+			print(blue("Currently running {} for {} iterations") .format("local_search_best_accept", no_runs))
+			break
+		if case(4):
+			print(blue("Currently running {} for {} iterations") .format("local_search_first_accept", no_runs))
+			break
+		if case(5):
+			print(blue("Currently running {} for {} iterations") .format("simulated_annelaing", no_runs))
+			break
+		if case(6):
+			print(blue("Currently running {} for {} iterations") .format("Jumping particle swarm", no_runs))
+			break
+		if case(7):
+			print("where I should not be:")
+
+			
+def launch_tests(operation_mode, path_to_runner, number_of_runs, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, simulated_annelaing, jumping_particle_swarm, report_average):	
+	#run tests
+	for filename in os.listdir(path_to_test_files):
+		for case in switch(int(operation_mode)):
+			if case(1):
+				launch_scp_program(path_to_runner, filename, operation_mode, number_of_runs, random_heuristic, report_average)
+				break
+			if case(2):
+				launch_scp_program(path_to_runner, filename, operation_mode, "1", greedy_heuristic, False)
+				break
+			if case(3):
+				launch_scp_program(path_to_runner, filename, operation_mode, number_of_runs, local_search_best_accept, report_average)
+				break
+			if case(4):
+				launch_scp_program(path_to_runner, filename, operation_mode, number_of_runs, local_search_first_accept, report_average)
+				break
+			if case(5):
+				launch_scp_program(path_to_runner, filename, operation_mode, number_of_runs, simulated_annelaing, report_average)
+				break
+			if case(6):
+				launch_scp_program(path_to_runner, filename, operation_mode, number_of_runs, jumping_particle_swarm, report_average)
+				break
+				
+
+def run_program(operation_mode, number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, simulated_annelaing, jumping_particle_swarm, report_average):
+	print_header_to_console(operation_mode, number_of_runs)
+	start_time = time.time()	
+	launch_tests(operation_mode, path_to_runner, number_of_runs, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, simulated_annelaing, jumping_particle_swarm, report_average)
+	end_time = time.time()
+	duration = end_time-start_time
+	print(blue("end tests"))	
+	print(magenta("that took {} seconds to run") .format(duration))	
+	return duration
+
 
 # Program will run all of the covering problems listed in the test_data folder
 # Arguments:
@@ -250,93 +459,76 @@ def generate_data_structures():
 #				4.  Local search 2 (tba)
 #				5.  Single Point meta-heuristic
 #				6.  Population based meta-heuristic
-#				7.  Run ALL currently available heuristics
+#				7.  Run ALL currently available heuristics - currently running in a while true loop
 #		2. int	Number of runs
 if __name__ == "__main__":
-
 	if len(sys.argv) < 2:
-		print "invalid arguments"
+		print("invalid arguments - pleaes provide 2 int params.\nfor more information - check the documenation for the main method in run.py\n")
 
+	print(green("\n\nI'm just setting things up"))
+	
 	heuristic_code = sys.argv[1]
-
-	no_runs = sys.argv[2]
-	if (int(no_runs) >= 2):
-		report_average = True
-	
-	#will hold the details to be written to each sheet of the xlsx
-	random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta = generate_data_structures()
-
-	print("Launching tests\n")
+	number_of_runs = sys.argv[2]
 	path_to_runner = host_path()
-	for filename in os.listdir(path_to_test_files):
-		for case in switch(int(heuristic_code)):
-			if case(1):
-				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, random_heuristic)
-				break
-			if case(2):
-				report_average = False	#ensure you only ever run 1 run for the greedy - since its deterministic
-				launch_scp_program(path_to_runner, filename, heuristic_code, "1", greedy_heuristic)
-				break
-			if case(3):
-				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search_best_accept)
-				break
-			if case(4):
-				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, local_search_first_accept)
-				break
-			if case(5):
-				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, single_point_meta)
-				break
-			if case(6):
-				launch_scp_program(path_to_runner, filename, heuristic_code, no_runs, population_based_meta)
-				break
-			if case(7):
-				#Run all for case 7
-				launch_scp_program(path_to_runner, filename, "1", no_runs, random_heuristic)
-				#when running greedy - you want to ensure you are only ever running 1
-				report_average = False;
-				launch_scp_program(path_to_runner, filename, "2", "1", greedy_heuristic)
-				if (int(no_runs) >= 2):
-					report_average = True
-				launch_scp_program(path_to_runner, filename, "3", no_runs, local_search_best_accept)
-				launch_scp_program(path_to_runner, filename, "4", no_runs, local_search_first_accept)
-				#still in devel
-				#launch_scp_program(path_to_runner, filename, "5", no_runs, single_point_meta)
-				#launch_scp_program(path_to_runner, filename, "6", no_runs, population_based_meta)
-				break
-			if case(): # default
-				print "error with input"
-				exit()
-
-	print("end tests")
 	
+	if (int(number_of_runs) >= 2):
+		report_average = True
+	else:
+		report_average = False
+	
+	random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta = generate_data_structures()
+	
+	if(int(heuristic_code) < 7) and int(heuristic_code) > 0:
+		duration = run_program(heuristic_code, number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
+	else:
+		random_duration = run_program("1", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
+		greedy_duration = run_program("2", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
+		best_accept_duration = run_program("3", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
+		first_accept_duration = run_program("4", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
+		simulated_annelaing_duration = run_program("5", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
+		#jumping_particle_swarm_duration = run_program("6", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based)
+
+	#print output
 	for case in switch(int(heuristic_code)):
 		if case(1):
-			print("printing random summary")
-			print_single_heuristic_summary_to_xlsx("random", random_heuristic)
+			print(magenta("printing random summary"))
+			output_file = print_single_heuristic_summary_to_xlsx("random", heuristic_code, random_heuristic, duration, number_of_runs, report_average)
+			print(blue("summary printed - details can be found in {}") .format(path_to_output + output_file))
 			break
 		if case(2):
-			print("printing greedy summary")
+			print(magenta("printing greedy summary"))
 			report_average = False	#ensure you only ever run 1 run for the greedy - since its deterministic
-			print_single_heuristic_summary_to_xlsx("greedy", greedy_heuristic)
+			output_file = print_single_heuristic_summary_to_xlsx("greedy", heuristic_code, greedy_heuristic, duration, "1", False)
+			print(blue("summary printed - details can be found in {}") .format(path_to_output + output_file))
 			break
 		if case(3):
-			print("printing local_1 summary")
-			print_single_heuristic_summary_to_xlsx("best_accept_greedy", local_search_best_accept)
+			print(magenta("printing local_search_best_accept summary"))
+			output_file = print_single_heuristic_summary_to_xlsx("best_accept_greedy", heuristic_code, local_search_best_accept, duration, number_of_runs, report_average)
+			print(blue("summary printed - details can be found in {}") .format(path_to_output + output_file))
 			break
 		if case(4):
-			print("printing local_2 summary")
-			print_single_heuristic_summary_to_xlsx("first_accept_random", local_search_first_accept)
+			print(magenta("printing local_search_first_accept summary"))
+			output_file = print_single_heuristic_summary_to_xlsx("first_accept_random", heuristic_code, local_search_first_accept, duration, number_of_runs, report_average)
+			print(blue("summary printed - details can be found in {}") .format(path_to_output + output_file))
 			break
 		if case(5):
-			print("printing single_point summary")
-			print_single_heuristic_summary_to_xlsx("single_point_meta", single_point_meta)
+			print(magenta("printing simulated_annelaing summary"))
+			output_file = print_single_heuristic_summary_to_xlsx("simulated_annelaing", heuristic_code, single_point_meta, duration, number_of_runs, report_average)
+			print(blue("summary printed - details can be found in {}") .format(path_to_output + output_file))
 			break
 		if case(6):
-			print("printing population_based summary")
-			print_single_heuristic_summary_to_xlsx("population_based", population_based_meta)
+			print(magenta("printing jumping_particle_swarm_summary"))
+			output_file = print_single_heuristic_summary_to_xlsx("jumping_particle_swarm", heuristic_code, population_based_meta, duration, number_of_runs, report_average)
+			print(blue("summary printed - details can be found in {}") .format(path_to_output + output_file))
 			break
-		if case(7):
-			print("printing ALL summary")
-			print_ALL_heuritic_summary_to_xlsx(random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta)
-			
-	print("summary printed - details can be found in %s" % path_to_output)
+		if case(): # default - prints all
+			print(magenta("printing results_summary now"))
+			random_output_file = print_single_heuristic_summary_to_xlsx("random", "1", random_heuristic, random_duration, number_of_runs, report_average)
+			greedy_output_file = print_single_heuristic_summary_to_xlsx("greedy", "2", greedy_heuristic, greedy_duration, "1", False)
+			best_accept_output_file = print_single_heuristic_summary_to_xlsx("best_accept_greedy", "3", local_search_best_accept, best_accept_duration, number_of_runs, report_average)
+			first_accept_output_file = print_single_heuristic_summary_to_xlsx("first_accept_random", "4", local_search_first_accept, first_accept_duration, number_of_runs, report_average)
+			simulated_annelaing_output_file = print_single_heuristic_summary_to_xlsx("simulated_annelaing", "5", single_point_meta, simulated_annelaing_duration, number_of_runs, report_average)
+			#jps_output_file = print_single_heuristic_summary_to_xlsx("jumping_particle_swarm", "7", population_based_meta, jumping_particle_swarm_duration, number_of_runs, report_average)
+			print(blue("summary printed - details can be found in {}\n{}\n{}\n{}\n{}\n{}\n") .format( path_to_output, random_output_file, greedy_output_file, best_accept_output_file, first_accept_output_file, simulated_annelaing_output_file))
+			#print(blue("summary printed - details can be found in {}\n{}\n{}\n{}\n{}\n{}\n{}\n") .format( path_to_output, random_output_file, greedy_output_file, best_accept_output_file, first_accept_output_file, simulated_annelaing_output_file, jps_output_file ))
+	

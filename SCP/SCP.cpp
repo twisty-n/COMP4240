@@ -27,6 +27,7 @@
 #include "solution.h"
 #include "constructive_heuristic.h"
 #include "local_search.h"
+#include "simulated_annealing.h"
 #include "utilities.h"
 #include "jpso.h"
 
@@ -41,7 +42,6 @@
 typedef int boolean;
 
 /* Function prototypes */
-
 boolean valid_arguments(int argument_count, char * arguments[]);
 void generate_problem_instance(Instance * instance, FILE * file);
 char * generate_output_file_path(char * input_file);
@@ -89,7 +89,7 @@ int main(int argument_count, char * argv[])
 		printf("Invalid operation_mode %d", operation_mode);
 		return 0;
 	}
-	char * operation = "";		//will be used populated and used later in program for raw output identification
+	char * operation = "";					//will be used populated and used later in program for raw output identification
 
 	int number_of_runs = atoi(argv[3]);
 	//validate number of runs
@@ -99,10 +99,9 @@ int main(int argument_count, char * argv[])
 	}
 	
 	Instance instance;
-	Solution current_solution;
-	Solution best_solution;
-
-	Solution * best;
+	Solution current_solution;				//keeps track of the current solution from multiple runs
+	Solution best_solution;					//holds the best solution found this program
+	Solution * returned;					//holds the best solution returned from the local searches or heuristic options
 	
 	time_t start_formulate = get_current_time();
 	generate_problem_instance(&instance, file);
@@ -127,17 +126,34 @@ int main(int argument_count, char * argv[])
 			operation = "greedy_construction";
 			break;
 		case 3:
-			best = perform_local_search_best_accept(&instance, &current_solution);
+			greedy_construction(&instance, &current_solution, FALSE);	//TRUE == unicost, FALSE == NON-UNICOST
+			//printout required for python report
+			if (i == 0) {
+				printf("%d ", current_solution.cost);
+			}
+			returned = local_search_best_accept(&instance, &current_solution);
 			operation = "local_search_best_accept";
-			current_solution = *best;
+			current_solution = *returned;
 			break;
 		case 4:
-			best = perform_local_search_first_accept(&instance, &current_solution, start_sol);
+			random_construction(&instance, &current_solution);	//TRUE == unicost, FALSE == NON-UNICOST
+			//printout required for python report
+			if (i == 0) {
+				printf("%d ", current_solution.cost);
+			}
+			returned = local_search_first_accept(&instance, &current_solution);
 			operation = "local_search_first_accept";
-			current_solution = *best;
+			current_solution = *returned;
 			break;
 		case 5:
-			
+			random_construction(&instance, &current_solution);	//TRUE == unicost, FALSE == NON-UNICOST
+			//printout required for python report
+			if (i == 0) {
+				printf("%d ", current_solution.cost);
+			}
+			returned = perform_simulated_annealing(&instance, &current_solution);
+			operation = "simulated_annealing";
+			current_solution = *returned;
 			break;
 		case 6:
 			current_solution = jpso(&instance, 10);
@@ -147,6 +163,7 @@ int main(int argument_count, char * argv[])
 		
 		time_t end_sol = get_current_time();
 		current_solution.time = difftime(end_sol, start_sol);
+		
 		if (i == 0) {
 			best_solution = current_solution;
 		}

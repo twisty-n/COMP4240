@@ -53,9 +53,21 @@ void set_to_minus_ones(int * array, int size);
 */
 time_t get_current_time();
 
+/*
+	will print the details of an array
+*/
 void print_array(int * array, int size);
 
+/*
+	will print the details of an array
+	incrementing the output by 1 (use this for presenting data (columns/rows) from the matrix)
+*/
 void print_array_real_column_labels(int * array, int size);
+
+/*
+	will generate a random number between 0 and 1
+*/
+double bounded_rand();
 
 
 

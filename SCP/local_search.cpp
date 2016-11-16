@@ -13,15 +13,6 @@
 #define NEIGHBOURHOOD_SIZE 10		//currently has 10 solutions in a neighbourhood, can ammend if required
 
 
-Solution * perform_local_search_best_accept(Instance * instance, Solution * solution) {
-	// First we'll obtain an initial solution using a greedy approach
-	greedy_construction(instance, solution, FALSE);
-	//random_construction(instance, solution);
-	// Then we'll actually perform the local search given our greedy instance
-	return local_search_best_accept(instance, solution);
-}
-
-
 Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 	// We need to keep a track of the best found cost, and the current state of the solution
 	// This is already done, as being stored in the solution file. 
@@ -81,7 +72,7 @@ Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 			// is a valid solution
 			int compare_result = compare(&working_solution, &current_best);
 
-			printf("Iteration: %d. Hill Climb Iteration: %d. Current best cost: %d. Working best cost: %d \n", current_repetition, i, current_best.cost, working_solution.cost);
+			//printf("Iteration: %d. Hill Climb Iteration: %d. Current best cost: %d. Working best cost: %d \n", current_repetition, i, current_best.cost, working_solution.cost);
 
 			if (is_feasible(instance, &working_solution) && ((compare_result == 0) || (compare_result == -1))) {
 				// This good
@@ -108,20 +99,6 @@ Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 }
 
 
-Solution * perform_local_search_first_accept(Instance * instance, Solution * solution, time_t start_sol) {
-	
-	//construct a random solution S0
-	//TODO:  ensure time is added to the solution properly, so that deep copy will work.
-	greedy_construction(instance, solution, FALSE);
-	//random_construction(instance, solution);
-	time_t end_sol = get_current_time();
-	solution->time = difftime(end_sol, start_sol);
-	
-	//go to local_search
-	return local_search_first_accept(instance, solution);
-}
-
-
 Solution * local_search_first_accept(Instance * instance, Solution * solution_S0) {	
 
 	Solution current = *solution_S0;
@@ -141,13 +118,13 @@ Solution * local_search_first_accept(Instance * instance, Solution * solution_S0
 		//for each solution in the neighbourhood
 		for (int i = 0; i < NEIGHBOURHOOD_SIZE; i++) {
 			//check costs, if you found a better guy, then set as your best neighbour
-			if (compare(&neighbourhood[i], &best_neighbour) < 0){
+			if (compare(&neighbourhood[i], &best_neighbour) == -1){
 				best_neighbour = neighbourhood[i];
 				break;
 			}
 		}
 
-		//if it turns out the current solution was the best solution you already had in your neighbourhood
+		//if it turns out the current solution happens to be the best solution you already had in your neighbourhood
 		if(compare(&current, &best_neighbour) == 0) {
 			terminate_search = TRUE;
 		}
@@ -163,7 +140,7 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 
 	int total_rows_to_swap = 5;				
 	int non_feasible = 0;						//counter for the number of non-feasible solutions generated
-	int non_feasible_max = 2000;				//max number of non-feasible solutions allowed.  When maxed, return s0.
+	int non_feasible_max = 500;					//max number of non-feasible solutions allowed.  When maxed, return s0.
 	boolean solution_found = FALSE;
 	Solution neighbour = deep_copy(instance, solution_S0);
 
@@ -183,9 +160,12 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 			neighbour.non_covering_columns[column_to_add_index] = column_to_remove;
 			neighbour.minimal_cover[column_to_remove_index] = column_to_add;
 
-			//update
+			//updates
 			neighbour.columns_in_solution[column_to_add] = COVERED;
 			neighbour.columns_in_solution[column_to_remove] = NOT_COVERED;
+			neighbour.cost -= instance->column_costs[column_to_remove];
+			neighbour.cost += instance->column_costs[column_to_add];
+
 		}
 		if (is_feasible(instance, &neighbour)) {
 			solution_found = TRUE;
@@ -193,6 +173,35 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 		else {
 			non_feasible++;
 		}
+	}
+
+	return neighbour;
+}
+
+/*
+	still in development - need to work out the plan for this one - how to generate neighbours
+*/
+Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * solution_S0) {
+
+	int total_rows_to_swap = 5;
+	int non_feasible = 0;						//counter for the number of non-feasible solutions generated
+	int non_feasible_max = 2000;				//max number of non-feasible solutions allowed.  When maxed, return s0.
+	boolean solution_found = FALSE;
+	Solution neighbour = deep_copy(instance, solution_S0);
+
+	while (!solution_found && non_feasible < non_feasible_max) {
+	
+		//from the list of cols not in the solution, find the column which provides coverage of the most rows
+		//for(int)
+		//neighbour.non_covering_columns[i]
+		
+		//from the list of cols in the solution, find the column which provides coverage of the least number of rows
+
+		
+		//swap the colums and update the solution
+
+		
+		//check the feasibility of this solution
 	}
 
 	return neighbour;

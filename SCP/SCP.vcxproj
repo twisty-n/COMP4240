@@ -150,6 +150,7 @@
     <ClInclude Include="local_search.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="problem_instance.h" />
+    <ClInclude Include="simulated_annealing.h" />
     <ClInclude Include="solution.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="problem_instance.cpp" />
     <ClCompile Include="SCP.cpp" />
+    <ClCompile Include="simulated_annealing.cpp" />
     <ClCompile Include="solution.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

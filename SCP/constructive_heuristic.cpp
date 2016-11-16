@@ -19,6 +19,7 @@ void random_construction(Instance * instance, Solution * solution) {
 	int * minimal_coverings = (int *) calloc(instance->row_count, sizeof(int));
 	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
 	int * number_of_columns_covering_rows = (int *)calloc(instance->row_count, sizeof(int));	//will not be maintainted in random construction, just initing to save issues else where.
+	int * rows = (int *)calloc(instance->row_count, sizeof(int));								//will not be maintained in random construction, just initing to save issues else where.
 	set_to_minus_ones(column_covering_row, instance->row_count);
 	set_to_minus_ones(minimal_coverings, instance->row_count);
 
@@ -78,7 +79,8 @@ void random_construction(Instance * instance, Solution * solution) {
 
 	solution->cost = current_cost;
 	solution->covering_column = column_covering_row;
-	solution->number_of_columns_covering_rows = number_of_columns_covering_rows;
+	solution->covering_details.row_index = rows;
+	solution->covering_details.number_of_covers = number_of_columns_covering_rows;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 	solution->columns_in_solution = columns_in_solution;
@@ -102,7 +104,7 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	int * column_covering_row = (int *)calloc(instance->row_count, sizeof(int));
 	int * number_of_columns_covering_row = (int *)calloc(instance->row_count, sizeof(int));
 	int * minimal_coverings = (int *)calloc(instance->row_count, sizeof(int));
-	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
+	int * columnIDs_in_solution = (int *)calloc(instance->column_count, sizeof(int));
 	set_to_minus_ones(column_covering_row, instance->row_count);
 	set_to_minus_ones(minimal_coverings, instance->row_count);
 	int current_cost = 0;
@@ -119,6 +121,9 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	for (int i = 0; i < no_uncovered_rows; i++) {
 		uncovered_rows[i] = i;
 	}
+
+	//make a copy of this array which will be used to set the row index in the solution details
+	int * rows = copy_array(uncovered_rows, no_uncovered_rows);
 
 
 	// next, create an array which will be used to define the colums not presently
@@ -159,7 +164,7 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 		//then update the list of uncovered rows based on what the column just covered
 		minimal_coverings[number_of_coverings] = best_col;
 		number_of_coverings++; 
-		columns_in_solution[best_col] = 1;
+		columnIDs_in_solution[best_col] = 1;
 		current_cost += instance->column_costs[best_col];
 		remove_column(unassigned_columns, &best_col, &no_unassigned_columns);
 		remove_rows(column_covering_row, number_of_columns_covering_row, uncovered_rows, &no_uncovered_rows, rows_to_be_covered_this_instance, &no_current_rows, &best_col);
@@ -189,12 +194,13 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	//update solution details with results of the cover
 	solution->cost = current_cost;
 	solution->covering_column = column_covering_row;
-	solution->columns_in_solution = columns_in_solution;
+	solution->columns_in_solution = columnIDs_in_solution;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 	solution->non_covering_columns = non_covering_columns;
 	solution->number_of_non_covering = no_unassigned_columns;
-	solution->number_of_columns_covering_rows = number_of_columns_covering_row;
+	solution->covering_details.row_index = 
+	solution->covering_details.number_of_covers = number_of_columns_covering_row;
 
 	//free memory
 	free(uncovered_rows);

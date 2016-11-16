@@ -143,7 +143,6 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 	int non_feasible_max = 500;					//max number of non-feasible solutions allowed.  When maxed, return s0.
 	boolean solution_found = FALSE;
 	Solution neighbour = deep_copy(instance, solution_S0);
-
 	
 
 	while (!solution_found && non_feasible < non_feasible_max) {
@@ -194,6 +193,7 @@ Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * solu
 
 	for (int i = 0; i < total_rows_to_remove; i++){
 	
+
 		
 	}
 

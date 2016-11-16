@@ -16,6 +16,12 @@ typedef int boolean;
 */
 void quick_sort(int * array, int p, int r);
 
+/*
+	quick_sorts 2 arrays working in parallel
+	index and value will be sored together, 
+	based on the value (lowest to highest)
+*/
+void quick_sort(int * index, int * value, int left, int right);
 
 /*
 	will return ture is all rows are covered by a column

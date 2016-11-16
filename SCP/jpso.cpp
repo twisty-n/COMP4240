@@ -15,10 +15,6 @@ double rand_in_range(int min, int max)
 }
 
 void add_column(Instance * instance, Solution * target, int candidate) {
-	target->minimal_cover[target->number_of_covers] = candidate;
-	target->number_of_covers++;
-	target->columns_in_solution[candidate] = TRUE;
-
 	int removal_index = -1;
 	for (int i = 0; i < target->number_of_non_covering; i++) {
 		if (target->non_covering_columns[i] == candidate) {
@@ -31,6 +27,10 @@ void add_column(Instance * instance, Solution * target, int candidate) {
 		return;
 	}
 
+	target->minimal_cover[target->number_of_covers] = candidate;
+	target->number_of_covers++;
+	target->columns_in_solution[candidate] = TRUE;
+
 	target->non_covering_columns[removal_index] = target->non_covering_columns[target->number_of_non_covering - 1];
 	target->non_covering_columns[target->number_of_non_covering - 1] = -1;
 	target->number_of_non_covering -= 1;
@@ -39,7 +39,7 @@ void add_column(Instance * instance, Solution * target, int candidate) {
 
 Solution * generate_population(Instance * instance, int population_size) {
 	Solution * initial_population = (Solution *) malloc(sizeof(Solution) * population_size);
-	for (int i = 0; i < population_size; i++) {
+	for (int j = 0; j < population_size; j++) {
 		Solution * s = (Solution *) malloc(sizeof(Solution));
 		greedy_construction(instance, s, FALSE);
 		for (int i = 0; i < instance->column_count; i++) {
@@ -51,7 +51,7 @@ Solution * generate_population(Instance * instance, int population_size) {
 				}
 			}
 		}
-		initial_population[i] = *s;
+		initial_population[j] = *s;
 	}
 
 	return initial_population;

@@ -47,7 +47,7 @@ Solution * generate_population(Instance * instance, int population_size) {
 				double mutate = rand_in_range(0,1);
 				if (mutate < 0.25) {
 					s->columns_in_solution[i] = TRUE;
-					add_column(instance, s, i);
+					//add_column(instance, s, i);
 				}
 			}
 		}

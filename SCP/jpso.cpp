@@ -81,7 +81,7 @@ void make_feasible(Instance * instance, Solution * target) {
 	}
 
 	for (int i = 0; i < instance->row_count; i++) {
-		if (rows[1] != TRUE) {
+		if (rows[i] != TRUE) {
 			// Find the best column to cover it
 			long current_best_ratio = LONG_MAX;
 			int best_column = -1;
@@ -97,10 +97,12 @@ void make_feasible(Instance * instance, Solution * target) {
 						}
 					}
 				}
-				long ratio = ((long)cost) / ((long)covers);
-				if (ratio < current_best_ratio) {
-					current_best_ratio = ratio;
-					best_column = candidate;
+				if (covers != 0) {
+					long ratio = ((long)cost) / ((long)covers);
+					if (ratio < current_best_ratio) {
+						current_best_ratio = ratio;
+						best_column = candidate;
+					}
 				}
 			}
 
@@ -191,7 +193,11 @@ Solution jpso(Instance * instance, int population_size) {
 			
 			// Merge, and them perform the local search
 			merge(instance, &population[i], modifier);
-			population[i] = deep_copy(instance, local_search_first_accept(instance, &population[i]));
+
+			// Restore when we have a working local search
+			//Solution * test = local_search_first_accept(instance, &population[i]);
+			//population[i] = deep_copy(instance, test);
+			population[i] = deep_copy(instance, &population[i]);
 
 			if (population[i].cost < personal_bests[i].cost) {
 				personal_bests[i] = deep_copy(instance, &population[i]);

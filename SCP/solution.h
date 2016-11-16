@@ -3,9 +3,8 @@
 #include "problem_instance.h"
 
 /*
-This is only available for solutions using a greedy construction
-has parallel arrays which will hold the number of times a row is has been
-covered in the solution.
+	Has parallel arrays which will hold the number of times a row is has been
+	covered in the solution.
 */
 struct number_of_columns_covering_rows {
 	int * row_index;

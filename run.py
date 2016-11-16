@@ -136,14 +136,14 @@ def host_path():
 def print_single_heuristic_summary_to_xlsx(worksheet_name, operation_mode, output_summary, duration, number_of_runs, report_average):
 	local_time = time.localtime(time.time())
 	time_string = "{}{}{}_{}{}{}_" .format(local_time[0],local_time[1],local_time[2],local_time[3],local_time[4], local_time[5])
-	workbook = xlsxwriter.Workbook(path_to_output + time_string + worksheet_name + summary_output_file)
+	workbook = xlsxwriter.Workbook(path_to_output + time_string + worksheet_name + "_" + summary_output_file)
 	if (int(operation_mode) <= 2):
 		add_worksheet_constructive(workbook, operation_mode, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME], duration, number_of_runs, report_average)
 	else:
 		add_worksheet_others(workbook, operation_mode, worksheet_name, output_summary[BEST_COVER], output_summary[BEST_TIME], output_summary[AVERAGE_COVER], output_summary[AVERAGE_TIME], output_summary[CONSTRUCTIVE], duration, number_of_runs, report_average)
 	
 	workbook.close()
-	return time_string + summary_output_file;
+	return time_string + worksheet_name + summary_output_file;
 
 
 #  function is overloaded, dependingon which heuristic is running:
@@ -172,14 +172,14 @@ def add_headings(worksheet, operation_mode, emphasis_formatting, number_of_runs,
 			worksheet.write('A2', "best known", emphasis_formatting)
 			worksheet.write('A3', "best cost", emphasis_formatting)
 			worksheet.write('A4', "time (seconds)", emphasis_formatting)
-			worksheet.write('A5', "performance vs best-known (%)", emphasis_formatting)
+			worksheet.write('A5', "best performance vs best-known (%)", emphasis_formatting)
 			if report_average:
 				worksheet.write('A6', "average cost - {} iterations", emphasis_formatting)
 				worksheet.write('A7', "time (seconds)", emphasis_formatting)
-				worksheet.write('A8', "performance gains (%)", emphasis_formatting)
-				worksheet.write('A9', "Duration - seconds", emphasis_formatting)
+				worksheet.write('A8', "average performance vs best-known (%)", emphasis_formatting)
+				worksheet.write('A9', "duration - seconds", emphasis_formatting)
 			else:
-				worksheet.write('A6', "Duration - seconds", emphasis_formatting)
+				worksheet.write('A6', "duration - seconds", emphasis_formatting)
 			break
 			
 		#cases 3, 4, 5 and 6 will opreate based on case 6
@@ -195,16 +195,16 @@ def add_headings(worksheet, operation_mode, emphasis_formatting, number_of_runs,
 			worksheet.write('A3', "constructive", emphasis_formatting)
 			worksheet.write('A4', "best cost", emphasis_formatting)
 			worksheet.write('A5', "time (seconds)", emphasis_formatting)
-			worksheet.write('A6', "performance vs best-known (%)", emphasis_formatting)
-			worksheet.write('A7', "performance vs constructive (%)", emphasis_formatting)
+			worksheet.write('A6', "best performance vs best-known (%)", emphasis_formatting)
+			worksheet.write('A7', "best performance vs constructive (%)", emphasis_formatting)
 			if report_average:
-				worksheet.write('A8', "average cost - {} iterations", emphasis_formatting)
+				worksheet.write('A8', "average cost - {} iterations" .format(number_of_runs), emphasis_formatting)
 				worksheet.write('A9', "time (seconds)", emphasis_formatting)
-				worksheet.write('A10', "performance vs best-known (%)", emphasis_formatting)
-				worksheet.write('A11', "performance vs constructive (%)", emphasis_formatting)
-				worksheet.write('A12', "Duration - seconds", emphasis_formatting)
+				worksheet.write('A10', "average performance vs best-known (%)", emphasis_formatting)
+				worksheet.write('A11', "average performance vs constructive (%)", emphasis_formatting)
+				worksheet.write('A12', "duration - seconds", emphasis_formatting)
 			else:
-				worksheet.write('A8', "Duration - seconds", emphasis_formatting)
+				worksheet.write('A8', "duration - seconds", emphasis_formatting)
 			
 			break
 		worksheet.set_column(0, 0, 35)
@@ -303,7 +303,7 @@ def fill_sheet_others(worksheet, heuristic, emphasis_formatting, best_cover_cost
 			average_cover_cell = xl_rowcol_to_cell(row + 7, i)
 			performance_gains_formula = "=100-((" + average_cover_cell + "/" + best_known_cell + ")*100)"
 			worksheet.write_formula(row + 9, i, performance_gains_formula, emphasis_formatting)
-			performance_gains_vs_constructive = "=100-((" + constructive_cell + "/" + average_cover_cell + ")*100)"
+			performance_gains_vs_constructive = "=100-((" + average_cover_cell + "/" + constructive_cell + ")*100)"
 			worksheet.write_formula(row + 10, i, performance_gains_vs_constructive, emphasis_formatting)
 		
 			if (i == 1):

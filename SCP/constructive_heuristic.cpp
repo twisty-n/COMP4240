@@ -15,10 +15,10 @@ void random_construction(Instance * instance, Solution * solution) {
 	// First we create an array for the covering columns
 	// This will be at most the number of rows, most likely less
 	// The ith row will be covered by the value
-	int * columns_coverings_rows = (int *) calloc(instance->row_count, sizeof(int));
+	int * column_covering_row = (int *) calloc(instance->row_count, sizeof(int));
 	int * minimal_coverings = (int *) calloc(instance->row_count, sizeof(int));
 	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
-	set_to_minus_ones(columns_coverings_rows, instance->row_count);
+	set_to_minus_ones(column_covering_row, instance->row_count);
 	set_to_minus_ones(minimal_coverings, instance->row_count);
 
 	//create a set of un_assigned columns so it is easy to find out which columns are not in the solution
@@ -47,7 +47,7 @@ void random_construction(Instance * instance, Solution * solution) {
 		
 		//add column to the solution
 		columns_in_solution[selected_column] = 1; // Flip the bit
-		columns_coverings_rows[row] = selected_column;
+		column_covering_row[row] = selected_column;
 
 		// Determine if the selected column exists in the current set of minimal coverings
 		boolean column_exists = FALSE;
@@ -76,7 +76,7 @@ void random_construction(Instance * instance, Solution * solution) {
 	}
 
 	solution->cost = current_cost;
-	solution->covering_columns = columns_coverings_rows;
+	solution->covering_column = column_covering_row;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 	solution->columns_in_solution = columns_in_solution;
@@ -91,14 +91,17 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	boolean solution_covered = FALSE;
 
 	// First create an array which will keep a reference to the covering columns - this is an array
-	// which will keep track of rows covered by the solution.  array index matches the row, array[i]
+	// which will keep track of rows covered by the solution.  The keep track of how many columns
+	// will be covering a row - this will come in handy during later functions
+	// For this arrays, the index matches the row, array[i].
 	// represents the first column selected which covered it.
 	// minimal_coverings will keep track of which columns are included in the solution
 	// also need to keep track of the current cost and the number of coverings in the solution
-	int * coverings = (int *)calloc(instance->row_count, sizeof(int));
+	int * column_covering_row = (int *)calloc(instance->row_count, sizeof(int));
+	int * number_of_columns_covering_row = (int *)calloc(instance->row_count, sizeof(int));
 	int * minimal_coverings = (int *)calloc(instance->row_count, sizeof(int));
 	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
-	set_to_minus_ones(coverings, instance->row_count);
+	set_to_minus_ones(column_covering_row, instance->row_count);
 	set_to_minus_ones(minimal_coverings, instance->row_count);
 	int current_cost = 0;
 	int number_of_coverings = 0;
@@ -150,15 +153,15 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 		//}
 		
 		//add best col index to the solution
-		//remove it from the set of columns not currently in the solution
-		//and update the list of uncovered rows based on what the column just covered
+		//then remove it from the set of columns not currently in the solution
+		//then update the list of uncovered rows based on what the column just covered
 		minimal_coverings[number_of_coverings] = best_col;
+		number_of_coverings++; 
 		columns_in_solution[best_col] = 1;
-		number_of_coverings++;
 		current_cost += instance->column_costs[best_col];
 		remove_column(unassigned_columns, &best_col, &no_unassigned_columns);
-		remove_rows(coverings, uncovered_rows, &no_uncovered_rows, rows_to_be_covered_this_instance, &no_current_rows, &best_col);
-
+		remove_rows(column_covering_row, number_of_columns_covering_row, uncovered_rows, &no_uncovered_rows, rows_to_be_covered_this_instance, &no_current_rows, &best_col);
+		
 		//fprintf(debug_log, "\nuncovered rows: ");
 		//for (i = 0; i < no_uncovered_rows; i++) {
 		//	fprintf(debug_log, "%d ", uncovered_rows[i]);
@@ -183,12 +186,13 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 
 	//update solution details with results of the cover
 	solution->cost = current_cost;
-	solution->covering_columns = coverings;
+	solution->covering_column = column_covering_row;
 	solution->columns_in_solution = columns_in_solution;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 	solution->non_covering_columns = non_covering_columns;
 	solution->number_of_non_covering = no_unassigned_columns;
+	solution->number_of_columns_covering_rows = number_of_columns_covering_row;
 
 	//free memory
 	free(uncovered_rows);
@@ -315,7 +319,7 @@ void remove_column(int * unassigned_columns, int * best_col, int * no_unassigned
 	}
 }
 
-void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows, int * rows_to_be_covered_this_instance, int * no_current_rows, int * best_col){
+void remove_rows(int * coverings, int * number_of_columns_covering_rows, int * uncovered_rows, int * no_uncovered_rows, int * rows_to_be_covered_this_instance, int * no_current_rows, int * best_col){
 
 	//traverse the set of rows going into the solution, and remove them from the larger rows not yet in the solution
 	//keep the larger array sorted as you go
@@ -323,8 +327,9 @@ void remove_rows(int * coverings, int * uncovered_rows, int * no_uncovered_rows,
 
 	for (int i = 0, j = 0; i < rows_to_be_removed; i++) {
 
-		//for each row to be covered, update its reference in coverings to define which col covered it
+		//for each row to be covered, update its reference in coverings to define last col covered it
 		coverings[rows_to_be_covered_this_instance[i]] = *best_col;
+		number_of_columns_covering_rows[rows_to_be_covered_this_instance[i]]++;
 
 		//find the row to be removed from the uncovered rows list
 		//if you dont have a match, traverse along the uncovered_rows list some more

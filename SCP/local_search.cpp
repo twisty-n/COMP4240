@@ -178,31 +178,33 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 	return neighbour;
 }
 
-/*
-	still in development - need to work out the plan for this one - how to generate neighbours
-*/
+
 Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * solution_S0) {
 
-	int total_rows_to_swap = 5;
+	int total_rows_to_remove = 5;
 	int non_feasible = 0;						//counter for the number of non-feasible solutions generated
-	int non_feasible_max = 2000;				//max number of non-feasible solutions allowed.  When maxed, return s0.
-	boolean solution_found = FALSE;
+	int non_feasible_max = 10;					//max number of non-feasible solutions allowed.  When maxed, return s0.
 	Solution neighbour = deep_copy(instance, solution_S0);
 
-	while (!solution_found && non_feasible < non_feasible_max) {
+	//find the rows that have the highest coverage in the solution
+	int * rows_with_most_coverage = (int *)calloc(total_rows_to_remove, sizeof(int));
+	find_rows_with_most_coverage(instance, solution_S0, rows_with_most_coverage, &total_rows_to_remove);
+
+
+
+	for (int i = 0; i < total_rows_to_remove; i++){
 	
-		//from the list of cols not in the solution, find the column which provides coverage of the most rows
-		//for(int)
-		//neighbour.non_covering_columns[i]
 		
-		//from the list of cols in the solution, find the column which provides coverage of the least number of rows
-
-		
-		//swap the colums and update the solution
-
-		
-		//check the feasibility of this solution
 	}
 
 	return neighbour;
+}
+
+
+void find_rows_with_most_coverage(Instance * instance, Solution * solutionnS0, int * rows_with_most_coverage, int * total_rows_to_remove) {
+
+	int * covers_per_row = (int *)calloc(instance->row_count, sizeof(int));
+	
+	
+
 }

@@ -483,7 +483,7 @@ if __name__ == "__main__":
 	else:
 		random_duration = run_program("1", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
 		greedy_duration = run_program("2", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
-		#best_accept_duration = run_program("3", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
+		best_accept_duration = run_program("3", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
 		first_accept_duration = run_program("4", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
 		simulated_annelaing_duration = run_program("5", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based_meta, report_average)
 		#jumping_particle_swarm_duration = run_program("6", number_of_runs, path_to_runner, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, single_point_meta, population_based)
@@ -525,7 +525,7 @@ if __name__ == "__main__":
 			print(magenta("printing results_summary now"))
 			random_output_file = print_single_heuristic_summary_to_xlsx("random", "1", random_heuristic, random_duration, number_of_runs, report_average)
 			greedy_output_file = print_single_heuristic_summary_to_xlsx("greedy", "2", greedy_heuristic, greedy_duration, "1", False)
-			#best_accept_output_file = print_single_heuristic_summary_to_xlsx("best_accept_greedy", "3", local_search_best_accept, best_accept_duration, number_of_runs, report_average)
+			best_accept_output_file = print_single_heuristic_summary_to_xlsx("best_accept_greedy", "3", local_search_best_accept, best_accept_duration, number_of_runs, report_average)
 			first_accept_output_file = print_single_heuristic_summary_to_xlsx("first_accept_random", "4", local_search_first_accept, first_accept_duration, number_of_runs, report_average)
 			simulated_annelaing_output_file = print_single_heuristic_summary_to_xlsx("simulated_annelaing", "5", single_point_meta, simulated_annelaing_duration, number_of_runs, report_average)
 			#jps_output_file = print_single_heuristic_summary_to_xlsx("jumping_particle_swarm", "7", population_based_meta, jumping_particle_swarm_duration, number_of_runs, report_average)

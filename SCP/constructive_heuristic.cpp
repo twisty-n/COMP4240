@@ -18,6 +18,7 @@ void random_construction(Instance * instance, Solution * solution) {
 	int * column_covering_row = (int *) calloc(instance->row_count, sizeof(int));
 	int * minimal_coverings = (int *) calloc(instance->row_count, sizeof(int));
 	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
+	int * number_of_columns_covering_rows = (int *)calloc(instance->row_count, sizeof(int));	//will not be maintainted in random construction, just initing to save issues else where.
 	set_to_minus_ones(column_covering_row, instance->row_count);
 	set_to_minus_ones(minimal_coverings, instance->row_count);
 
@@ -77,6 +78,7 @@ void random_construction(Instance * instance, Solution * solution) {
 
 	solution->cost = current_cost;
 	solution->covering_column = column_covering_row;
+	solution->number_of_columns_covering_rows = number_of_columns_covering_rows;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 	solution->columns_in_solution = columns_in_solution;

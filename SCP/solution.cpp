@@ -15,7 +15,7 @@ void print_solution(Instance * instance, Solution * solution) {
 	print_array(solution->columns_in_solution, instance->row_count);
 	printf("\n");
 	printf("indicates which col is covering which row:  \n");
-	print_array_real_column_labels(solution->first_covering_column, instance->row_count);
+	print_array_real_column_labels(solution->covering_column, instance->row_count);
 	printf("\n");
 }
 
@@ -48,7 +48,7 @@ void print_solution_to_file(Solution * solution, FILE * file, char * heuristic) 
 
 void free_solution(Solution * solution) {
 	free(solution->minimal_cover);
-	free(solution->first_covering_column);
+	free(solution->covering_column);
 	free(solution->columns_in_solution);
 }
 

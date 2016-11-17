@@ -12,10 +12,8 @@
 Solution * perform_simulated_annealing(Instance * instance, Solution * solution) {
 
 	//Init solutions to work with
-	Solution current_sol;
-	Solution neighbour;
-	
-	neighbour = deep_copy(instance, solution);
+	Solution current_sol = deep_copy(instance, solution);
+	Solution neighbour = deep_copy(instance, solution);
 	int solution_not_found = 0;					//will keep track of the number of times an agreeable solution is not found.
 	int solution_not_found_max = 50;			//allows termination of algorithim if an agreeable soltion is not really found.
 

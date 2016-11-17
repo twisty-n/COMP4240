@@ -18,7 +18,11 @@ void random_construction(Instance * instance, Solution * solution) {
 	int * column_covering_row = (int *) calloc(instance->row_count, sizeof(int));
 	int * minimal_coverings = (int *) calloc(instance->row_count, sizeof(int));
 	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
-	int * number_of_columns_covering_rows = (int *)calloc(instance->row_count, sizeof(int));	//will not be maintainted in random construction, just initing to save issues else where.
+	int * rows = (int *)calloc(instance->row_count, sizeof(int));
+	for (int i = 0; i < instance->row_count; i++) {
+		rows[i] = i;
+	}
+	int * number_of_columns_covering_rows = (int *)calloc(instance->row_count, sizeof(int));
 	set_to_minus_ones(column_covering_row, instance->row_count);
 	set_to_minus_ones(minimal_coverings, instance->row_count);
 
@@ -64,7 +68,8 @@ void random_construction(Instance * instance, Solution * solution) {
 		if (!column_exists) {
 			minimal_coverings[number_of_coverings] = selected_column;
 			current_cost += instance->column_costs[selected_column];
-			remove_column(unassigned_columns, &selected_column, &no_unassigned_columns);
+			update_number_of_columns_covering_row(instance, number_of_columns_covering_rows, &selected_column);
+			remove_column_from_unassigned_cols(unassigned_columns, &selected_column, &no_unassigned_columns);
 			number_of_coverings++;
 		}
 	}
@@ -78,13 +83,15 @@ void random_construction(Instance * instance, Solution * solution) {
 
 	solution->cost = current_cost;
 	solution->covering_column = column_covering_row;
-	solution->number_of_columns_covering_rows = number_of_columns_covering_rows;
+	solution->covering_details.row_index = rows;
+	solution->covering_details.number_of_covers = number_of_columns_covering_rows;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 	solution->columns_in_solution = columns_in_solution;
 	solution->non_covering_columns = non_covering_columns;
 	solution->number_of_non_covering = no_unassigned_columns;
 
+	//test_arrays_and_quick_sort(solution->covering_details.row_index, solution->covering_details.number_of_covers, 0, instance->row_count - 1);
 }
 
 
@@ -102,7 +109,7 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	int * column_covering_row = (int *)calloc(instance->row_count, sizeof(int));
 	int * number_of_columns_covering_row = (int *)calloc(instance->row_count, sizeof(int));
 	int * minimal_coverings = (int *)calloc(instance->row_count, sizeof(int));
-	int * columns_in_solution = (int *)calloc(instance->column_count, sizeof(int));
+	int * columnIDs_in_solution = (int *)calloc(instance->column_count, sizeof(int));
 	set_to_minus_ones(column_covering_row, instance->row_count);
 	set_to_minus_ones(minimal_coverings, instance->row_count);
 	int current_cost = 0;
@@ -119,6 +126,9 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	for (int i = 0; i < no_uncovered_rows; i++) {
 		uncovered_rows[i] = i;
 	}
+
+	//make a copy of this array which will be used to set the row index in the solution details
+	int * rows = copy_array(uncovered_rows, no_uncovered_rows);
 
 
 	// next, create an array which will be used to define the colums not presently
@@ -159,10 +169,11 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 		//then update the list of uncovered rows based on what the column just covered
 		minimal_coverings[number_of_coverings] = best_col;
 		number_of_coverings++; 
-		columns_in_solution[best_col] = 1;
+		columnIDs_in_solution[best_col] = 1;
 		current_cost += instance->column_costs[best_col];
-		remove_column(unassigned_columns, &best_col, &no_unassigned_columns);
-		remove_rows(column_covering_row, number_of_columns_covering_row, uncovered_rows, &no_uncovered_rows, rows_to_be_covered_this_instance, &no_current_rows, &best_col);
+		remove_column_from_unassigned_cols(unassigned_columns, &best_col, &no_unassigned_columns);
+		remove_rows_from_uncovered_rows(column_covering_row, number_of_columns_covering_row, uncovered_rows, &no_uncovered_rows, rows_to_be_covered_this_instance, &no_current_rows, &best_col);
+		update_number_of_columns_covering_row(instance, number_of_columns_covering_row, &best_col);
 		
 		//fprintf(debug_log, "\nuncovered rows: ");
 		//for (i = 0; i < no_uncovered_rows; i++) {
@@ -189,12 +200,15 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	//update solution details with results of the cover
 	solution->cost = current_cost;
 	solution->covering_column = column_covering_row;
-	solution->columns_in_solution = columns_in_solution;
+	solution->columns_in_solution = columnIDs_in_solution;
 	solution->minimal_cover = minimal_coverings;
 	solution->number_of_covers = number_of_coverings;
 	solution->non_covering_columns = non_covering_columns;
 	solution->number_of_non_covering = no_unassigned_columns;
-	solution->number_of_columns_covering_rows = number_of_columns_covering_row;
+	solution->covering_details.row_index = rows;
+	solution->covering_details.number_of_covers = number_of_columns_covering_row;
+
+	//test_arrays_and_quick_sort(solution->covering_details.row_index, solution->covering_details.number_of_covers, 0, instance->row_count - 1);
 
 	//free memory
 	free(uncovered_rows);
@@ -277,11 +291,6 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 
 				if (current_col_value < best_value) {
 
-					//if (current_col_value == best_value) {
-					//	if (tie_break(instance, &current_col_index, current_rows_to_be_covered, &no_current_rows, &best_col_local_index, best_rows_to_be_covered, &*no_selected_rows, &no_unassigned_columns, unassigned_columns) == best_col_local_index)
-					//		continue;
-					//}
-
 					best_col_local_index = i;
 					best_value = current_col_value;
 					best_currrent_rows = no_current_rows;
@@ -290,6 +299,11 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 					for (int n = 0; n < best_currrent_rows; n++) {
 						best_rows_to_be_covered[n] = current_rows_to_be_covered[n];
 					}
+
+					//if (current_col_value == best_value) {
+					//	if (tie_break(instance, &current_col_index, current_rows_to_be_covered, &no_current_rows, &best_col_local_index, best_rows_to_be_covered, &*no_selected_rows, &no_unassigned_columns, unassigned_columns) == best_col_local_index)
+					//		continue;
+					//}
 				}
 			}
 		}
@@ -309,7 +323,7 @@ void find_next_best_col(Instance * instance, int * best_col, int * uncovered_row
 	free(best_rows_to_be_covered);
 }
 
-void remove_column(int * unassigned_columns, int * best_col, int * no_unassigned_columns) {
+void remove_column_from_unassigned_cols(int * unassigned_columns, int * best_col, int * no_unassigned_columns) {
 	for (int i = 0; i < *no_unassigned_columns; i++) {
 		if (unassigned_columns[i] == *best_col) {
 			for (int n = i; n < *no_unassigned_columns - 1; n++) {
@@ -321,7 +335,7 @@ void remove_column(int * unassigned_columns, int * best_col, int * no_unassigned
 	}
 }
 
-void remove_rows(int * coverings, int * number_of_columns_covering_rows, int * uncovered_rows, int * no_uncovered_rows, int * rows_to_be_covered_this_instance, int * no_current_rows, int * best_col){
+void remove_rows_from_uncovered_rows(int * coverings, int * number_of_columns_covering_rows, int * uncovered_rows, int * no_uncovered_rows, int * rows_to_be_covered_this_instance, int * no_current_rows, int * best_col){
 
 	//traverse the set of rows going into the solution, and remove them from the larger rows not yet in the solution
 	//keep the larger array sorted as you go
@@ -331,7 +345,6 @@ void remove_rows(int * coverings, int * number_of_columns_covering_rows, int * u
 
 		//for each row to be covered, update its reference in coverings to define last col covered it
 		coverings[rows_to_be_covered_this_instance[i]] = *best_col;
-		number_of_columns_covering_rows[rows_to_be_covered_this_instance[i]]++;
 
 		//find the row to be removed from the uncovered rows list
 		//if you dont have a match, traverse along the uncovered_rows list some more
@@ -344,6 +357,18 @@ void remove_rows(int * coverings, int * number_of_columns_covering_rows, int * u
 			uncovered_rows[n] = uncovered_rows[n + 1];
 		}
 		*no_uncovered_rows -=1;
+	}
+}
+
+void update_number_of_columns_covering_row(Instance * instance, int * number_of_columns_covering_row, int * column) {
+
+	//for each row in the solution
+	for (int row = 0; row < instance->row_count; row++) {
+
+		//check if the selected column is covering it		
+		if (instance->matrix[row][*column] == 1) {
+			number_of_columns_covering_row[row] += 1;
+		}
 	}
 }
 

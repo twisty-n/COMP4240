@@ -183,28 +183,70 @@ Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * solu
 	int total_rows_to_remove = 5;
 	int non_feasible = 0;						//counter for the number of non-feasible solutions generated
 	int non_feasible_max = 10;					//max number of non-feasible solutions allowed.  When maxed, return s0.
+	
 	Solution neighbour = deep_copy(instance, solution_S0);
 
 	//find the rows that have the highest coverage in the solution
 	int * rows_with_most_coverage = (int *)calloc(total_rows_to_remove, sizeof(int));
-	find_rows_with_most_coverage(instance, solution_S0, rows_with_most_coverage, &total_rows_to_remove);
+	find_rows_with_most_coverage(instance, &neighbour, rows_with_most_coverage, &total_rows_to_remove);
 
-
-
+	//remove a selected column which is covering one of these rows from the solution
 	for (int i = 0; i < total_rows_to_remove; i++){
 	
+		//find a column to remove
+		int column_to_remove = neighbour.covering_column[rows_with_most_coverage[i]];
 
+		//find out how many rows will lose 1 cover because of this removal
+																																		//you know there will be at least one row losing cover, but init to 0
+		int number_of_rows_losing_cover = 0;																							//the next function (find_rows_losing_cover) will update
+		int * rows_losing_cover = find_rows_losing_cover(instance, &neighbour, &column_to_remove, &number_of_rows_losing_cover);		//this value, so that it can be used as a logical size
+																																		//for the array
 		
+		
+
 	}
 
 	return neighbour;
 }
 
 
-void find_rows_with_most_coverage(Instance * instance, Solution * solutionnS0, int * rows_with_most_coverage, int * total_rows_to_remove) {
+void find_rows_with_most_coverage(Instance * instance, Solution * solution, int * rows_with_most_coverage, int * total_rows_to_remove) {
 
-	int * covers_per_row = (int *)calloc(instance->row_count, sizeof(int));
-	
-	
+	//make copies of the row coverings and sort them.  Sort will be sorted from least cover to most cover
+	int * row_index = copy_array(solution->covering_details.row_index, instance->row_count);
+	int * covers_per_row = copy_array(solution->covering_details.number_of_covers, instance->row_count);
+	quick_sort(row_index, covers_per_row, 0, instance->row_count - 1);
 
+	//print to test
+	//test_arrays_and_quick_sort(row_index, covers_per_row, 0, instance->row_count-1);
+
+	//find the index's for the rows to remove this round
+	for (int i = 0, j = instance->row_count - 1; i < *total_rows_to_remove; i++, j--) {
+		rows_with_most_coverage[i] = row_index[j];
+	}
+	
+	//print to test
+	//print_array(rows_with_most_coverage, *total_rows_to_remove);
+
+}
+
+
+int * find_rows_losing_cover(Instance * instance, Solution * solution, int * column_to_remove, int * number_of_rows_losing_cover) {
+	
+	//create an array with one element, you know there will be at least one row losing cover
+	int * rows_losing_cover = (int *)calloc(1, sizeof(int));
+
+	//find which rows are being covered by this column
+	for (int row = 0; row < instance->row_count; row++) {
+		if (instance->matrix[row][*column_to_remove] == 1) {
+			rows_losing_cover[*number_of_rows_losing_cover] += 1;
+			number_of_rows_losing_cover += 1;
+			expand_array(rows_losing_cover, *number_of_rows_losing_cover);
+		}
+	}
+
+	//for testing
+	print_array(rows_losing_cover, *number_of_rows_losing_cover);
+
+	return rows_losing_cover;
 }

@@ -8,13 +8,13 @@
 void quick_sort(int * arr, int left, int right) {
 	int i = left, j = right;
 	int tmp;
-	int pivot = arr[(left + right) / 2];
+	int pivot_value = arr[(left + right) / 2];
 
 	/* partition */
 	while (i <= j) {
-		while (arr[i] < pivot)
+		while (arr[i] < pivot_value)
 			i++;
-		while (arr[j] > pivot)
+		while (arr[j] > pivot_value)
 			j--;
 		if (i <= j) {
 			tmp = arr[i];
@@ -30,6 +30,37 @@ void quick_sort(int * arr, int left, int right) {
 		quick_sort(arr, left, j);
 	if (i < right)
 		quick_sort(arr, i, right);
+}
+
+
+void quick_sort(int * index, int * value, int left, int right){
+	int i = left, j = right;
+	int tmp_index, tmp_value;
+	int pivot_value = value[(left + right) / 2];
+
+	/* partition */
+	while (i <= j) {
+		while (value[i] < pivot_value)
+			i++;
+		while (value[j] > pivot_value)
+			j--;
+		if (i <= j) {
+			tmp_index = index[i];
+			tmp_value = value[i];
+			index[i] = index[j];
+			value[i] = value[j];
+			index[j] = tmp_index;
+			value[j] = tmp_value;
+			i++;
+			j--;
+		}
+	};
+
+	/* recursion */
+	if (left < j)
+		quick_sort(index, value, left, j);
+	if (i < right)
+		quick_sort(index, value, i, right);
 }
 
 int compare(Solution * solution_a, Solution * solution_b) {
@@ -55,7 +86,8 @@ Solution deep_copy(Instance * instance, Solution * solution_s0) {
 	deep_copy.minimal_cover = copy_array(solution_s0->minimal_cover, instance->row_count);
 	deep_copy.columns_in_solution = copy_array(solution_s0->columns_in_solution, instance->column_count);
 	deep_copy.non_covering_columns = copy_array(solution_s0->non_covering_columns, solution_s0->number_of_non_covering);
-	deep_copy.number_of_columns_covering_rows = copy_array(solution_s0->number_of_columns_covering_rows, instance->row_count);
+	deep_copy.covering_details.row_index = copy_array(solution_s0->covering_details.row_index, instance->row_count);
+	deep_copy.covering_details.number_of_covers = copy_array(solution_s0->covering_details.number_of_covers, instance->row_count);
 
 	return deep_copy;
 }
@@ -150,4 +182,35 @@ time_t get_current_time() {
 
 double bounded_rand() {
 	return ((double)rand() / (RAND_MAX));
+}
+
+
+void test_arrays_and_quick_sort(int * index, int * value, int left, int right) {
+	
+	print_array(index, right+1);
+	printf("\n\n\n");
+	print_array(value, right + 1);
+	printf("\n\n\n");
+
+	quick_sort(index, value, left, right);
+	
+	print_array(index, right + 1);
+	printf("\n\n\n");
+	print_array(value, right + 1);
+	printf("\n\n\n");
+
+}
+
+void expand_array(int * array, int size) {
+
+	int * new_array = (int *)calloc(size+1, sizeof(int));
+	int * old_array = array;
+
+	for (int i = 0; i < size; i++) {
+		new_array[i] = old_array[i];
+	}
+	
+	*array = *new_array;
+	//free(old_array);
+	
 }

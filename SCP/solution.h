@@ -2,6 +2,15 @@
 
 #include "problem_instance.h"
 
+/*
+	Has parallel arrays which will hold the number of times a row is has been
+	covered in the solution.
+*/
+struct number_of_columns_covering_rows {
+	int * row_index;
+	int * number_of_covers;
+};
+
 
 struct Solution {
 	int cost;
@@ -15,13 +24,7 @@ struct Solution {
 	*/
 	int * covering_column;
 
-	/*
-		This is only available for solutions using a greedy contruction
-		Each cell represents a row, the value represents how many columns in the solution
-		are covering that row.  
-		-1 indicates that the row is not covered
-	*/
-	int * number_of_columns_covering_rows;
+	number_of_columns_covering_rows covering_details;
 
 
 	/*

@@ -63,42 +63,44 @@ void make_feasible(Instance * instance, Solution * target) {
 			}
 		}
 	}
+	while (!is_feasible(instance, target)) {
+		for (int i = 0; i < instance->row_count; i++) {
+			if (rows[i] != TRUE) {
+				//printf("covering %d", i);
+				// Find the best column to cover it
+				long current_best_ratio = LONG_MAX;
+				int best_column = -1;
 
-	for (int i = 0; i < instance->row_count; i++) {
-		if (rows[i] != TRUE) {
-			// Find the best column to cover it
-			long current_best_ratio = LONG_MAX;
-			int best_column = -1;
-			
-			for (int j = 0; j < target->number_of_non_covering; j++) {
-				int candidate = target->non_covering_columns[i];
-				int cost = instance->column_costs[candidate];
-				int covers = 0;
-				for (int i = 0; i < instance->row_count; i++) {
-					if (instance->matrix[i][candidate] == TRUE) {
-						if (rows[i] == FALSE) {
-							covers++;
+				for (int j = 0; j < target->number_of_non_covering; j++) {
+					int candidate = target->non_covering_columns[j];
+					
+					if (instance->matrix[i][candidate] != TRUE) continue;
+
+					int cost = instance->column_costs[candidate];
+					int covers = 0;
+					for (int i = 0; i < instance->row_count; i++) {
+						if (instance->matrix[i][candidate] == TRUE) {
+							if (rows[i] == FALSE) {
+								covers++;
+							}
+						}
+					}
+					if (covers != 0) {
+						long ratio = ((long)cost) / ((long)covers);
+						if (ratio < current_best_ratio) {
+							current_best_ratio = ratio;
+							best_column = candidate;
 						}
 					}
 				}
-				if (covers != 0) {
-					long ratio = ((long)cost) / ((long)covers);
-					if (ratio < current_best_ratio) {
-						current_best_ratio = ratio;
-						best_column = candidate;
+
+				for (int i = 0; i < instance->row_count; i++) {
+					if (instance->matrix[i][best_column] == TRUE) {
+						rows[i] = TRUE;
 					}
 				}
-			}
 
-			for (int i = 0; i < instance->row_count; i++) {
-				if (instance->matrix[i][best_column] == TRUE) {
-					rows[i] = TRUE;
-				}
-			}
-
-			add_column(instance, target, best_column);
-			
-			if (is_feasible(instance, target)) {
+				add_column(instance, target, best_column);
 				break;
 			}
 		}
@@ -155,8 +157,8 @@ Solution jpso(Instance * instance, int population_size) {
 			merge(instance, &population[i], modifier);
 
 			// Restore when we have a working local search
-			//Solution * test = local_search_first_accept(instance, &population[i]);
-			//population[i] = deep_copy(instance, test);
+			Solution * test = local_search_first_accept(instance, &population[i]);
+			population[i] = deep_copy(instance, test);
 			//population[i] = deep_copy(instance, &population[i]);
 
 			if (population[i].cost < personal_bests[i].cost) {

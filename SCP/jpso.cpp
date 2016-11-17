@@ -38,22 +38,6 @@ void add_column(Instance * instance, Solution * target, int candidate) {
 	target->cost += instance->column_costs[candidate];
 }
 
-void remove_column(Instance * instance, Solution * target, int candidate) {
-	target->columns_in_solution[candidate] = FALSE;
-	for (int i = 0; i < target->number_of_covers; i++) {
-		if (target->minimal_cover[i] == candidate) {
-			target->minimal_cover[i] = target->minimal_cover[target->number_of_covers - 1];
-			target->minimal_cover[target->number_of_covers - 1] = -1;
-			target->number_of_covers -= 1;
-			target->cost -= instance->column_costs[candidate];
-
-			target->non_covering_columns[target->number_of_non_covering] = candidate;
-			target->number_of_non_covering += 1;
-			break;
-		}
-	}
-}
-
 Solution * generate_population(Instance * instance, int population_size) {
 	Solution * initial_population = (Solution *) malloc(sizeof(Solution) * population_size);
 	for (int j = 0; j < population_size; j++) {

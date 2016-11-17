@@ -96,6 +96,10 @@ void test_arrays_and_quick_sort(int * index, int * value, int left, int right);
 */
 int * expand_array(int * array, int size);
 
+/*
+	Removes a column from the solution and updates all necessary fields
+*/
+void remove_column(Instance * instance, Solution * target, int candidate);
 
 
 

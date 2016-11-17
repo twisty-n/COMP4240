@@ -202,7 +202,8 @@ Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * solu
 		int * rows_losing_cover = find_rows_losing_cover(instance, &neighbour, &column_to_remove, &number_of_rows_losing_cover);		//this value, so that it can be used as a logical size
 																																		//for the array
 		//now we need to update the details of the solution properly
-		update_solution_deatils(instance, &neighbour, &column_to_remove, rows_losing_cover, &number_of_rows_losing_cover);
+		remove_column(instance, &neighbour, column_to_remove);
+
 
 	}
 
@@ -247,31 +248,4 @@ int * find_rows_losing_cover(Instance * instance, Solution * solution, int * col
 	//for testing
 	//print_array(rows_losing_cover, *number_of_rows_losing_cover);
 	return rows_losing_cover;
-}
-
-//remove the cost of the column from the solution, remove it from the covering columns list and 
-//add it to the uncovering columns list
-void update_solution_deatils(Instance * instance, Solution * neighbour, int * column_to_remove, int * rows_losing_cover, int * number_of_rows_losing_cover) {
-
-	//update the cost of the solution
-	neighbour->cost -= instance->column_costs[*column_to_remove];
-	
-	//remove column from the list of covering columns
-	for (int i = 0; i < neighbour->number_of_covers; i++) {
-		if (neighbour->minimal_cover[i] == *column_to_remove) {
-			for (int j = i+1; j < neighbour->number_of_covers; j++, i++) {
-				neighbour->minimal_cover[i] = neighbour->minimal_cover[j];
-			}
-			neighbour->number_of_covers -= 1;
-			break;
-		}
-	}
-
-	//add the column to the list of non-covering columns in the solution
-	neighbour->non_covering_columns[neighbour->number_of_non_covering] = *column_to_remove;
-	neighbour->number_of_non_covering += 1;
-
-
-
-
 }

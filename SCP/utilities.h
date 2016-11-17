@@ -92,7 +92,7 @@ void test_arrays_and_quick_sort(int * index, int * value, int left, int right);
 /*
 	will take an array and exapand it by 1 empty element
 */
-void expand_array(int * array, int size);
+int * expand_array(int * array, int size);
 
 
 

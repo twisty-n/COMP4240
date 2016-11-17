@@ -201,16 +201,13 @@ void test_arrays_and_quick_sort(int * index, int * value, int left, int right) {
 
 }
 
-void expand_array(int * array, int size) {
+int * expand_array(int * array, int size) {
 
-	int * new_array = (int *)calloc(size+1, sizeof(int));
-	int * old_array = array;
+	int * new_array = (int *)malloc(size+1);
 
 	for (int i = 0; i < size; i++) {
-		new_array[i] = old_array[i];
+		new_array[i] = array[i];
 	}
 	
-	*array = *new_array;
-	//free(old_array);
-	
+	return array;
 }

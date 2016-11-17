@@ -14,30 +14,6 @@ double rand_in_range(int min, int max)
 	return min + (rand() / div);
 }
 
-void add_column(Instance * instance, Solution * target, int candidate) {
-	int removal_index = -1;
-	for (int i = 0; i < target->number_of_non_covering; i++) {
-		if (target->non_covering_columns[i] == candidate) {
-			removal_index = i;
-			break;
-		}
-	}
-
-	// If we can't remove it, it was already a member of the solution
-	if (removal_index == -1) {
-		return;
-	}
-
-	target->minimal_cover[target->number_of_covers] = candidate;
-	target->number_of_covers++;
-	target->columns_in_solution[candidate] = TRUE;
-
-	target->non_covering_columns[removal_index] = target->non_covering_columns[target->number_of_non_covering - 1];
-	target->non_covering_columns[target->number_of_non_covering - 1] = -1;
-	target->number_of_non_covering -= 1;
-	target->cost += instance->column_costs[candidate];
-}
-
 Solution * generate_population(Instance * instance, int population_size) {
 	Solution * initial_population = (Solution *) malloc(sizeof(Solution) * population_size);
 	for (int j = 0; j < population_size; j++) {
@@ -61,8 +37,6 @@ Solution * generate_population(Instance * instance, int population_size) {
 boolean terminate(int current_iteration, Solution * solutions) {
 	return current_iteration > 20 ? TRUE : FALSE;
 }
-
-
 
 void make_feasible(Instance * instance, Solution * target) {
 	// add columsn to cover things with the lowest cost ratio

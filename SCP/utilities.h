@@ -101,6 +101,12 @@ int * expand_array(int * array, int size);
 */
 void remove_column(Instance * instance, Solution * target, int candidate);
 
+/*
+	This nice chap will add a column to your solution and udpate any required details
+*/
+void add_column(Instance * instance, Solution * target, int candidate);
+
+
 
 
 

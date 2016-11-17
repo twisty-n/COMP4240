@@ -224,3 +224,44 @@ int * expand_array(int * array, int size) {
 	
 	return array;
 }
+
+void remove_column(Instance * instance, Solution * target, int candidate) {
+	target->columns_in_solution[candidate] = FALSE;
+	for (int i = 0; i < target->number_of_covers; i++) {
+		if (target->minimal_cover[i] == candidate) {
+			target->minimal_cover[i] = target->minimal_cover[target->number_of_covers - 1];
+			target->minimal_cover[target->number_of_covers - 1] = -1;
+			target->number_of_covers -= 1;
+			target->cost -= instance->column_costs[candidate];
+
+			target->non_covering_columns[target->number_of_non_covering] = candidate;
+			target->number_of_non_covering += 1;
+			break;
+		}
+	}
+	target->columns_in_solution[candidate] = -1;
+}
+
+void add_column(Instance * instance, Solution * target, int candidate) {
+	int removal_index = -1;
+	for (int i = 0; i < target->number_of_non_covering; i++) {
+		if (target->non_covering_columns[i] == candidate) {
+			removal_index = i;
+			break;
+		}
+	}
+
+	// If we can't remove it, it was already a member of the solution
+	if (removal_index == -1) {
+		return;
+	}
+
+	target->minimal_cover[target->number_of_covers] = candidate;
+	target->number_of_covers++;
+	target->columns_in_solution[candidate] = TRUE;
+
+	target->non_covering_columns[removal_index] = target->non_covering_columns[target->number_of_non_covering - 1];
+	target->non_covering_columns[target->number_of_non_covering - 1] = -1;
+	target->number_of_non_covering -= 1;
+	target->cost += instance->column_costs[candidate];
+}

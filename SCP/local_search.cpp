@@ -102,6 +102,7 @@ Solution * local_search_best_accept(Instance * instance, Solution * solution) {
 Solution * local_search_first_accept(Instance * instance, Solution * solution_S0) {	
 
 	Solution current = *solution_S0;
+	Solution base_neighbour;
 	Solution best_neighbour;
 	boolean terminate_search = FALSE;
 	Solution neighbourhood[NEIGHBOURHOOD_SIZE];
@@ -111,8 +112,10 @@ Solution * local_search_first_accept(Instance * instance, Solution * solution_S0
 		best_neighbour = current;
 
 		//define the neighbourhood	
+		base_neighbour = current;
 		for (int i = 0; i < NEIGHBOURHOOD_SIZE; i++) {
-			neighbourhood[i] = randomly_generate_neighbour(instance, &current);
+			neighbourhood[i] = not_so_randomly_generate_neighbour(instance, &base_neighbour);
+			base_neighbour = deep_copy(instance, &neighbourhood[i]);
 		}
 
 		//for each solution in the neighbourhood

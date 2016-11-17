@@ -207,7 +207,7 @@ def add_headings(worksheet, operation_mode, emphasis_formatting, number_of_runs,
 				worksheet.write('A8', "duration - seconds", emphasis_formatting)
 			
 			break
-		worksheet.set_column(0, 0, 35)
+		worksheet.set_column(0, 0, 45)
 	
 	
 # This function is also overloaded, depending on which code it runs for:  This will services codes 1 and 2

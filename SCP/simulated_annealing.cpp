@@ -29,7 +29,7 @@ Solution * perform_simulated_annealing(Instance * instance, Solution * solution)
 		T = double(k) / double(k_final);
 		
 		//generate a neighbour
-		neighbour = not_so_randomly_generate_neighbour(instance, &neighbour);
+		neighbour = randomly_generate_neighbour(instance, &neighbour);
 
 		//decide if you will keep the neighbour
 		if (probaility(&current_sol, &neighbour, T) >= bounded_rand()) {

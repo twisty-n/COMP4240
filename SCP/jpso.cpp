@@ -9,9 +9,9 @@
 
 double rand_in_range(int min, int max)
 {
-	double scaled = (double)rand() / (double)RAND_MAX;
-
-	return (max - min + 1)*scaled + min;
+	double range = (max - min);
+	double div = RAND_MAX / range;
+	return min + (rand() / div);
 }
 
 void add_column(Instance * instance, Solution * target, int candidate) {
@@ -23,6 +23,7 @@ void add_column(Instance * instance, Solution * target, int candidate) {
 		}
 	}
 
+	// If we can't remove it, it was already a member of the solution
 	if (removal_index == -1) {
 		return;
 	}
@@ -37,6 +38,22 @@ void add_column(Instance * instance, Solution * target, int candidate) {
 	target->cost += instance->column_costs[candidate];
 }
 
+void remove_column(Instance * instance, Solution * target, int candidate) {
+	target->columns_in_solution[candidate] = FALSE;
+	for (int i = 0; i < target->number_of_covers; i++) {
+		if (target->minimal_cover[i] == candidate) {
+			target->minimal_cover[i] = target->minimal_cover[target->number_of_covers - 1];
+			target->minimal_cover[target->number_of_covers - 1] = -1;
+			target->number_of_covers -= 1;
+			target->cost -= instance->column_costs[candidate];
+
+			target->non_covering_columns[target->number_of_non_covering] = candidate;
+			target->number_of_non_covering += 1;
+			break;
+		}
+	}
+}
+
 Solution * generate_population(Instance * instance, int population_size) {
 	Solution * initial_population = (Solution *) malloc(sizeof(Solution) * population_size);
 	for (int j = 0; j < population_size; j++) {
@@ -45,7 +62,7 @@ Solution * generate_population(Instance * instance, int population_size) {
 		for (int i = 0; i < instance->column_count; i++) {
 			if (s->columns_in_solution[i] != TRUE) {
 				double mutate = rand_in_range(0,1);
-				if (mutate < 0.25) {
+				if (mutate < 0.1) {
 					s->columns_in_solution[i] = TRUE;
 					//add_column(instance, s, i);
 				}
@@ -70,6 +87,9 @@ void make_feasible(Instance * instance, Solution * target) {
 	int * rows = (int *) calloc(instance->row_count, sizeof(int));
 
 	// Preprocess to see which rows are uncovered
+
+	target->minimal_cover = reverse_quick_sort(target->minimal_cover, 0, instance->row_count - 1, instance->row_count);
+
 	for (int i = 0; i < target->number_of_covers; i++) {
 		int covering_column = target->minimal_cover[i];
 		assert(covering_column != -1);
@@ -124,24 +144,12 @@ void make_feasible(Instance * instance, Solution * target) {
 }
 
 void merge(Instance * instance, Solution * target, Solution * source) {
-	int number_columns_to_modify = rand() * ((2 * target->number_of_covers) / 3.0);
+	int number_columns_to_modify = (int)rand_in_range(1, target->number_of_covers / 3.0);
 	for (int i = 0; i < number_columns_to_modify; i++) {
 		boolean do_remove = rand_in_range(0, 1) < 0.5;
 		if (do_remove) {
 			int candidate = target->minimal_cover[((int)rand_in_range(0, target->number_of_covers-1))];
-			target->columns_in_solution[candidate] = FALSE;
-			for (int i = 0; i < target->number_of_covers; i++) {
-				if (target->minimal_cover[i] == candidate) {
-					target->minimal_cover[i] = target->minimal_cover[target->number_of_covers - 1];
-					target->minimal_cover[target->number_of_covers - 1] = -1;
-					target->number_of_covers -= 1;
-					target->cost -= instance->column_costs[candidate];
-
-					target->non_covering_columns[target->number_of_non_covering] = candidate;
-					target->number_of_non_covering += 1;
-					break;
-				}
-			}
+			remove_column(instance, target, candidate);
 		}
 		else {
 			int index = ((int)rand_in_range(0, source->number_of_covers));

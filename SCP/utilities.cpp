@@ -32,6 +32,19 @@ void quick_sort(int * arr, int left, int right) {
 		quick_sort(arr, i, right);
 }
 
+int * reverse_array(int * a, int size) {
+	int * a2 = (int *)malloc(size * sizeof(int));
+	for (int i = size - 1, j = 0; i >= 0; i--, j++) {
+		a2[j] = a[i];
+	}
+	return a2;
+}
+
+int * reverse_quick_sort(int arr[], int left, int right, int size) {
+	quick_sort(arr, left, right);
+	return reverse_array(arr, size);
+}
+
 
 void quick_sort(int * index, int * value, int left, int right){
 	int i = left, j = right;

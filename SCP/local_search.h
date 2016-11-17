@@ -48,9 +48,9 @@ Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * solu
 void find_rows_with_most_coverage(Instance * instance, Solution * solutionnS0, int * rows_with_most_coverage, int * total_rows_to_remove);
 
 /*
-	will scan the matrix to work out how many rows are losing cover due to removal of a colum
+	will scan the matrix to work out how many rows are are covered by a column
 	Will returns an array with the id's of rows that are covered by a column
-	Will keeps the value of number_of_rows_losing_cover updated to represent how rows a colum covered
-	(when calling, provide 0 as the number_of_rows_losing_cover).
+	When calling, provide an int pointer init'd to 0 as the logical size)  - function will keep this updated
+	and this will represent the number of rows being covered by the solution.
 */
-int * find_rows_losing_cover(Instance * instance, Solution * solution, int * column_to_remove, int * number_of_rows_losing_cover);
+int * find_rows_covered_by_column(Instance * instance, Solution * solution, int * selected_col, int * logical_size);

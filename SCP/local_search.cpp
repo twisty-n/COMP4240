@@ -234,15 +234,14 @@ Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * neig
 	}
 	free(rows_with_most_coverage);
 
-	//check if any rows are missing cover and require a column to be added
+	//for all rows:
 	for (int row = 0; row < instance->row_count; row++) {
 		
+		//check if any rows are missing cover and require a column to be added
 		if (neighbour->covering_details.number_of_covers[row] <= 0) {
-			
 			//get a list of columns which can cover the row
 			int coverings_for_row = instance->row_covering_count[row];
 			int * column_covers_for_row = instance->raw_coverings[row];
-
 			//find the cheapest
 			int min_cost = INT_MAX;
 			int selected_col;
@@ -252,16 +251,13 @@ Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * neig
 					selected_col = column_covers_for_row[j];
 				}
 			}
-
 			//add the column to the solution then list it as the covering column for this row
 			add_column(instance, neighbour, selected_col);
 			neighbour->covering_column[row] = selected_col;
-
 			//find all other rows which are being covered because of this addition
 			int number_of_rows_being_added = 0;
 			int * rows_getting_cover = (int *)calloc(instance->row_count, sizeof(int));
 			find_rows_covered_by_column(instance, neighbour, rows_getting_cover, &selected_col, &number_of_rows_being_added);
-
 			//and update their coverage details
 			for (int k = 0; k < number_of_rows_being_added; k++) {
 				if (neighbour->covering_details.number_of_covers[rows_getting_cover[k]] >= 0) {
@@ -273,6 +269,17 @@ Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * neig
 				}
 			}
 			free(rows_getting_cover);
+		}
+
+		//sanity check - ensure that the row does have a decent value as its covering column
+		if (neighbour->covering_column[row] < 0) {
+//			printf("you have an issue - look into how/when you are getting here");
+			for (int k = 0; k < instance->row_covering_count[row]; k++) {
+				if (neighbour->columns_in_solution[instance->raw_coverings[row][k]] == TRUE) {
+					neighbour->covering_column[row] = instance->raw_coverings[row][k];
+					break;
+				}
+			}
 		}
 	}
 	return *neighbour;

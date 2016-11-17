@@ -54,3 +54,8 @@ void find_rows_with_most_coverage(Instance * instance, Solution * solutionnS0, i
 	and this will represent the number of rows being covered by the solution.
 */
 int * find_rows_covered_by_column(Instance * instance, Solution * solution, int * selected_col, int * logical_size);
+
+/*
+	trying a new one because the memory management on the other one stuffed up
+*/
+void find_rows_covered_by_column(Instance * instance, Solution * solution, int * rows_covered_by_column, int * selected_col, int * logical_size);

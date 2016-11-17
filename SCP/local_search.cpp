@@ -183,38 +183,46 @@ Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * solu
 	int total_cols_to_remove = 5;
 	int non_feasible = 0;						//counter for the number of non-feasible solutions generated
 	int non_feasible_max = 10;					//max number of non-feasible solutions allowed.  When maxed, return s0.
+	int number_of_rows_losing_cover;
+	int * rows_losing_cover;
+	int column_to_remove;
 	
 	Solution neighbour = deep_copy(instance, solution_S0);
 
 	//find the rows that have the highest coverage in the solution
 	int * rows_with_most_coverage = (int *)calloc(total_cols_to_remove, sizeof(int));
 	find_rows_with_most_coverage(instance, &neighbour, rows_with_most_coverage, &total_cols_to_remove);
+	//print_array(rows_with_most_coverage, total_cols_to_remove);
 
 	//for each of these rows, remove a selected column which is covering one of these rows from the solution
 	for (int i = 0; i < total_cols_to_remove; i++){
 	
 		//find a column to remove
-		int column_to_remove = neighbour.covering_column[rows_with_most_coverage[i]];
+		column_to_remove = neighbour.covering_column[rows_with_most_coverage[i]];
 
-		//find out how many rows will lose 1 cover because of this removal																																//you know there will be at least one row losing cover, but init to 0
-		int number_of_rows_losing_cover = 0;																							//the next function (find_rows_losing_cover) will update
-		int * rows_losing_cover = find_rows_covered_by_column(instance, &neighbour, &column_to_remove, &number_of_rows_losing_cover);		//this value, so that it can be used as a logical size
-																																		//for the array
+		//find out how many rows will lose 1 cover because of this removal																
+		number_of_rows_losing_cover = 0;																								
+		rows_losing_cover = find_rows_covered_by_column(instance, &neighbour, &column_to_remove, &number_of_rows_losing_cover);
+	
 		//now remove the column from the solution
 		remove_column(instance, &neighbour, column_to_remove);
 
-		//now update details in the solution for each of the rows losing cover
-		for (int i = 0; i < number_of_rows_losing_cover; i++) {	
+		/******************************************************************************************************************
+			Now it's all just housekeeping
+		******************************************************************************************************************/
+		//update details in the solution for each of the rows losing cover
+
+		for (int j = 0; j < number_of_rows_losing_cover; j++) {	
 			
 			//update the number of covers for this row
-			neighbour.covering_details.number_of_covers[rows_losing_cover[i]] -= 1;
+			neighbour.covering_details.number_of_covers[rows_losing_cover[j]] -= 1;
 			
 			//if that is now less than zero you have to add a column which covers this row
-			if (neighbour.covering_details.number_of_covers[rows_losing_cover[i]] == 0) {
+			if (neighbour.covering_details.number_of_covers[rows_losing_cover[j]] == 0) {
 				
 				//get a list of columns which can cover the row
-				int coverings_for_row = instance->row_covering_count[rows_losing_cover[i]];
-				int * column_covers_for_row = instance->raw_coverings[rows_losing_cover[i]];
+				int coverings_for_row = instance->row_covering_count[rows_losing_cover[j]];
+				int * column_covers_for_row = instance->raw_coverings[rows_losing_cover[j]];
 
 				//work out what you can add (try and add the first one - it'll be the cheapest)
 				int selected_covering_col = column_covers_for_row[0];
@@ -222,34 +230,37 @@ Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * solu
 					selected_covering_col = column_covers_for_row[1];
 				} 
 				
-				//add the column and list it as the covering column for this row
+				//add the column to the solution then list it as the covering column for this row
 				add_column(instance, &neighbour, selected_covering_col);
-				neighbour.covering_column[rows_losing_cover[i]] = column_covers_for_row[selected_covering_col];
+				neighbour.covering_column[rows_losing_cover[j]] = selected_covering_col;
+
 				
-				//find any other rows which are being covered because of this addition and update their coverage details
+				//find all other rows which are being covered because of this addition and update their coverage details
 				int number_of_rows_being_added = 0;
 				int * rows_getting_cover = find_rows_covered_by_column(instance, &neighbour, &selected_covering_col, &number_of_rows_being_added);
-				for (int j = 0; j < number_of_rows_being_added; j++) {
-					neighbour.covering_details.number_of_covers[rows_getting_cover[j]] += 1;
+				for (int k = 0; k < number_of_rows_being_added; k++) {
+					neighbour.covering_details.number_of_covers[rows_getting_cover[k]] += 1;
 				}
-
+				free(rows_getting_cover);
 			}
 
-			//if the colum being removed was representative as covering col for this row, update it to something else.
-			if (neighbour.covering_column[rows_losing_cover[i]] == column_to_remove) {
-				//find out which columns do cover the row
-				int coverings_for_row = instance->row_covering_count[rows_losing_cover[i]];
-				int * column_covers_for_row = instance->raw_coverings[rows_losing_cover[i]];
+			//if the colum being removed was the representative as covering col for this row, update it to something else.
+			if (neighbour.covering_column[rows_losing_cover[j]] == column_to_remove) {
+				//find another column which covers the row which can be listed instead
+				int coverings_for_row = instance->row_covering_count[rows_losing_cover[j]];
+				int * column_covers_for_row = instance->raw_coverings[rows_losing_cover[j]];
 				//find one that is already in the solution which can be listed as covering this row
-				for (int j = 0; j < coverings_for_row; j++) {
-					if (neighbour.columns_in_solution[column_covers_for_row[j]] == 1) {
-						neighbour.covering_column[rows_losing_cover[i]] = column_covers_for_row[j];
+				for (int k = 0; k < coverings_for_row; k++) {
+					if (neighbour.columns_in_solution[column_covers_for_row[k]] == 1) {
+						neighbour.covering_column[rows_losing_cover[j]] = column_covers_for_row[k];
 						break;
 					}
 				}
 			}
 		}
+		free(rows_losing_cover);
 	}
+	free(rows_with_most_coverage);
 
 	return neighbour;
 }
@@ -279,20 +290,37 @@ void find_rows_with_most_coverage(Instance * instance, Solution * solution, int 
 	Finds the rows which are covered by a column.  pass in a pointer to a logical size int.  Pass it in as 0.
 	The function will update this, so that by the end, it denotes the number of rows covered by a particular col.
 */
+void find_rows_covered_by_column(Instance * instance, Solution * solution, int * rows_covered_by_column, int * selected_col, int * logical_size) {
+	
+	//find which rows are being covered by this column
+	for (int row = 0; row < instance->row_count; row++) {
+		if (instance->matrix[row][*selected_col] == 1) {
+			rows_covered_by_column[*logical_size] = row;
+			*logical_size += 1;
+			rows_covered_by_column = expand_array(rows_covered_by_column, *logical_size);
+		}
+	}
+	//for testing
+	//print_array(rows_covered_by_column, *logical_size);
+}
+
+
+/*
+	Finds the rows which are covered by a column.  pass in a pointer to a logical size int.  Pass it in as 0.
+	The function will update this, so that by the end, it denotes the number of rows covered by a particular col.
+*/
 int * find_rows_covered_by_column(Instance * instance, Solution * solution, int * selected_col, int * logical_size) {
 	
-	//create an array with one element, you know there will be at least one row losing cover
-	int * rows_losing_cover = (int *)calloc(1, sizeof(int));
+	int * rows_covered = (int *)calloc(instance->row_count, sizeof(int));
 
 	//find which rows are being covered by this column
 	for (int row = 0; row < instance->row_count; row++) {
 		if (instance->matrix[row][*selected_col] == 1) {
-			rows_losing_cover[*logical_size] = row;
+			rows_covered[*logical_size] = row;
 			*logical_size += 1;
-			rows_losing_cover = expand_array(rows_losing_cover, *logical_size);
 		}
 	}
 	//for testing
-	//print_array(rows_losing_cover, *number_of_rows_losing_cover);
-	return rows_losing_cover;
+	//print_array(rows_covered_by_column, *logical_size);
+	return rows_covered;
 }

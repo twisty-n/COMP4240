@@ -104,7 +104,7 @@ Solution * local_search_first_accept(Instance * instance, Solution * solution_S0
 	Solution current = *solution_S0;
 	Solution best_neighbour;
 	boolean terminate_search = FALSE;
-	struct Solution neighbourhood[NEIGHBOURHOOD_SIZE];
+	Solution neighbourhood[NEIGHBOURHOOD_SIZE];
 
 	while (!terminate_search) {
 		

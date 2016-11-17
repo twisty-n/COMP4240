@@ -69,7 +69,8 @@ void print_array(int * array, int size);
 
 /*
 	will print the details of an array
-	incrementing the output by 1 (use this for presenting data (columns/rows) from the matrix)
+	incrementing the output by 1
+	(use this for presenting columns/rows from the matrix)
 */
 void print_array_real_column_labels(int * array, int size);
 
@@ -81,8 +82,17 @@ double bounded_rand();
 /*
 	will print array contents to screen, then run quicksort (parrallel version)
 	then print the results to screen.  For devel use.
+	intputs: array to be sorted - indexs
+			 array to be sotred (based on these values)
+			 left (first index, use 0 when calling)
+			 right (last index, use the final idex of the sort region when calling).
 */
 void test_arrays_and_quick_sort(int * index, int * value, int left, int right);
+
+/*
+	will take an array and exapand it by 1 empty element
+*/
+void expand_array(int * array, int size);
 
 
 

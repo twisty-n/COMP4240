@@ -200,3 +200,17 @@ void test_arrays_and_quick_sort(int * index, int * value, int left, int right) {
 	printf("\n\n\n");
 
 }
+
+void expand_array(int * array, int size) {
+
+	int * new_array = (int *)calloc(size+1, sizeof(int));
+	int * old_array = array;
+
+	for (int i = 0; i < size; i++) {
+		new_array[i] = old_array[i];
+	}
+	
+	*array = *new_array;
+	//free(old_array);
+	
+}

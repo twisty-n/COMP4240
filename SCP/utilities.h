@@ -78,6 +78,12 @@ void print_array_real_column_labels(int * array, int size);
 */
 double bounded_rand();
 
+/*
+	will print array contents to screen, then run quicksort (parrallel version)
+	then print the results to screen.  For devel use.
+*/
+void test_arrays_and_quick_sort(int * index, int * value, int left, int right);
+
 
 
 

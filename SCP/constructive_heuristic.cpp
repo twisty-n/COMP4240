@@ -207,14 +207,8 @@ void greedy_construction(Instance * instance, Solution * solution, boolean uni_c
 	solution->number_of_non_covering = no_unassigned_columns;
 	solution->covering_details.row_index = rows;
 	solution->covering_details.number_of_covers = number_of_columns_covering_row;
-	
-	
-	print_array(solution->covering_details.row_index, instance->row_count);
-	print_array(solution->covering_details.number_of_covers, instance->row_count);
-	printf("\n\n\n");
-	quick_sort(solution->covering_details.row_index, solution->covering_details.number_of_covers, 0, instance->row_count);
-	print_array(solution->covering_details.row_index, instance->row_count);
-	print_array(solution->covering_details.number_of_covers, instance->row_count);
+
+	//test_arrays_and_quick_sort(solution->covering_details.row_index, solution->covering_details.number_of_covers, 0, instance->row_count - 1);
 
 	//free memory
 	free(uncovered_rows);

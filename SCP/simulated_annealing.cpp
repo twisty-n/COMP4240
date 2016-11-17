@@ -15,7 +15,6 @@ Solution * perform_simulated_annealing(Instance * instance, Solution * solution)
 	Solution current_sol;
 	Solution neighbour;
 	
-	current_sol = deep_copy(instance, solution);
 	neighbour = deep_copy(instance, solution);
 	int solution_not_found = 0;					//will keep track of the number of times an agreeable solution is not found.
 	int solution_not_found_max = 50;			//allows termination of algorithim if an agreeable soltion is not really found.
@@ -37,7 +36,7 @@ Solution * perform_simulated_annealing(Instance * instance, Solution * solution)
 		//decide if you will keep the neighbour
 		if (probaility(&current_sol, &neighbour, T) >= bounded_rand()) {
 			//free_solution(&current_sol);
-			current_sol = neighbour;
+			current_sol = deep_copy(instance, &neighbour);
 			solution_not_found = 0;
 		}
 		else {

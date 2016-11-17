@@ -226,7 +226,9 @@ int * expand_array(int * array, int size) {
 }
 
 void remove_column(Instance * instance, Solution * target, int candidate) {
-			target->columns_in_solution[candidate] = FALSE;
+	//set the column as not being in the soluition
+	target->columns_in_solution[candidate] = FALSE;
+	
 	for (int i = 0; i < target->number_of_covers; i++) {
 		if (target->minimal_cover[i] == candidate) {
 			target->minimal_cover[i] = target->minimal_cover[target->number_of_covers - 1];
@@ -241,7 +243,10 @@ void remove_column(Instance * instance, Solution * target, int candidate) {
 }
 
 void add_column(Instance * instance, Solution * target, int candidate) {
+	//set the column to be in the solution
 	target->columns_in_solution[candidate] = TRUE;
+	
+	//remove it from the list of non-covering columns
 	int removal_index = -1;
 	for (int i = 0; i < target->number_of_non_covering; i++) {
 		if (target->non_covering_columns[i] == candidate) {
@@ -255,6 +260,7 @@ void add_column(Instance * instance, Solution * target, int candidate) {
 		return;
 	}
 
+	//update the solution with details of the candidate 
 	target->minimal_cover[target->number_of_covers] = candidate;
 	target->number_of_covers++;
 

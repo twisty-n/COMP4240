@@ -19,6 +19,8 @@ typedef int boolean;
 */
 void quick_sort(int * array, int p, int r);
 
+int * reverse_quick_sort(int * array, int p, int r, int size);
+
 /*
 	quick_sorts 2 arrays working in parallel
 	index and value will be sored together, 

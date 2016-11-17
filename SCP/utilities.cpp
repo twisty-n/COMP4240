@@ -183,3 +183,20 @@ time_t get_current_time() {
 double bounded_rand() {
 	return ((double)rand() / (RAND_MAX));
 }
+
+
+void test_arrays_and_quick_sort(int * index, int * value, int left, int right) {
+	
+	print_array(index, right+1);
+	printf("\n\n\n");
+	print_array(value, right + 1);
+	printf("\n\n\n");
+
+	quick_sort(index, value, left, right);
+	
+	print_array(index, right + 1);
+	printf("\n\n\n");
+	print_array(value, right + 1);
+	printf("\n\n\n");
+
+}

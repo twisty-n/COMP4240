@@ -13,6 +13,9 @@ typedef int boolean;
 /*
 	If an array needs to be sorted - lowest to highest
 	follows: http://www.algolist.net/Algorithms/Sorting/Quicksort
+	inputs:	 array to be sorted
+			 p (first index, use 0 when calling)
+			 r (last index, use the final idex of the sort region when calling).
 */
 void quick_sort(int * array, int p, int r);
 

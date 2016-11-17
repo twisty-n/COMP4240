@@ -157,6 +157,11 @@ int main(int argument_count, char * argv[])
 			current_solution = *returned;
 			break;
 		case 6:
+			random_construction(&instance, &current_solution);	//TRUE == unicost, FALSE == NON-UNICOST
+			//printout required for python report
+			if (i == 0) {
+				printf("%d ", current_solution.cost);
+			}
 			current_solution = jpso(&instance, 25);
 			returned = &current_solution;
 			operation = "meta_jpso";

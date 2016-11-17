@@ -66,8 +66,11 @@ int main(int argument_count, char * argv[])
 
 	boolean debug = atoi(argv[4]);
 	if (debug) {
-
+<<<<<<< HEAD
+		input_file_name = "debug_quick_sort.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
+=======
 		input_file_name = "03scp43.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
+>>>>>>> 9f96f61144fa4847125297951e4c395d08a3a5d2
 	}
 	else {
 		input_file_name = argv[1];

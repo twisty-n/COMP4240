@@ -106,7 +106,7 @@ void remove_column(Instance * instance, Solution * target, int candidate);
 */
 void add_column(Instance * instance, Solution * target, int candidate);
 
-
+int sanity_cost(Instance * instance, Solution * solution);
 
 
 

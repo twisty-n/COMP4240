@@ -66,7 +66,7 @@ int main(int argument_count, char * argv[])
 
 	boolean debug = atoi(argv[4]);
 	if (debug) {
-		input_file_name = "09scp49.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
+		input_file_name = "01scp41.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
 	}
 	else {
 		input_file_name = argv[1];
@@ -157,7 +157,8 @@ int main(int argument_count, char * argv[])
 			current_solution = *returned;
 			break;
 		case 6:
-			current_solution = jpso(&instance, 15);
+			current_solution = jpso(&instance, 25);
+			returned = &current_solution;
 			operation = "meta_jpso";
 			break;
 		}

@@ -157,7 +157,7 @@ int main(int argument_count, char * argv[])
 			current_solution = *returned;
 			break;
 		case 6:
-			current_solution = jpso(&instance, 10);
+			current_solution = jpso(&instance, 15);
 			operation = "meta_jpso";
 			break;
 		}

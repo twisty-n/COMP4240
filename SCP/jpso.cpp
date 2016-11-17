@@ -19,12 +19,14 @@ Solution * generate_population(Instance * instance, int population_size) {
 	for (int j = 0; j < population_size; j++) {
 		Solution * s = (Solution *) malloc(sizeof(Solution));
 		greedy_construction(instance, s, FALSE);
-		for (int i = 0; i < instance->column_count; i++) {
+		int max_mutation_count = s->number_of_covers / 10.0;
+		int current_mutation_count = 0;
+		for (int i = 0; i < instance->column_count && current_mutation_count != max_mutation_count; i++) {
 			if (s->columns_in_solution[i] != TRUE) {
 				double mutate = rand_in_range(0,1);
 				if (mutate < 0.1) {
-					s->columns_in_solution[i] = TRUE;
-					//add_column(instance, s, i);
+					add_column(instance, s, i);
+					current_mutation_count++;
 				}
 			}
 		}
@@ -35,7 +37,7 @@ Solution * generate_population(Instance * instance, int population_size) {
 }
 
 boolean terminate(int current_iteration, Solution * solutions) {
-	return current_iteration > 20 ? TRUE : FALSE;
+	return current_iteration > 30 ? TRUE : FALSE;
 }
 
 void make_feasible(Instance * instance, Solution * target) {
@@ -47,6 +49,10 @@ void make_feasible(Instance * instance, Solution * target) {
 	// Preprocess to see which rows are uncovered
 
 	target->minimal_cover = reverse_quick_sort(target->minimal_cover, 0, instance->row_count - 1, instance->row_count);
+
+	//print_array(target->minimal_cover, instance->row_count);
+	//printf("Number of covers: %d", target->number_of_covers);
+	//printf("\n");
 
 	for (int i = 0; i < target->number_of_covers; i++) {
 		int covering_column = target->minimal_cover[i];
@@ -105,23 +111,12 @@ void merge(Instance * instance, Solution * target, Solution * source) {
 	int number_columns_to_modify = (int)rand_in_range(1, target->number_of_covers / 3.0);
 	for (int i = 0; i < number_columns_to_modify; i++) {
 		boolean do_remove = rand_in_range(0, 1) < 0.5;
+		int candidate = target->minimal_cover[((int)rand_in_range(0, target->number_of_covers - 1))];
 		if (do_remove) {
-			int candidate = target->minimal_cover[((int)rand_in_range(0, target->number_of_covers-1))];
 			remove_column(instance, target, candidate);
 		}
 		else {
-			int index = ((int)rand_in_range(0, source->number_of_covers));
-			int candidate = source->minimal_cover[index];
-			boolean already_in_solution = FALSE;
-			for (int i = 0; i < target->number_of_covers; i++) {
-				if (target->minimal_cover[i] == candidate) {
-					already_in_solution = TRUE;
-					break;
-				}
-			}
-			if (!already_in_solution) {
-				add_column(instance, target, candidate);
-			}
+			add_column(instance, target, candidate);
 		}
 	}
 	make_feasible(instance, target);
@@ -140,7 +135,6 @@ Solution jpso(Instance * instance, int population_size) {
 	int current_iteration = 0;
 
 	Solution * modifier;
-
 	while (!terminate(current_iteration, population)) {
 		for (int i = 0; i < population_size; i++) {
 			double selector = rand_in_range(0, 1);
@@ -163,7 +157,7 @@ Solution jpso(Instance * instance, int population_size) {
 			// Restore when we have a working local search
 			//Solution * test = local_search_first_accept(instance, &population[i]);
 			//population[i] = deep_copy(instance, test);
-			population[i] = deep_copy(instance, &population[i]);
+			//population[i] = deep_copy(instance, &population[i]);
 
 			if (population[i].cost < personal_bests[i].cost) {
 				personal_bests[i] = deep_copy(instance, &population[i]);
@@ -175,6 +169,7 @@ Solution jpso(Instance * instance, int population_size) {
 				global_best = deep_copy(instance, &population[i]);
 			}
 		}
+		current_iteration++;
 	}
 
 	return global_best;

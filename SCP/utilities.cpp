@@ -98,7 +98,7 @@ Solution deep_copy(Instance * instance, Solution * solution_s0) {
 	deep_copy.covering_column = copy_array(solution_s0->covering_column, instance->row_count);
 	deep_copy.minimal_cover = copy_array(solution_s0->minimal_cover, instance->row_count);
 	deep_copy.columns_in_solution = copy_array(solution_s0->columns_in_solution, instance->column_count);
-	deep_copy.non_covering_columns = copy_array(solution_s0->non_covering_columns, solution_s0->number_of_non_covering);
+	deep_copy.non_covering_columns = copy_array(solution_s0->non_covering_columns, instance->row_count);
 	deep_copy.covering_details.row_index = copy_array(solution_s0->covering_details.row_index, instance->row_count);
 	deep_copy.covering_details.number_of_covers = copy_array(solution_s0->covering_details.number_of_covers, instance->row_count);
 
@@ -106,7 +106,7 @@ Solution deep_copy(Instance * instance, Solution * solution_s0) {
 }
 
 int * copy_array(int * array, int size) {
-	int * new_array = (int *)calloc(size, sizeof(int));;
+	int * new_array = (int *)calloc(size, sizeof(int));
 	for (int i = 0; i < size; i++) {
 		new_array[i] = array[i];
 	}
@@ -226,20 +226,18 @@ int * expand_array(int * array, int size) {
 }
 
 void remove_column(Instance * instance, Solution * target, int candidate) {
-	target->columns_in_solution[candidate] = FALSE;
 	for (int i = 0; i < target->number_of_covers; i++) {
 		if (target->minimal_cover[i] == candidate) {
 			target->minimal_cover[i] = target->minimal_cover[target->number_of_covers - 1];
 			target->minimal_cover[target->number_of_covers - 1] = -1;
 			target->number_of_covers -= 1;
 			target->cost -= instance->column_costs[candidate];
-
+			target->columns_in_solution[candidate] = FALSE;
 			target->non_covering_columns[target->number_of_non_covering] = candidate;
 			target->number_of_non_covering += 1;
 			break;
 		}
 	}
-	target->columns_in_solution[candidate] = -1;
 }
 
 void add_column(Instance * instance, Solution * target, int candidate) {

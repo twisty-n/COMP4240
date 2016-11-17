@@ -98,7 +98,7 @@ Solution deep_copy(Instance * instance, Solution * solution_s0) {
 	deep_copy.covering_column = copy_array(solution_s0->covering_column, instance->row_count);
 	deep_copy.minimal_cover = copy_array(solution_s0->minimal_cover, instance->row_count);
 	deep_copy.columns_in_solution = copy_array(solution_s0->columns_in_solution, instance->column_count);
-	deep_copy.non_covering_columns = copy_array(solution_s0->non_covering_columns, instance->row_count);
+	deep_copy.non_covering_columns = copy_array(solution_s0->non_covering_columns, instance->column_count);
 	deep_copy.covering_details.row_index = copy_array(solution_s0->covering_details.row_index, instance->row_count);
 	deep_copy.covering_details.number_of_covers = copy_array(solution_s0->covering_details.number_of_covers, instance->row_count);
 

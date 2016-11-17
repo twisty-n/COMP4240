@@ -271,9 +271,11 @@ Solution not_so_randomly_generate_neighbour(Instance * instance, Solution * neig
 			free(rows_getting_cover);
 		}
 
-		//sanity check - ensure that the row does have a decent value as its covering column
+		//final sanity check
+		//ensure that the row does have a decent value as its covering column
 		if (neighbour->covering_column[row] < 0) {
-//			printf("you have an issue - look into how/when you are getting here");
+			//you can assume one of the columns covering the row is in the solution, otherwise it would have
+			//been caught in the last case.
 			for (int k = 0; k < instance->row_covering_count[row]; k++) {
 				if (neighbour->columns_in_solution[instance->raw_coverings[row][k]] == TRUE) {
 					neighbour->covering_column[row] = instance->raw_coverings[row][k];

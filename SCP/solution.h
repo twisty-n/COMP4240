@@ -79,4 +79,4 @@ void free_solution(Solution * solution, FILE * file);
 
 void free_solution(Solution * solution);
 
-void print_solution_to_file(Solution * solution, FILE * file,  char * heuristic);
+void print_solution_to_file(Instance * instance, Solution * solution, FILE * file,  char * heuristic);

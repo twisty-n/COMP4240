@@ -42,6 +42,8 @@ Solution * perform_simulated_annealing(Instance * instance, Solution * solution)
 		}
 		k++;
 	}
+	printf("\n Solution is feasible: %s", is_feasible(instance, &current_sol) ? "Yes" : "no");
+	printf("\n Sanity cost: %d", sanity_cost(instance, &current_sol));
 	return &current_sol;
 }
 

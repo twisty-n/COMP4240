@@ -145,7 +145,7 @@ Solution * local_search_first_accept(Instance * instance, Solution * solution_S0
 
 Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0) {
 
-	int total_rows_to_swap = 5;				
+	int total_cols_to_swap = 5;				
 	int non_feasible = 0;						//counter for the number of non-feasible solutions generated
 	int non_feasible_max = 500;					//max number of non-feasible solutions allowed.  When maxed, return s0.
 	boolean solution_found = FALSE;
@@ -153,7 +153,7 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 	
 
 	while (!solution_found && non_feasible < non_feasible_max) {
-		for (int i = 0; i < total_rows_to_swap; i++) {
+		for (int i = 0; i < total_cols_to_swap; i++) {
 			//pick a random row from the minimal coverings
 			int column_to_remove_index = rand() % neighbour.number_of_covers;
 			int column_to_remove = neighbour.minimal_cover[column_to_remove_index];

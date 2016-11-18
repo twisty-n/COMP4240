@@ -11,9 +11,6 @@
  *							6.  Population based meta-heuristic
  *		3. int				Number of runs
  *      4. int				Will be used to indicate debug mode. 1 == TRUE 0 == FALSE		
- *		5. int:optional:	The current best known solution for the given input file (only required
- *							if finding a solution and second argument is a search single-point or 
- *					        metaheurstic)
  */
 
 #include "stdafx.h"
@@ -68,6 +65,7 @@ int main(int argument_count, char * argv[])
 	if (debug) {
 
 		input_file_name = "11scp51.txt";				//use this when running in debug mode.  Make sure arg2 and arg3 for VS2015 have values you can run with.
+		print_raw_output = TRUE;
 	}
 	else {
 		input_file_name = argv[1];

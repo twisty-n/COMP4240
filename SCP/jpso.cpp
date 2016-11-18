@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "local_search.h"
 #include <assert.h>
+#include "simulated_annealing.h"
 
 double rand_in_range(int min, int max)
 {
@@ -37,7 +38,7 @@ Solution * generate_population(Instance * instance, int population_size) {
 }
 
 boolean terminate(int current_iteration, Solution * solutions) {
-	return current_iteration > 30 ? TRUE : FALSE;
+	return current_iteration > 15 ? TRUE : FALSE;
 }
 
 void make_feasible(Instance * instance, Solution * target) {
@@ -157,8 +158,8 @@ Solution jpso(Instance * instance, int population_size) {
 			merge(instance, &population[i], modifier);
 
 			// Restore when we have a working local search
-			Solution * test = local_search_first_accept(instance, &population[i]);
-			population[i] = deep_copy(instance, test);
+			population[i] = *perform_simulated_annealing(instance, &population[i]);
+			//population[i] = deep_copy(instance, test);
 			//population[i] = deep_copy(instance, &population[i]);
 
 			if (population[i].cost < personal_bests[i].cost) {

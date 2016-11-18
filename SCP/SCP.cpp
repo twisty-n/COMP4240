@@ -162,10 +162,10 @@ int main(int argument_count, char * argv[])
 			if (i == 0) {
 				printf("%d ", current_solution.cost);
 			}
-			current_solution = jpso(&instance, 250);
+			current_solution = jpso(&instance, 10);
 			returned = &current_solution;
-			printf("\n Solution is feasible: %s", is_feasible(&instance, returned) ? "Yes" : "no");
-			printf("\n Sanity cost: %d", sanity_cost(&instance, returned));
+			//printf("\n Solution is feasible: %s", is_feasible(&instance, returned) ? "Yes" : "no");
+			//printf("\n Sanity cost: %d", sanity_cost(&instance, returned));
 			operation = "meta_jpso";
 			break;
 		}

@@ -112,11 +112,15 @@ Solution * local_search_first_accept(Instance * instance, Solution * solution_S0
 		best_neighbour = current;
 
 		//define the neighbourhood	
-		base_neighbour = current;
+		for (int i = 0; i < NEIGHBOURHOOD_SIZE; i++) {
+			neighbourhood[i] = randomly_generate_neighbour(instance, &current);
+		}
+		
+		/*base_neighbour = current;
 		for (int i = 0; i < NEIGHBOURHOOD_SIZE; i++) {
 			neighbourhood[i] = not_so_randomly_generate_neighbour(instance, &base_neighbour);
 			base_neighbour = deep_copy(instance, &neighbourhood[i]);
-		}
+		}*/
 
 		//for each solution in the neighbourhood
 		for (int i = 0; i < NEIGHBOURHOOD_SIZE; i++) {
@@ -158,16 +162,8 @@ Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0
 			int column_to_add_index = rand() % neighbour.number_of_non_covering;
 			int column_to_add = neighbour.non_covering_columns[column_to_add_index];
 
-			//Swap cols in the solution
-			neighbour.non_covering_columns[column_to_add_index] = column_to_remove;
-			neighbour.minimal_cover[column_to_remove_index] = column_to_add;
-
-			//updates
-			neighbour.columns_in_solution[column_to_add] = COVERED;
-			neighbour.columns_in_solution[column_to_remove] = NOT_COVERED;
-			neighbour.cost -= instance->column_costs[column_to_remove];
-			neighbour.cost += instance->column_costs[column_to_add];
-
+			add_column(instance, &neighbour, column_to_add);
+			remove_column(instance, &neighbour, column_to_remove);
 		}
 		if (is_feasible(instance, &neighbour)) {
 			solution_found = TRUE;

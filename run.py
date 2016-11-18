@@ -174,7 +174,7 @@ def add_headings(worksheet, operation_mode, emphasis_formatting, number_of_runs,
 			worksheet.write('A4', "time (seconds)", emphasis_formatting)
 			worksheet.write('A5', "best performance vs best-known (%)", emphasis_formatting)
 			if report_average:
-				worksheet.write('A6', "average cost - {} iterations", emphasis_formatting)
+				worksheet.write('A6', "average cost - {} iterations".format(number_of_runs), emphasis_formatting)
 				worksheet.write('A7', "time (seconds)", emphasis_formatting)
 				worksheet.write('A8', "average performance vs best-known (%)", emphasis_formatting)
 				worksheet.write('A9', "duration - seconds", emphasis_formatting)
@@ -207,7 +207,7 @@ def add_headings(worksheet, operation_mode, emphasis_formatting, number_of_runs,
 				worksheet.write('A8', "duration - seconds", emphasis_formatting)
 			
 			break
-		worksheet.set_column(0, 0, 45)
+		worksheet.set_column(0, 0, 65)
 	
 	
 # This function is also overloaded, depending on which code it runs for:  This will services codes 1 and 2
@@ -261,8 +261,8 @@ def fill_sheet_constructive(worksheet, operation_mode, emphasis_formatting, best
 		cell_range = 'A8:' + average_performance_percentage_final_cell
 		average_performance_gains_formula = '=SUM(' + cell_range + ')/COUNT(' + cell_range + ')'
 		worksheet.write_formula(row + 7, i, average_performance_gains_formula, emphasis_formatting)
-	
 	worksheet.set_column(0, i, 30)
+	
 	input_file.close()
 
 

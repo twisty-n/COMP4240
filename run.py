@@ -392,27 +392,32 @@ def generate_data_structures():
 
 	
 def print_header_to_console(operation_mode, no_runs):
+	pluralise = "iteration" if no_runs == 1 else "iterations"
+	operation = ""
+	# This switch could be a dict :D
 	for case in switch(int(operation_mode)):
 		if case(1):
-			print(blue("Currently running {} for {} iterations").format("random_constructive", no_runs))
+			operation = "random_constructive"
 			break
 		if case(2):
-			print(blue("Currently running {} for {} iteration").format("greedy_constructive", 1))
+			operation = "greedy_constructive"
 			break
 		if case(3):
-			print(blue("Currently running {} for {} iterations").format("local_search_best_accept", no_runs))
+			operation = "local_search_best_accept"
 			break
 		if case(4):
-			print(blue("Currently running {} for {} iterations").format("local_search_first_accept", no_runs))
+			operation = "local_search_first_accept"
 			break
 		if case(5):
-			print(blue("Currently running {} for {} iterations").format("simulated_annelaing", no_runs))
+			operation = "simulated_annelaing"
 			break
 		if case(6):
-			print(blue("Currently running {} for {} iterations").format("Jumping particle swarm", no_runs))
+			operation = "Jumping particle swarm"
 			break
 		if case(7):
 			print("where I should not be:")
+			
+	print(blue("Currently running {} for {} {}").format(operation, no_runs, pluralise))
 
 			
 def launch_tests(operation_mode, path_to_runner, number_of_runs, random_heuristic, greedy_heuristic, local_search_best_accept, local_search_first_accept, simulated_annelaing, jumping_particle_swarm, report_average):	

@@ -140,7 +140,8 @@ Solution * local_search_first_accept(Instance * instance, Solution * solution_S0
 		}
 	}//end while
 
-	return &best_neighbour;
+	solution_S0 = &best_neighbour;
+	return solution_S0;
 }
 
 Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0) {

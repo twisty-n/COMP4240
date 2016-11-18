@@ -20,12 +20,12 @@ Solution * generate_population(Instance * instance, int population_size) {
 	for (int j = 0; j < population_size; j++) {
 		Solution * s = (Solution *) malloc(sizeof(Solution));
 		greedy_construction(instance, s, FALSE);
-		int max_mutation_count = s->number_of_covers / 10.0;
+		int max_mutation_count = s->number_of_covers / 15.0;
 		int current_mutation_count = 0;
 		for (int i = 0; i < instance->column_count && current_mutation_count != max_mutation_count; i++) {
 			if (s->columns_in_solution[i] != TRUE) {
 				double mutate = rand_in_range(0,1);
-				if (mutate < 0.1) {
+				if (mutate < 0.15) {
 					add_column(instance, s, i);
 					current_mutation_count++;
 				}
@@ -141,13 +141,13 @@ Solution jpso(Instance * instance, int population_size) {
 	while (!terminate(current_iteration, population)) {
 		for (int i = 0; i < population_size; i++) {
 			double selector = rand_in_range(0, 1);
-			if (selector <= 0.25) {
+			if (selector <= 0.30) {
 				modifier = &population[i];
 			}
-			else if (selector <= 0.5) {
+			else if (selector <= 0.50) {
 				modifier = &personal_bests[i];
 			}
-			else if (selector <= 0.75) {
+			else if (selector <= 0.70) {
 				modifier = &current_best;
 			}
 			else {

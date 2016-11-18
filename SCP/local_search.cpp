@@ -146,7 +146,7 @@ Solution * local_search_first_accept(Instance * instance, Solution * solution_S0
 
 Solution randomly_generate_neighbour(Instance * instance, Solution * solution_S0) {
 
-	int total_cols_to_swap = 20;				
+	int total_cols_to_swap = 200;				
 	int non_feasible = 0;						//counter for the number of non-feasible solutions generated
 	int non_feasible_max = 500;					//max number of non-feasible solutions allowed.  When maxed, return s0.
 	boolean solution_found = FALSE;
